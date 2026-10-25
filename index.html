@@ -39,7 +39,7 @@ button,input,select,textarea{font:inherit;color:inherit}
 .ic{width:18px;height:18px;flex:none}
 .muted{color:var(--muted)}
 kbd{font:11px ui-monospace,monospace;background:var(--hover);border:1px solid var(--border);border-radius:4px;padding:1px 5px;color:var(--muted)}
-#app{display:flex;height:100vh;height:100dvh}
+#app{display:flex;height:100%}
 /* nav */
 #nav{width:224px;flex:none;background:var(--panel);border-right:1px solid var(--border);display:flex;flex-direction:column;padding:14px 10px;gap:2px;overflow-y:auto}
 .brand{display:flex;align-items:center;gap:10px;font-weight:700;font-size:16px;padding:4px 10px 16px}
@@ -563,7 +563,15 @@ function safeUrl(u) { try { const x = new URL(normUrl(u)); return /^https?:$/.te
 function ytId(u) { const m = String(u || '').match(/(?:youtube\.com\/(?:watch\?(?:.*&)?v=|shorts\/|embed\/)|youtu\.be\/)([\w-]{11})/); return m ? m[1] : null; }
 const randomHex = () => '#' + ['e5484d', 'f76b15', 'e2b203', '30a46c', '12a594', '3e63dd', '8e4ec6', 'd6409f', '1d1d1f', 'f2e8cf'][Math.floor(Math.random() * 10)];
 function download(name, url) { const a = h('a', { href: url, download: name }); document.body.append(a); a.click(); a.remove(); }
-function downloadText(name, text, type = 'application/json') { const url = URL.createObjectURL(new Blob([text], { type })); download(name, url); setTimeout(() => URL.revokeObjectURL(url), 2000); }
+function downloadText(name, text, type = 'application/json') {
+  try { const url = URL.createObjectURL(new Blob([text], { type })); download(name, url); setTimeout(() => URL.revokeObjectURL(url), 2000); } catch { }
+  const m = modal(`<h2>Export ready</h2><p class="muted" style="font-size:13px">Your download of <b>${esc(name)}</b> should start. If it doesn't, copy the contents below and save them as a file.</p><textarea class="inp" readonly style="min-height:180px;font:12px ui-monospace,monospace"></textarea><div class="modal-actions"><button class="btn" data-c>Close</button><button class="btn primary" data-copy>Copy to clipboard</button></div>`);
+  m.style.width = 'min(620px,100%)';
+  const ta = m.querySelector('textarea'); ta.value = text;
+  m.querySelector('[data-c]').onclick = () => m.close();
+  m.querySelector('[data-copy]').onclick = () => { navigator.clipboard.writeText(text).then(() => toast('Copied to clipboard'), () => { ta.focus(); ta.select(); toast('Press Ctrl+C to copy'); }); };
+}
+function openUrl(u) { const a = h('a', { href: u, target: '_blank', rel: 'noopener noreferrer' }); document.body.append(a); a.click(); a.remove(); }
 function readFile(file, as = 'dataURL') { return new Promise((res, rej) => { const r = new FileReader(); r.onload = () => res(r.result); r.onerror = rej; as === 'text' ? r.readAsText(file) : r.readAsDataURL(file); }); }
 function loadImg(src) { return new Promise((res, rej) => { const i = new Image(); i.onload = () => res(i); i.onerror = rej; i.src = src; }); }
 function pickFiles(accept = '', multiple = true) {
@@ -1002,7 +1010,7 @@ function addTodoItem(c, idx) { c.data.items.splice(idx, 0, { id: uid('i'), text:
 function focusTodo(c, idx) { const t = els.get(c.id)?.querySelectorAll('.todo-text')[idx]; if (t) activateEditable(t); }
 R.link = (c, el) => {
   const d = c.data, u = safeUrl(d.url), host = u ? u.hostname.replace(/^www\./, '') : d.url, yt = ytId(d.url);
-  if (yt) el.append(h('div', { class: 'link-thumb' }, h('img', { src: `https://img.youtube.com/vi/${yt}/hqdefault.jpg`, alt: '', onload: scheduleLines }), h('span', { class: 'play' }, '▶')));
+  if (yt) el.append(h('div', { class: 'link-thumb' }, h('img', { src: `https://img.youtube.com/vi/${yt}/hqdefault.jpg`, alt: '', onload: scheduleLines, onerror: e => { e.target.closest('.link-thumb')?.remove(); scheduleLines(); } }), h('span', { class: 'play' }, '▶')));
   el.append(h('div', { class: 'link-body' },
     h('div', { class: 'link-host' }, u ? h('img', { src: `https://www.google.com/s2/favicons?domain=${encodeURIComponent(u.hostname)}&sz=32`, alt: '', onerror: e => e.target.remove() }) : null, host),
     ed({ cls: 'link-title', value: d.title || (u ? decodeURIComponent(u.pathname.split('/').filter(Boolean).pop() || host).replace(/[-_]+/g, ' ') : ''), ph: 'Add a title', onInput: v => d.title = v }),
@@ -1482,7 +1490,7 @@ function onUp(e) {
 }
 function handleClick(p, e) {
   const t = p.target; if (!t.isConnected) return;
-  const a = t.closest('a[href]'); if (a) { window.open(a.href, '_blank', 'noopener'); return; }
+  const a = t.closest('a[href]'); if (a) { openUrl(a.href); return; }
   const edEl = t.closest('.ed'); if (!edEl) return;
   const cfg = edCfg.get(edEl); if (!cfg) return;
   if (cfg.immediate) activateEditable(edEl, e.clientX, e.clientY);
@@ -1651,7 +1659,7 @@ function openCard(c) {
   if (!c) return;
   switch (c.type) {
     case 'board': openBoard(c.data.boardId); break;
-    case 'link': { const u = safeUrl(c.data.url); if (u) window.open(u.href, '_blank', 'noopener'); break; }
+    case 'link': { const u = safeUrl(c.data.url); if (u) openUrl(u.href); break; }
     case 'image': { const src = c.data.assetId ? assets[c.data.assetId] : c.data.src; if (src) { const m = modal(`<div class="lightbox"><img alt=""></div>`, { wide: true, cls: 'lb' }); m.querySelector('img').src = src; m.style.padding = '12px'; } break; }
     case 'file': if (assets[c.data.assetId]) download(c.data.name, assets[c.data.assetId]); break;
     case 'sketch': openSketch(c); break;

@@ -565,6 +565,29 @@ body.presenting-body #nav{display:none}
 .sh-main{flex:1;display:flex;min-height:0}
 .sh-canvas{flex:1;overflow:auto;background:var(--sh-canvas);position:relative;outline:0;touch-action:pan-x pan-y}
 .sh-zoomer{position:relative;overflow:hidden}
+#sh-page{-webkit-user-select:none;user-select:none;-webkit-touch-callout:none}
+#sh-page [contenteditable=true],#sh-page input{-webkit-user-select:text;user-select:text}
+.sh-obj.lifting{filter:drop-shadow(0 10px 18px rgba(0,0,0,.28));opacity:.92;transition:filter .12s}
+.sh-lift-ring{position:fixed;width:56px;height:56px;margin:-28px 0 0 -28px;border-radius:50%;border:3px solid var(--accent);pointer-events:none;z-index:3000;animation:liftring .35s ease-out forwards}
+@keyframes liftring{from{transform:scale(.4);opacity:.9}to{transform:scale(1);opacity:0}}
+@media (pointer:coarse){
+  .sh-resize{width:calc(26px * var(--iz,1));height:calc(26px * var(--iz,1));right:calc(-13px * var(--iz,1));bottom:calc(-13px * var(--iz,1))}
+  .sh-fill{width:calc(22px * var(--iz,1));height:calc(22px * var(--iz,1))}
+  .conn-h{width:calc(26px * var(--iz,1));height:calc(26px * var(--iz,1))}
+  .sh-grab{width:calc(36px * var(--iz,1));height:calc(36px * var(--iz,1));left:calc(-40px * var(--iz,1));top:calc(-40px * var(--iz,1))}
+  .cw{width:calc(18px * var(--iz,1));right:calc(-9px * var(--iz,1));touch-action:none}
+  .rh{height:calc(18px * var(--iz,1));bottom:calc(-9px * var(--iz,1));touch-action:none}
+}
+.color-row{flex-wrap:wrap;max-width:252px}
+.color-dot.add{background:var(--panel);color:var(--muted);font-size:14px;line-height:1;display:inline-grid;place-items:center;font-weight:600}
+.sw-row{flex-wrap:wrap}
+.appear .ap-row{display:flex;align-items:center;gap:12px;margin:10px 0;flex-wrap:wrap}.appear .ap-row.top{align-items:flex-start}
+.appear .ap-lab{width:130px;flex:none;font-size:13px;font-weight:600;display:flex;flex-direction:column;gap:2px}.appear .ap-lab small{font-weight:400;font-size:11.5px;line-height:1.3}
+.appear .sw-row{flex:1;min-width:0;gap:6px}.appear .color-dot{width:24px;height:24px}
+.my-col{position:relative;display:inline-block}.my-col i{display:block;width:24px;height:24px;border-radius:50%;box-shadow:0 0 0 1px var(--border)}
+.my-col .x-btn{position:absolute;top:-6px;right:-6px;width:16px;height:16px;padding:0;border-radius:50%;background:var(--panel);box-shadow:var(--shadow);display:grid;place-items:center}.my-col .x-btn .ic{width:10px;height:10px}
+.ap-prev{gap:4px!important}.ap-prev .color-dot{width:16px;height:16px}
+@media (max-width:600px){.appear .ap-lab{width:100%}}
 .sh-page{position:absolute;left:0;top:0;transform-origin:0 0}
 .sh-zoom{margin-left:auto;display:flex;align-items:center;gap:2px;flex:none;position:sticky;right:0;background:var(--panel);padding-left:8px}
 .sh-zoom button{border:0;background:none;color:var(--text);min-width:30px;height:26px;border-radius:6px;font-size:15px;cursor:pointer}
@@ -576,7 +599,7 @@ body.presenting-body #nav{display:none}
 .sh-tname{position:absolute;left:0;bottom:calc(100% + 6px);font-weight:700;font-size:15px;white-space:nowrap;cursor:grab;user-select:none}
 .sh-table.sel-obj .sh-tname{bottom:calc(100% + 30px)}
 .pill{display:inline-block;font-size:10px;font-weight:700;padding:1px 6px;border-radius:999px;background:var(--accent-weak);color:var(--accent);vertical-align:2px}
-.sh-grab{position:absolute;left:-30px;top:-30px;width:24px;height:24px;border-radius:50%;background:var(--panel);box-shadow:var(--shadow);display:none;place-items:center;cursor:grab;color:var(--muted);touch-action:none;z-index:3}
+.sh-grab{position:absolute;left:calc(-30px * var(--iz,1));top:calc(-30px * var(--iz,1));width:calc(24px * var(--iz,1));height:calc(24px * var(--iz,1));border-radius:50%;background:var(--panel);box-shadow:var(--shadow);display:none;place-items:center;cursor:grab;color:var(--muted);touch-action:none;z-index:3}
 .sh-grab .ic{width:14px;height:14px}
 .sh-table.sel-obj .sh-grab{display:grid}
 .grid{border-collapse:collapse;table-layout:fixed;margin-left:-30px;font-size:13px;background:transparent}
@@ -615,7 +638,7 @@ body.presenting-body #nav{display:none}
 .grid td.sel{box-shadow:inset 0 0 0 9999px color-mix(in srgb,var(--accent) 14%,transparent)}
 .grid td.act{outline:2px solid var(--accent);outline-offset:-2px;z-index:1}
 .grid td.fillp{box-shadow:inset 0 0 0 9999px color-mix(in srgb,var(--accent) 8%,transparent);outline:1px dashed var(--accent);outline-offset:-1px}
-.sh-fill{position:absolute;width:10px;height:10px;background:var(--accent);border:2px solid var(--sh-cell);border-radius:50%;cursor:crosshair;z-index:5;touch-action:none}
+.sh-fill{position:absolute;width:calc(12px * var(--iz,1));height:calc(12px * var(--iz,1));transform:translate(-50%,-50%);background:var(--accent);border:2px solid var(--sh-cell);border-radius:50%;cursor:crosshair;z-index:5;touch-action:none}
 .sh-cell-input{position:absolute;z-index:20;border:2px solid var(--accent);background:var(--sh-cell);padding:2px 6px;font:13px ui-sans-serif,system-ui;outline:0;box-shadow:var(--shadow-lg)}
 .sh-add{position:absolute;width:20px;height:20px;border-radius:50%;border:0;background:var(--accent);color:#fff;font-weight:700;cursor:pointer;line-height:1;padding:0}
 .sh-addcol{right:-26px;top:4px}.sh-addrow{left:4px;bottom:-26px}
@@ -671,7 +694,7 @@ body.presenting-body #nav{display:none}
 .conn-hit{fill:none;stroke:transparent;stroke-width:14;pointer-events:stroke;cursor:move}
 .sh-obj.sh-conn.sel-obj{outline:none}
 .sh-conn.sel-obj path:not(.conn-hit){filter:drop-shadow(0 0 2px var(--accent))}
-.conn-h{position:absolute;width:14px;height:14px;border-radius:50%;background:var(--panel);border:2px solid var(--accent);pointer-events:auto;cursor:crosshair;box-sizing:border-box}
+.conn-h{position:absolute;width:calc(16px * var(--iz,1));height:calc(16px * var(--iz,1));transform:translate(-50%,-50%);touch-action:none;border-radius:50%;background:var(--panel);border:2px solid var(--accent);pointer-events:auto;cursor:crosshair;box-sizing:border-box}
 .sh-obj.conn-target{outline:2px dashed var(--accent)!important;outline-offset:3px}
 .sh-obj.multi-sel{outline:2px solid var(--accent)!important;outline-offset:2px}
 .sh-obj.multi-sel.sh-conn{outline:none!important}
@@ -716,7 +739,7 @@ body.presenting-body #nav{display:none}
 }
 .btn-grid.three{grid-template-columns:repeat(3,minmax(0,1fr))}.al-btn{flex-direction:column;gap:2px}.al-btn span{font-size:16px}
 .sh-image img{width:100%;height:100%;object-fit:cover;display:block;border-radius:6px;pointer-events:none}
-.sh-resize{position:absolute;right:-6px;bottom:-6px;width:14px;height:14px;border-radius:50%;background:var(--panel);border:2px solid var(--accent);cursor:nwse-resize;z-index:4;touch-action:none}
+.sh-resize{position:absolute;right:calc(-8px * var(--iz,1));bottom:calc(-8px * var(--iz,1));width:calc(16px * var(--iz,1));height:calc(16px * var(--iz,1));border-radius:50%;background:var(--panel);border:2px solid var(--accent);cursor:nwse-resize;z-index:4;touch-action:none}
 .sh-side{width:300px;flex:none;border-left:1px solid var(--border);background:var(--panel);overflow-y:auto;min-height:0}
 .side-head{display:flex;align-items:center;gap:6px;padding:10px;border-bottom:1px solid var(--border);position:sticky;top:0;background:var(--panel);z-index:2}
 .side-head .seg{flex:1}
@@ -2275,7 +2298,8 @@ function showMenu(x, y, items) {
     if (it === '-') { m.append(h('div', { class: 'menu-sep' })); continue; }
     if (it.colors) {
       const row = h('div', { class: 'color-row' }, h('button', { class: 'color-dot none', title: 'No color', onclick: () => { hideMenu(); it.run(null); } }));
-      COLORS.forEach(c => row.append(h('button', { class: 'color-dot', title: c, style: `background:var(--cc-${c})`, onclick: () => { hideMenu(); it.run(c); } })));
+      COLORS.forEach(c => row.append(h('button', { class: 'color-dot', title: colorLabel(c), style: `background:var(--cc-${c})`, onclick: () => { hideMenu(); it.run(c); } })));
+      row.append(h('button', { class: 'color-dot add', title: 'Custom color…', 'aria-label': 'Custom color', onclick: () => { hideMenu(); pickCustomColor(c => it.run(c)); } }, '+'));
       m.append(row); continue;
     }
     if (it.emojis) { const row = h('div', { class: 'color-row emoji-row' }); REACTIONS.forEach(em => row.append(h('button', { class: 'emoji-btn', title: 'React ' + em, onclick: () => { hideMenu(); it.run(em); } }, em))); m.append(row); continue; }
@@ -2597,7 +2621,7 @@ function pasteStyle() {
 
 /* ----- labels ----- */
 function openLabels(ids) {
-  const m = modal(`<h2>Labels</h2><div class="label-list"></div><form class="label-new"><input class="inp" id="label-name" placeholder="New label name" maxlength="24"><select class="inp" id="label-color" aria-label="Label color">${COLORS.map(c => `<option value="${c}">${c[0].toUpperCase() + c.slice(1)}</option>`).join('')}</select><button class="btn">Add</button></form>`);
+  const m = modal(`<h2>Labels</h2><div class="label-list"></div><form class="label-new"><input class="inp" id="label-name" placeholder="New label name" maxlength="24"><select class="inp" id="label-color" aria-label="Label color">${COLORS.map(c => `<option value="${c}">${esc(colorLabel(c))}</option>`).join('')}</select><button class="btn">Add</button></form>`);
   const list = m.querySelector('.label-list');
   const draw = () => {
     list.innerHTML = '';
@@ -4139,7 +4163,7 @@ function placeFillHandle() {
   const page = $('#sh-page'), tEl = page.querySelector(`.sh-table[data-id="${SH.sel.t}"]`); if (!tEl) return;
   const td = tEl.querySelector(`td[data-r="${r.r2}"][data-c="${r.c2}"]`) || tEl.querySelector('td.sel:last-of-type'); if (!td) return;
   const pr = page.getBoundingClientRect(), tr = td.getBoundingClientRect();
-  const z = shZ(); page.append(h('div', { class: 'sh-fill', title: 'Drag to fill', style: `left:${(tr.right - pr.left) / z - 5}px;top:${(tr.bottom - pr.top) / z - 5}px` }));
+  const z = shZ(); page.append(h('div', { class: 'sh-fill', title: 'Drag to fill', style: `left:${(tr.right - pr.left) / z}px;top:${(tr.bottom - pr.top) / z}px` }));
 }
 function renderFbar() {
   const s = SH.sel, ref = $('#sh-ref'), fx = $('#sh-fx'); if (!ref) return;
@@ -4256,6 +4280,7 @@ function bindSheetCanvas() {
       e.preventDefault();
       if (o.locked) { SH.sel = { obj: o.id }; shRender(); return; }
       if (!(SH.sel && SH.sel.obj === o.id)) { SH.sel = { obj: o.id }; shRender(); }
+      if (e.pointerType === 'touch') return;
       SH.drag = { mode: 'move', o, sx: e.clientX, sy: e.clientY, ox: o.x, oy: o.y, pushed: false }; return;
     }
     SH.sel = null; shRender();
@@ -4531,7 +4556,7 @@ function sheetMenu(sid, x, y) {
 }
 
 /* ----- format sidebar ----- */
-function swRow(attr, cur, none = true) { return `<div class="sw-row">${none ? `<button class="color-dot none${!cur ? ' on' : ''}" ${attr}="" title="None"></button>` : ''}${SH_COLORS.map(c => `<button class="color-dot${cur === c ? ' on' : ''}" ${attr}="${c}" style="background:var(--cc-${c})" title="${c}"></button>`).join('')}</div>`; }
+function swRow(attr, cur, none = true) { return `<div class="sw-row">${none ? `<button class="color-dot none${!cur ? ' on' : ''}" ${attr}="" title="None"></button>` : ''}${SH_COLORS.map(c => `<button class="color-dot${cur === c ? ' on' : ''}" ${attr}="${c}" style="background:var(--cc-${c})" title="${esc(colorLabel(c))}"></button>`).join('')}<button class="color-dot add" data-addcolor="${attr}" title="Custom color…" aria-label="Custom color">+</button></div>`; }
 function stepperRow(label, key, val, min, max) { return `<div class="side-row"><span>${label}</span><span class="mini-step"><button data-tstep="${key}" data-d="-1" ${val <= min ? 'disabled' : ''}>−</button><b>${val}</b><button data-tstep="${key}" data-d="1" ${val >= max ? 'disabled' : ''}>+</button></span></div>`; }
 function renderSide() {
   const side = $('#sh-side'); if (!side) return;
@@ -5543,7 +5568,7 @@ sideChart = function (o) {
   const sel = (key, list, v) => `<select class="inp" data-cprop="${key}">${list.map(([k, l]) => `<option value="${k}" ${(v || 'none') === k ? 'selected' : ''}>${l}</option>`).join('')}</select>`;
   let html = _sideChart0(o);
   html += `<div class="side-sec"><div class="side-title">Chart colors</div><div class="pal-row">${Object.entries(CHART_PALETTES).map(([k, p]) => `<button class="pal-btn${cur === k ? ' on' : ''}" data-cpal="${k}" title="${p.name}"><span>${p.c.slice(0, 5).map(c => `<i style="background:${c}"></i>`).join('')}</span>${p.name}</button>`).join('')}</div>
-    ${names.length ? `<div class="side-sub">Series colors</div>${names.slice(0, 12).map((n, i) => `<div class="ser-row"><i class="ser-dot" style="background:${(o.colors || [])[i] ? `var(--cc-${o.colors[i]})` : P[i % P.length]}"></i><span class="grow ellip">${esc(n || 'Series ' + (i + 1))}</span><select class="inp inp-sm" data-ccolor="${i}"><option value="">Style color</option>${SH_COLORS.map(c => `<option value="${c}" ${(o.colors || [])[i] === c ? 'selected' : ''}>${c[0].toUpperCase() + c.slice(1)}</option>`).join('')}</select></div>`).join('')}` : ''}</div>`;
+    ${names.length ? `<div class="side-sub">Series colors</div>${names.slice(0, 12).map((n, i) => `<div class="ser-row"><i class="ser-dot" style="background:${(o.colors || [])[i] ? `var(--cc-${o.colors[i]})` : P[i % P.length]}"></i><span class="grow ellip">${esc(n || 'Series ' + (i + 1))}</span><select class="inp inp-sm" data-ccolor="${i}"><option value="">Style color</option>${SH_COLORS.map(c => `<option value="${c}" ${(o.colors || [])[i] === c ? 'selected' : ''}>${esc(colorLabel(c))}</option>`).join('')}</select></div>`).join('')}` : ''}</div>`;
   if (axes) html += `<div class="side-sec"><div class="side-title">Axes</div><label class="side-lab">Value axis title<input class="inp" data-cprop="yTitle" value="${esc(o.yTitle || '')}" placeholder="e.g. Revenue"></label><label class="side-lab">Category axis title<input class="inp" data-cprop="xTitle" value="${esc(o.xTitle || '')}" placeholder="e.g. Month"></label></div>`;
   if (canTrend) html += `<div class="side-sec"><div class="side-title">Series</div><label class="side-lab">Trendline${sel('trend', TRENDS, o.trend)}</label><label class="side-lab">Error bars${sel('errBars', ERRBARS, o.errBars)}</label></div>`;
   if (is3D(o.type)) {
@@ -5609,7 +5634,7 @@ function connInner(o) {
   const mk = `mk_${o.id}`;
   const marker = (id, orient) => `<marker id="${id}" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="${Math.max(4, 3 + sw)}" markerHeight="${Math.max(4, 3 + sw)}" markerUnits="userSpaceOnUse" orient="${orient}"><path d="M0,0L10,5L0,10Z" style="fill:${col}"/></marker>`;
   const sel = SH.sel && SH.sel.obj === o.id;
-  return { x: Math.round(x), y: Math.round(y), w: Math.round(w), h: Math.round(hh), svg: `<svg width="${Math.round(w)}" height="${Math.round(hh)}" overflow="visible"><defs>${o.arrowEnd ? marker(mk + 'e', 'auto') : ''}${o.arrowStart ? marker(mk + 's', 'auto-start-reverse') : ''}</defs><path class="conn-hit" d="${d}"/><path d="${d}" fill="none" style="stroke:${col};stroke-width:${sw}${o.dash ? `;stroke-dasharray:${sw * 3} ${sw * 2.5}` : ''}" stroke-linecap="round"${o.arrowEnd ? ` marker-end="url(#${mk}e)"` : ''}${o.arrowStart ? ` marker-start="url(#${mk}s)"` : ''}/></svg>${sel ? `<span class="conn-h ctl" data-end="1" style="left:${A[0] - 7}px;top:${A[1] - 7}px"></span><span class="conn-h ctl" data-end="2" style="left:${B[0] - 7}px;top:${B[1] - 7}px"></span>` : ''}` };
+  return { x: Math.round(x), y: Math.round(y), w: Math.round(w), h: Math.round(hh), svg: `<svg width="${Math.round(w)}" height="${Math.round(hh)}" overflow="visible"><defs>${o.arrowEnd ? marker(mk + 'e', 'auto') : ''}${o.arrowStart ? marker(mk + 's', 'auto-start-reverse') : ''}</defs><path class="conn-hit" d="${d}"/><path d="${d}" fill="none" style="stroke:${col};stroke-width:${sw}${o.dash ? `;stroke-dasharray:${sw * 3} ${sw * 2.5}` : ''}" stroke-linecap="round"${o.arrowEnd ? ` marker-end="url(#${mk}e)"` : ''}${o.arrowStart ? ` marker-start="url(#${mk}s)"` : ''}/></svg>${sel ? `<span class="conn-h ctl" data-end="1" style="left:${A[0]}px;top:${A[1]}px"></span><span class="conn-h ctl" data-end="2" style="left:${B[0]}px;top:${B[1]}px"></span>` : ''}` };
 }
 function connHTML(o) { const c = connInner(o); return `<div class="sh-obj sh-conn${SH.sel && SH.sel.obj === o.id ? ' sel-obj' : ''}" data-id="${o.id}" style="left:${c.x}px;top:${c.y}px;width:${c.w}px;height:${c.h}px;z-index:${o.z || 2}">${c.svg}</div>`; }
 function updateConns() { curSheet()?.objects.forEach(o => { if (o.kind !== 'conn') return; const el = $(`#sh-page [data-id="${o.id}"]`); if (el) el.outerHTML = connHTML(o); }); }
@@ -6148,7 +6173,7 @@ function shZ() { return SH.zoom || 1; }
 function applyZoom() {
   const page = $('#sh-page'), zr = $('#sh-zoomer'), cv = $('#sh-canvas'); if (!page || !zr) return;
   const z = shZ(), w = Math.max(parseFloat(page.dataset.w || page.style.width) || 600, cv.clientWidth / z), hh = Math.max(parseFloat(page.dataset.h || page.style.height) || 400, cv.clientHeight / z);
-  page.style.width = w + 'px'; page.style.height = hh + 'px'; page.style.transform = z === 1 ? '' : `scale(${z})`;
+  page.style.width = w + 'px'; page.style.height = hh + 'px'; page.style.setProperty('--iz', 1 / z); page.style.transform = z === 1 ? '' : `scale(${z})`;
   zr.style.width = w * z + 'px'; zr.style.height = hh * z + 'px';
   const l = $('#sh-status .zl'); if (l) l.textContent = Math.round(z * 100) + '%';
 }
@@ -6197,6 +6222,72 @@ document.addEventListener('keydown', e => {
 addEventListener('resize', () => { if (UI.view === 'sheets' && SH.bookId) applyZoom(); });
 </script>
 <script>addEventListener('pagehide', () => { if (setZoom.t) { clearTimeout(setZoom.t); setZoom.t = 0; save(); } });</script>
+<script>
+/* ================= Sheets: touch drag and drop (press and hold to pick up, release in place for the menu) ================= */
+(function () {
+  const root = $('#view-sheets'), HOLD = 380, SLOP = 10;
+  const SKIP = '.ctl,.sh-resize,.sh-fill,.conn-h,.cw,.rh,.sh-cell-input,[contenteditable="true"],.sh-add,input,select,textarea,button:not(.sh-grab)';
+  let st = null;
+  const elOf = id => $(`#sh-page [data-id="${id}"]`);
+  function cleanup() {
+    if (!st) return; clearTimeout(st.timer); cancelAnimationFrame(st.raf);
+    ['touchmove', 'touchend', 'touchcancel'].forEach(t => st.t.removeEventListener(t, st[t]));
+    st.ids?.forEach(id => elOf(id)?.classList.remove('lifting')); st = null;
+  }
+  function lift() {
+    const o = findObj(st.id); if (!o) return cleanup();
+    if (o.locked) { toast('This object is locked. Unlock it to move it.'); return cleanup(); }
+    if (SH.edit) commitEdit();
+    SH.drag = null; st.lifted = true;
+    st.ids = (SH.multi.length > 1 && SH.multi.includes(o.id) ? SH.multi : groupOf(o)).filter(id => { const x = findObj(id); return x && !x.locked && x.kind !== 'conn'; });
+    st.starts = Object.fromEntries(st.ids.map(id => [id, { x: findObj(id).x, y: findObj(id).y }]));
+    st.ids.forEach(id => elOf(id)?.classList.add('lifting'));
+    const ring = h('div', { class: 'sh-lift-ring', style: `left:${st.cx}px;top:${st.cy}px` }); document.body.append(ring); setTimeout(() => ring.remove(), 400);
+    try { navigator.vibrate?.(12); } catch { }
+  }
+  function place() {
+    const cv = $('#sh-canvas'), z = shZ(), dx = (st.cx - st.x0 + cv.scrollLeft - st.sl) / z, dy = (st.cy - st.y0 + cv.scrollTop - st.stp) / z;
+    st.ids.forEach(id => { const o = findObj(id), p = st.starts[id]; if (!o) return; o.x = Math.max(0, Math.round((p.x + dx) / 4) * 4); o.y = Math.max(0, Math.round((p.y + dy) / 4) * 4); const el = elOf(id); if (el) { el.style.left = o.x + 'px'; el.style.top = o.y + 'px'; } });
+    if (curSheet().objects.some(o => o.kind === 'conn')) updateConns();
+  }
+  /* scroll the canvas while the finger rests near an edge */
+  function edgeScroll() {
+    if (!st?.lifted) return; const cv = $('#sh-canvas'), r = cv.getBoundingClientRect(), E = 44, sp = 10;
+    let vx = st.cx < r.left + E ? -sp : st.cx > r.right - E ? sp : 0, vy = st.cy < r.top + E ? -sp : st.cy > r.bottom - E ? sp : 0;
+    if (vx || vy) { cv.scrollLeft += vx; cv.scrollTop += vy; if (st.moved) place(); }
+    st.raf = requestAnimationFrame(edgeScroll);
+  }
+  root.addEventListener('touchstart', e => {
+    if (e.touches.length !== 1) { cleanup(); return; }
+    const t = e.target, objEl = t.closest?.('#sh-page .sh-obj'); if (!objEl || objEl.classList.contains('sh-conn')) return;
+    const quick = t.closest('.sh-grab,.md-bar,.au-head');
+    if (!quick && t.closest(SKIP)) return;
+    cleanup();
+    const cv = $('#sh-canvas'), p = e.touches[0];
+    st = { id: objEl.dataset.id, t, x0: p.clientX, y0: p.clientY, cx: p.clientX, cy: p.clientY, sl: cv.scrollLeft, stp: cv.scrollTop, lifted: false, moved: false, cell: t.closest('td[data-r]') };
+    st.touchmove = ev => {
+      if (!st) return; const q = ev.touches[0]; st.cx = q.clientX; st.cy = q.clientY;
+      if (!st.lifted) { if (Math.hypot(st.cx - st.x0, st.cy - st.y0) > SLOP) cleanup(); return; }
+      ev.preventDefault();
+      if (!st.moved) { if (Math.hypot(st.cx - st.x0, st.cy - st.y0) < 4) return; const ids = st.ids, starts = st.starts; ids.forEach(id => { const o = findObj(id); o.x = starts[id].x; o.y = starts[id].y; }); shPush(); st.moved = true; }
+      place();
+    };
+    st.touchend = ev => {
+      if (!st) return; const s = st;
+      if (!s.lifted) { cleanup(); return; }
+      ev.preventDefault(); cleanup();
+      const o = findObj(s.id); if (!o) return;
+      if (s.moved) { SH.multi = s.ids.length > 1 ? s.ids.slice() : []; SH.sel = { obj: s.id }; shSave(); shRender(); return; }
+      // held without moving: open the menu, like a right-click
+      if (s.cell && o.kind === 'table') { selectCell(o, +s.cell.dataset.r, +s.cell.dataset.c); shRender(); showMenu(s.cx, s.cy, cellMenu(o)); }
+      else { SH.sel = { obj: o.id }; shRender(); showMenu(s.cx, s.cy, objMenu(o)); }
+    };
+    st.touchcancel = () => { if (st?.moved) { shSave(); shRender(); } cleanup(); };
+    ['touchmove', 'touchend', 'touchcancel'].forEach(k => t.addEventListener(k, st[k], { passive: false }));
+    st.timer = setTimeout(() => { if (!st) return; lift(); if (st) st.raf = requestAnimationFrame(edgeScroll); }, quick ? 0 : HOLD);
+  }, { passive: true });
+})();
+</script>
 <script>
 /* ================= Sheets: template gallery ================= */
 const $C = (dec = 2, sym = '$') => ({ type: 'currency', sym, dec }), $P = (dec = 0) => ({ type: 'percent', dec }), $D = (style = 'medium') => ({ type: 'date', style });
@@ -7061,3 +7152,104 @@ function toast(msg, action) {
 </script>
 </body>
 </html>
+<script>
+/* ================= Colors and appearance: bigger palette, custom colors, accent, background tint, font ================= */
+// [name, light color, dark color, light tint, dark tint]
+const EXTRA_COLORS = [
+  ['coral', '#f0624d', '#ff8a7a', '#ffece9', '#3b2220'], ['amber', '#e08e00', '#f5b02e', '#fff3d6', '#3a2c10'], ['lime', '#6aa312', '#9ad93a', '#f0fadb', '#24300f'],
+  ['mint', '#20a87c', '#3fd3a0', '#e0f7ef', '#12302a'], ['cyan', '#0897b8', '#2fc2e6', '#dcf5fb', '#0f2e36'], ['sky', '#2b8ae6', '#5aaeff', '#e3f1ff', '#142b45'],
+  ['indigo', '#4f46e5', '#8a84ff', '#e8e7fd', '#1f1f45'], ['violet', '#9d4cf0', '#bb7cff', '#f3e8ff', '#2c1d45'], ['magenta', '#c536d9', '#e57cf5', '#fbe8fe', '#3a1b40'],
+  ['rose', '#e5304f', '#ff6680', '#ffe4e9', '#3d1a22'], ['brown', '#8f6243', '#c08a63', '#f3e9e1', '#33261d'], ['slate', '#5b6b80', '#94a3b8', '#e9edf2', '#262c35'],
+  ['black', '#1d1d1f', '#e8e8ea', '#e5e5e7', '#333338'],
+];
+const BASE_COLORS = COLORS.slice();
+const ACCENTS = ['#2f6fed', '#5b5bd6', '#8e4ec6', '#d6409f', '#e5484d', '#f76b15', '#e08e00', '#30a46c', '#12a594', '#0897b8', '#5b6b80', '#1d1d1f'];
+const TINTS = [['', 'None'], ['#ff9f43', 'Warm'], ['#4dabf7', 'Cool'], ['#f783ac', 'Rose'], ['#38d9a9', 'Mint'], ['#9775fa', 'Lavender'], ['#c9a227', 'Sand'], ['#868e96', 'Graphite']];
+const APP_FONTS = [['', 'System'], ['serif', 'Serif'], ['rounded', 'Rounded'], ['mono', 'Monospace']];
+const isHex = c => /^#[0-9a-f]{6}$/i.test(c || '');
+const customName = hex => 'x' + hex.slice(1).toLowerCase();
+function colorLabel(c) {
+  if (!c) return 'None'; if (/^x[0-9a-f]{6}$/.test(c)) return 'Custom #' + c.slice(1).toUpperCase();
+  return c[0].toUpperCase() + c.slice(1);
+}
+function rebuildPalettes() {
+  const custom = (db?.settings?.customColors || []).filter(isHex).map(customName);
+  const all = [...BASE_COLORS, ...EXTRA_COLORS.map(x => x[0]), ...custom];
+  COLORS.length = 0; COLORS.push(...all); SH_COLORS.length = 0; SH_COLORS.push(...all);
+}
+const lum = hex => { const n = parseInt(hex.slice(1), 16), f = v => { v /= 255; return v <= .03928 ? v / 12.92 : ((v + .055) / 1.055) ** 2.4; }; return .2126 * f(n >> 16) + .7152 * f((n >> 8) & 255) + .0722 * f(n & 255); };
+function appearanceCSS() {
+  const s = db.settings || {}, custom = (s.customColors || []).filter(isHex);
+  const light = [], dark = [], cls = [];
+  EXTRA_COLORS.forEach(([n, l, d, tl, td]) => { light.push(`--cc-${n}:${l};--t-${n}:${tl}`); dark.push(`--cc-${n}:${d};--t-${n}:${td}`); cls.push(n); });
+  custom.forEach(hx => { const n = customName(hx); light.push(`--cc-${n}:${hx};--t-${n}:color-mix(in srgb,${hx} 16%,#fff)`); dark.push(`--cc-${n}:${hx};--t-${n}:color-mix(in srgb,${hx} 24%,#1c1c1f)`); cls.push(n); });
+  if (isHex(s.accent)) { light.push(`--accent:${s.accent};--accent-weak:color-mix(in srgb,${s.accent} 14%,#fff)`); dark.push(`--accent:${s.accent};--accent-weak:color-mix(in srgb,${s.accent} 26%,#1c1c1f)`); }
+  if (isHex(s.tint)) {
+    const T = s.tint, m = (p, base) => `color-mix(in srgb,${T} ${p}%,${base})`;
+    light.push(`--bg:${m(9, '#f5f5f3')};--canvas:${m(12, '#ecebe6')};--panel-2:${m(5, '#fafaf8')};--hover:${m(8, '#f0f0ed')};--col-bg:${m(12, '#e2e1dc')};--sh-canvas:${m(7, '#f7f7f5')};--border:${m(10, '#e4e4e0')}`);
+    dark.push(`--bg:${m(9, '#141416')};--panel:${m(5, '#1c1c1f')};--canvas:${m(10, '#18181b')};--panel-2:${m(7, '#202024')};--hover:${m(10, '#26262b')};--col-bg:${m(11, '#2a2a2f')};--sh-canvas:${m(8, '#161618')};--border:${m(12, '#2e2e33')}`);
+  }
+  const L = light.join(';'), D = dark.join(';');
+  let css = `:root{${L}}:root[data-theme="dark"]{${D}}@media (prefers-color-scheme: dark){:root:not([data-theme="light"]){${D}}}`;
+  css += cls.map(n => `.color-${n}{--tint:var(--t-${n});--cc:var(--cc-${n})}.t-column.color-${n}{background:color-mix(in srgb,var(--cc) 22%,var(--col-bg))}`).join('');
+  if (isHex(s.accent) && lum(s.accent) > .45) css += '.btn.primary{color:#111!important}';
+  const font = { serif: '"Iowan Old Style","Palatino Linotype",Georgia,serif', rounded: 'ui-rounded,"SF Pro Rounded","Nunito","Arial Rounded MT Bold",system-ui,sans-serif', mono: 'ui-monospace,"SF Mono",Menlo,Consolas,monospace' }[s.font];
+  if (font) css += `body,button,input,select,textarea{font-family:${font}}`;
+  return css;
+}
+function applyAppearance() {
+  if (!db?.settings) return; rebuildPalettes();
+  let el = document.getElementById('user-appearance'); if (!el) { el = h('style', { id: 'user-appearance' }); document.head.append(el); }
+  el.textContent = appearanceCSS();
+}
+const _applyTheme0 = applyTheme;
+applyTheme = function () { _applyTheme0(); applyAppearance(); };
+
+/* add a color of your own from any color picker */
+function pickCustomColor(done, initial = '#7c5cff', keep = true) {
+  const inp = h('input', { type: 'color', value: initial, style: 'position:fixed;left:50%;top:50%;width:1px;height:1px;opacity:0;border:0;padding:0' });
+  let fired = false;
+  const finish = () => { if (fired) return; fired = true; const hx = inp.value.toLowerCase(); inp.remove(); if (!isHex(hx)) return; if (!keep) { done?.(hx); return; } const list = db.settings.customColors = db.settings.customColors || []; if (!list.includes(hx)) { list.push(hx); if (list.length > 24) list.shift(); } save(); applyAppearance(); done?.(customName(hx)); };
+  inp.addEventListener('change', finish); inp.addEventListener('blur', () => setTimeout(() => { if (!fired) inp.remove(); }, 400));
+  document.body.append(inp); inp.focus(); inp.click();
+}
+/* "+" in the Sheets color rows: add a color, then apply it like a swatch click */
+document.addEventListener('click', e => {
+  const b = e.target.closest('#sh-side [data-addcolor]'); if (!b) return; e.stopPropagation(); e.preventDefault();
+  const attr = b.dataset.addcolor, row = b.parentElement;
+  pickCustomColor(name => { const tmp = h('button', { [attr]: name, style: 'display:none' }); row.append(tmp); tmp.click(); tmp.remove(); });
+}, true);
+
+/* Settings: Appearance */
+const _openSettings0 = openSettings;
+openSettings = function () {
+  _openSettings0();
+  const m = $$('#modal-root .modal').pop(); if (!m) return;
+  const sec = h('div', { class: 'appear' }); const anchor = m.querySelector('.form-grid'); anchor.after(sec);
+  const draw = () => {
+    const s = db.settings, custom = (s.customColors || []).filter(isHex);
+    const dot = (attr, val, cur, label) => `<button class="color-dot${(cur || '') === val ? ' on' : ''}" ${attr}="${val}" title="${label}" aria-label="${label}" style="background:${val || 'var(--card)'}"></button>`;
+    sec.innerHTML = `<h2 style="margin-top:22px">Appearance</h2>
+      <div class="ap-row"><span class="ap-lab">Accent color</span><div class="sw-row">${ACCENTS.map(c => dot('data-acc', c, s.accent, c)).join('')}<button class="color-dot add" data-acc-custom title="Pick any accent color" aria-label="Custom accent color">+</button>${s.accent && !ACCENTS.includes(s.accent) ? dot('data-acc', s.accent, s.accent, 'Custom ' + s.accent) : ''}</div></div>
+      <div class="ap-row"><span class="ap-lab">Background tint</span><div class="sw-row">${TINTS.map(([c, l]) => `<button class="color-dot${(s.tint || '') === c ? ' on' : ''}${c ? '' : ' none'}" data-tint="${c}" title="${l}" aria-label="${l}"${c ? ` style="background:${c}"` : ''}></button>`).join('')}<button class="color-dot add" data-tint-custom title="Pick any tint" aria-label="Custom background tint">+</button>${s.tint && !TINTS.some(t => t[0] === s.tint) ? `<button class="color-dot on" data-tint="${s.tint}" style="background:${s.tint}" title="Custom"></button>` : ''}</div></div>
+      <div class="ap-row"><span class="ap-lab">Font</span><div class="seg seg-sm">${APP_FONTS.map(([v, l]) => `<button class="seg-b${(s.font || '') === v ? ' on' : ''}" data-font="${v}">${l}</button>`).join('')}</div></div>
+      <div class="ap-row top"><span class="ap-lab">Your colors<small class="muted">Shown in every color picker: cards, labels, cells, shapes, text and charts.</small></span><div class="sw-row">${custom.map(c => `<span class="my-col"><i style="background:${c}"></i><button class="x-btn" data-delcol="${c}" title="Remove ${c}" aria-label="Remove ${c}">${icon('x')}</button></span>`).join('')}<button class="color-dot add" data-addmine title="Add a color" aria-label="Add a color">+</button></div></div>
+      <div class="ap-row"><span class="ap-lab">Palette</span><div class="sw-row ap-prev">${COLORS.map(c => `<i class="color-dot" style="background:var(--cc-${c});cursor:default" title="${esc(colorLabel(c))}"></i>`).join('')}</div></div>
+      <button class="btn" data-apreset>Reset appearance</button>`;
+  };
+  const set = (k, v) => { if (v) db.settings[k] = v; else delete db.settings[k]; save(); applyAppearance(); draw(); };
+  sec.addEventListener('click', e => {
+    const b = e.target.closest('button'); if (!b) return; const d = b.dataset;
+    if (d.acc) set('accent', d.acc);
+    else if ('accCustom' in d) pickCustomColor(hx => set('accent', hx), db.settings.accent || '#2f6fed', false);
+    else if ('tint' in d) set('tint', d.tint);
+    else if ('tintCustom' in d) pickCustomColor(hx => set('tint', hx), db.settings.tint || '#ff9f43', false);
+    else if ('font' in d) set('font', d.font);
+    else if ('addmine' in d) pickCustomColor(() => draw());
+    else if (d.delcol) { db.settings.customColors = (db.settings.customColors || []).filter(c => c !== d.delcol); save(); applyAppearance(); draw(); }
+    else if ('apreset' in d) { ['accent', 'tint', 'font'].forEach(k => delete db.settings[k]); save(); applyAppearance(); draw(); toast('Appearance reset. Your colors are kept.'); }
+  });
+  draw();
+};
+if (db?.settings) applyAppearance();
+</script>

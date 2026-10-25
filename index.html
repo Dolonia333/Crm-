@@ -689,6 +689,26 @@ body.presenting-body #nav{display:none}
 .sh-model{background:var(--panel);border:1px solid var(--border);border-radius:12px;overflow:hidden;display:flex;flex-direction:column}
 .md-bar{height:26px;flex:none;font-size:11.5px;color:var(--muted);display:flex;align-items:center;padding:0 10px;border-bottom:1px solid var(--border);cursor:move;white-space:nowrap;overflow:hidden}
 .model-host{flex:1;min-height:0;display:grid;place-items:center}.model-canvas{display:block;touch-action:none}
+.pr-measure{position:absolute!important;left:-99999px;top:0;width:auto!important;height:auto!important}
+.print-view{position:fixed;inset:0;z-index:2000;background:var(--canvas);overflow:auto;display:flex;flex-direction:column}
+.pr-bar{position:sticky;top:0;z-index:2;display:flex;flex-wrap:wrap;align-items:center;gap:10px;padding:10px 16px;background:var(--panel);border-bottom:1px solid var(--border)}
+.pr-bar .grow{flex:1}
+.pr-tip{margin:10px 16px 0;font-size:12.5px}
+.pr-pages{display:flex;flex-direction:column;align-items:center;gap:24px;padding:20px 16px 40px}
+.pr-page{--bg:#f5f5f3;--panel:#fff;--panel-2:#fafaf8;--hover:#f0f0ed;--text:#1d1d1f;--muted:#6e6e73;--border:#e4e4e0;  --accent:#2f6fed;--accent-weak:#e8efff;--danger:#d93f3f;--success:#1e9e5a;--warn:#c27c00;  --canvas:#ecebe6;--dot:#cfcec8;--card:#fff;--col-bg:#e2e1dc;--line:#86868c;  --shadow:0 1px 2px rgba(0,0,0,.07),0 2px 8px rgba(0,0,0,.06);--shadow-lg:0 12px 32px rgba(0,0,0,.18);  --t-red:#fdeaea;--t-orange:#feeedd;--t-yellow:#fff5c9;--t-green:#e3f5ea;--t-teal:#ddf4f0;--t-blue:#e6edfe;--t-purple:#f1e8fb;--t-pink:#fce7f2;--t-gray:#ececee;  --cc-red:#e5484d;--cc-orange:#f76b15;--cc-yellow:#e2b203;--cc-green:#30a46c;--cc-teal:#12a594;--cc-blue:#3e63dd;--cc-purple:#8e4ec6;--cc-pink:#d6409f;--cc-gray:#8b8d98;  --s1:#2a78d6;--s2:#eb6834;--s3:#1baf7a;--s4:#eda100;--s5:#e87ba4;--s6:#008300;--s7:#6250d6;--s8:#e34948;--sh-cell:#fff;--sh-canvas:#f7f7f5;  color-scheme:light;;color-scheme:light;background:#fff;color:#1d1d1f;box-shadow:0 2px 12px rgba(0,0,0,.12);padding:28px;width:1056px;max-width:100%;box-sizing:border-box;overflow:hidden}
+.pr-pages.portrait .pr-page{width:776px}
+.pr-title{font-size:16px;margin:0 0 14px}
+.pr-body{position:relative;overflow:hidden}
+.pr-canvas{position:relative;background:transparent!important}
+@media print{
+  body.printing>*:not(.print-view){display:none!important}
+  body.printing .print-view{position:static;overflow:visible;background:#fff}
+  body.printing .pr-bar,body.printing .pr-tip{display:none}
+  body.printing .pr-pages{padding:0;gap:0;display:block}
+  body.printing .pr-page{box-shadow:none;padding:0;width:auto;break-after:page;page-break-after:always}
+  body.printing .pr-page:last-child{break-after:auto;page-break-after:auto}
+  *{-webkit-print-color-adjust:exact;print-color-adjust:exact}
+}
 .btn-grid.three{grid-template-columns:repeat(3,minmax(0,1fr))}.al-btn{flex-direction:column;gap:2px}.al-btn span{font-size:16px}
 .sh-image img{width:100%;height:100%;object-fit:cover;display:block;border-radius:6px;pointer-events:none}
 .sh-resize{position:absolute;right:-6px;bottom:-6px;width:14px;height:14px;border-radius:50%;background:var(--panel);border:2px solid var(--accent);cursor:nwse-resize;z-index:4;touch-action:none}
@@ -3939,7 +3959,7 @@ function renderSheets() {
   SH.bookId = null;
   const root = $('#view-sheets'); root.classList.remove('sh-editing');
   const books = db.books.slice().sort((a, b) => b.updatedAt - a.updatedAt);
-  root.innerHTML = `<header class="page-head"><div><h1>Spreadsheets</h1><p class="muted">${books.length} spreadsheet${books.length === 1 ? '' : 's'} · tables, formulas and charts</p></div><div class="head-actions"><button class="btn" data-sh="import">${icon('upload')} Import CSV</button><button class="btn primary" data-sh="new">${icon('plus')} New spreadsheet</button></div></header>
+  root.innerHTML = `<header class="page-head"><div><h1>Spreadsheets</h1><p class="muted">${books.length} spreadsheet${books.length === 1 ? '' : 's'} · tables, formulas and charts</p></div><div class="head-actions"><button class="btn" data-sh="import">${icon('upload')} Import</button><button class="btn primary" data-sh="new">${icon('plus')} New spreadsheet</button></div></header>
   <div class="book-grid">${books.map(b => `<div class="book-tile" data-book="${b.id}" role="button" tabindex="0"><div class="book-thumb theme-${b.theme || 'default'}">${bookThumb(b)}</div><div class="book-meta"><div class="book-title">${esc(b.icon || '📊')} ${esc(b.title || 'Untitled spreadsheet')}</div><div class="muted">${b.sheets.length} sheet${b.sheets.length === 1 ? '' : 's'} · edited ${timeAgo(b.updatedAt)}</div></div><button class="icon-btn book-more" data-book-menu="${b.id}" title="More">${icon('more')}</button></div>`).join('')}
   <button class="book-tile book-new" data-sh="new"><div class="book-thumb">${icon('plus')}</div><div class="book-meta"><div class="book-title">New spreadsheet</div><div class="muted">Start blank or from a template</div></div></button></div>`;
 }
@@ -5554,7 +5574,8 @@ let webFontsOn = false;
 function ensureWebFonts() { if (webFontsOn) return; webFontsOn = true; document.head.append(h('link', { rel: 'stylesheet', href: 'https://fonts.googleapis.com/css2?family=Caveat:wght@400;700&family=Playfair+Display:wght@400;700&display=swap' })); }
 const scriptCache = {};
 function loadScriptOnce(src) { return scriptCache[src] || (scriptCache[src] = new Promise((res, rej) => { const s = h('script', { src }); s.onload = res; s.onerror = () => { delete scriptCache[src]; rej(new Error('Could not load ' + src)); }; document.head.append(s); })); }
-const objBox = o => { const el = $(`#sh-page [data-id="${o.id}"]`); return { x: o.x, y: o.y, w: el ? el.offsetWidth : o.w || 100, h: el ? el.offsetHeight : o.h || 60 }; };
+let OBJ_SCOPE = '#sh-page';
+const objBox = o => { const el = $(`${OBJ_SCOPE} [data-id="${o.id}"]`); return { x: o.x, y: o.y, w: el ? el.offsetWidth : o.w || 100, h: el ? el.offsetHeight : o.h || 60 }; };
 const colorVar = c => c ? `var(--cc-${c})` : 'var(--text)';
 
 /* ----- builders ----- */
@@ -5958,7 +5979,163 @@ $('#view-sheets').addEventListener('change', e => {
   else if (d.oxc) { shPush(); o[d.oxc] = el.checked; shSave(); shRender(); }
 });
 </script>
+<script>
+/* ================= Sheets: Excel / ODS / Numbers import and export, print and PDF ================= */
+const XLSX_SRC = 'https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js';
+const loadXLSX = () => loadScriptOnce(XLSX_SRC).then(() => window.XLSX);
+const MAX_IMPORT_ROWS = 5000, MAX_IMPORT_COLS = 100;
 
+/* ----- export ----- */
+function sheetNameSafe(s, used) { let n = String(s).replace(/[\[\]:*?\/\\]/g, ' ').trim().slice(0, 31) || 'Sheet'; let k = 2, base = n; while (used.has(n.toLowerCase())) n = base.slice(0, 28) + ' ' + k++; used.add(n.toLowerCase()); return n; }
+function excelFormula(raw) {
+  const f = String(raw).slice(1); if (f.includes('::')) return null;
+  const bare = f.replace(/"([^"]|"")*"/g, '""');
+  for (const m of bare.matchAll(/([A-Za-z_][A-Za-z0-9_.]*)(\s*\()?/g)) { const id = m[1]; if (m[2]) continue; if (/^\$?[A-Z]{1,3}\$?\d+$/i.test(id) || /^(TRUE|FALSE)$/i.test(id) || /^[A-Z]{1,3}$/i.test(id)) continue; return null; }
+  return f;
+}
+function excelFmt(f) {
+  if (!f) return null;
+  const dec = f.dec ?? 2, z = dec ? '0.' + '0'.repeat(dec) : '0';
+  if (f.type === 'currency') return `"${(f.sym || '$').replace(/"/g, '')}"#,##${z}`;
+  if (f.type === 'percent') return (f.dec ?? 0) ? '0.' + '0'.repeat(f.dec) + '%' : '0%';
+  if (f.type === 'number') return '#,##' + z;
+  if (f.type === 'date') return f.time ? 'yyyy-mm-dd hh:mm' : 'yyyy-mm-dd';
+  if (f.type === 'custom' && f.pattern) return f.pattern;
+  return null;
+}
+async function buildWorkbook(book) {
+  const X = await loadXLSX(), wb = X.utils.book_new(), used = new Set(); shInvalidate();
+  book.sheets.forEach(s => s.objects.filter(o => o.kind === 'table').forEach(t => {
+    const ws = {}, nr = t.rows.length, nc = t.cols;
+    for (let r = 0; r < nr; r++) for (let c = 0; c < nc; c++) {
+      const cell = tCell(t, r, c); if (!cell || cell.v === '' || cell.v == null) continue;
+      const raw = String(cell.v), v = cellVal(t, r, c), ref = X.utils.encode_cell({ r, c }), out = {};
+      if (isErr(v)) { out.t = 'e'; out.v = 0x0F; out.w = v.code; }
+      else if (typeof v === 'number') { out.t = 'n'; out.v = v; const z = excelFmt(cell.f || autoFmt(raw)); if (z) out.z = z; }
+      else if (typeof v === 'boolean') { out.t = 'b'; out.v = v; }
+      else { out.t = 's'; out.v = String(cellShown(t, r, c).s ?? v); }
+      if (raw.startsWith('=')) { const f = excelFormula(raw); if (f) out.f = f; }
+      ws[ref] = out;
+    }
+    ws['!ref'] = X.utils.encode_range({ s: { r: 0, c: 0 }, e: { r: Math.max(0, nr - 1), c: Math.max(0, nc - 1) } });
+    ws['!cols'] = (t.colW || []).map(w => ({ wpx: w }));
+    if (t.merges?.length) ws['!merges'] = t.merges.map(m => ({ s: { r: m.r, c: m.c }, e: { r: m.r + m.rs - 1, c: m.c + m.cs - 1 } }));
+    X.utils.book_append_sheet(wb, ws, sheetNameSafe(book.sheets.length > 1 || s.objects.filter(o => o.kind === 'table').length > 1 ? `${s.name} - ${t.name}` : t.name, used));
+  }));
+  if (!wb.SheetNames.length) X.utils.book_append_sheet(wb, X.utils.aoa_to_sheet([['']]), 'Sheet1');
+  return { X, wb };
+}
+async function exportWorkbook(type) {
+  const b = curBook(); if (!b) return;
+  toast('Preparing ' + (type === 'ods' ? 'OpenDocument' : 'Excel') + ' file…');
+  try {
+    const { X, wb } = await buildWorkbook(b), data = X.write(wb, { type: 'array', bookType: type });
+    const url = URL.createObjectURL(new Blob([data], { type: type === 'ods' ? 'application/vnd.oasis.opendocument.spreadsheet' : 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' }));
+    download(fileSafe(b.title || 'Spreadsheet') + '.' + type, url); setTimeout(() => URL.revokeObjectURL(url), 4000);
+    toast('Exported. If no download started, your browser blocked it here. Open the app from its own file to export.');
+  } catch (e) { toast(/load/i.test(e.message) ? 'Couldn’t load the Excel exporter. Check your connection.' : 'Export failed: ' + e.message); }
+}
+
+/* ----- import ----- */
+function fmtFromExcel(X, z, v) {
+  if (!z || z === 'General') return null;
+  if (X.SSF.is_date(z)) return { type: 'date', style: 'medium', ...(/h/i.test(z) ? { time: true } : {}) };
+  const dec = (z.split(';')[0].match(/\.(0+)/) || [, ''])[1].length;
+  if (/%/.test(z)) return { type: 'percent', dec };
+  const sym = (z.match(/[$€£¥₹]/) || [])[0]; if (sym) return { type: 'currency', sym, dec };
+  if (/#,##/.test(z)) return { type: 'number', dec, sep: true };
+  return null;
+}
+function tableFromSheet(X, ws, name) {
+  if (!ws || !ws['!ref']) return null;
+  const rg = X.utils.decode_range(ws['!ref']), nr = Math.min(rg.e.r + 1, MAX_IMPORT_ROWS), nc = Math.min(rg.e.c + 1, MAX_IMPORT_COLS);
+  const rows = []; let cut = rg.e.r + 1 > MAX_IMPORT_ROWS || rg.e.c + 1 > MAX_IMPORT_COLS;
+  for (let r = 0; r < nr; r++) { const row = []; for (let c = 0; c < nc; c++) {
+    const cell = ws[X.utils.encode_cell({ r, c })]; if (!cell) { row.push(''); continue; }
+    let v;
+    if (cell.f) v = '=' + cell.f;
+    else if (cell.t === 'n') { const f = fmtFromExcel(X, cell.z, cell.v); if (f?.type === 'date') { const d = X.SSF.parse_date_code(cell.v); v = `${d.y}-${String(d.m).padStart(2, '0')}-${String(d.d).padStart(2, '0')}${f.time ? ` ${String(d.H).padStart(2, '0')}:${String(d.M).padStart(2, '0')}` : ''}`; } else v = String(cell.v); if (f && f.type !== 'date') { row.push({ v, f }); continue; } }
+    else if (cell.t === 'b') v = cell.v ? 'TRUE' : 'FALSE';
+    else if (cell.t === 'd') v = cell.v instanceof Date ? cell.v.toISOString().slice(0, 10) : String(cell.v);
+    else v = cell.w ?? String(cell.v ?? '');
+    if (cell.f) { const f = fmtFromExcel(X, cell.z, cell.v); if (f) { row.push({ v, f }); continue; } }
+    row.push(v);
+  } rows.push(row); }
+  while (rows.length > 1 && rows[rows.length - 1].every(x => x === '')) rows.pop();
+  const colW = Array.from({ length: nc }, (_, c) => Math.round(clamp(ws['!cols']?.[c]?.wpx || (ws['!cols']?.[c]?.wch ? ws['!cols'][c].wch * 7.5 : 110), 50, 400)));
+  const firstText = rows[0]?.some(x => x !== '' && typeof x === 'string' && isNaN(+x));
+  const t = mkTable(name, rows.length ? rows : [['']], { colW, x: 40, y: 70, headerRows: firstText ? 1 : 0, cw: undefined });
+  if (ws['!merges']) t.merges = ws['!merges'].filter(m => m.s.r < nr && m.s.c < nc).map(m => ({ r: m.s.r, c: m.s.c, rs: Math.min(m.e.r, nr - 1) - m.s.r + 1, cs: Math.min(m.e.c, nc - 1) - m.s.c + 1 }));
+  return { t, cut };
+}
+async function importWorkbook(intoBook) {
+  const [f] = await pickFiles('.xlsx,.xlsm,.xls,.ods,.numbers,.csv,.tsv,.txt', false); if (!f) return;
+  if (/\.(csv|tsv|txt)$/i.test(f.name)) { const rows = csvParse(await readFile(f, 'text'), /\.tsv$/i.test(f.name) ? '\t' : undefined); const name = f.name.replace(/\.[^.]+$/, ''); const t = mkTable(name, rows, { colW: (rows[0] || ['']).map(() => 120), x: 40, y: 70 }); if (intoBook && curBook()) { const p = insertPos(600); t.x = p.x; t.y = p.y; insertObj(t); } else { const b = mkBook(name, [mkSheet('Sheet 1', [t])]); db.books.push(b); save(); openBook(b.id); } return; }
+  if (f.size > 25 * 1024 * 1024) { toast('That file is over 25 MB'); return; }
+  toast('Reading ' + f.name + '…');
+  let X, wb; try { X = await loadXLSX(); wb = X.read(new Uint8Array(await f.arrayBuffer()), { type: 'array', cellFormula: true, cellNF: true, cellDates: false }); }
+  catch (e) { toast(/load/i.test(e.message) ? 'Couldn’t load the importer. Check your connection.' : /\.numbers$/i.test(f.name) ? 'Couldn’t read this Numbers file. In Numbers choose File › Export To › Excel, then import that.' : 'Couldn’t read that file: ' + e.message); return; }
+  const name = f.name.replace(/\.[^.]+$/, ''); let cut = false;
+  const sheets = wb.SheetNames.map(sn => { const r = tableFromSheet(X, wb.Sheets[sn], sn); if (!r) return null; cut = cut || r.cut; return mkSheet(sn.slice(0, 40), [r.t]); }).filter(Boolean);
+  if (!sheets.length) { toast('That file has no data'); return; }
+  if (intoBook && curBook()) { shPush(); const b = curBook(); sheets.forEach(s => { s.name = b.sheets.some(x => x.name === s.name) ? s.name + ' 2' : s.name; b.sheets.push(s); }); SH.sheetId = sheets[0].id; SH.sel = null; shSave(); renderSheetEditor(); }
+  else { const b = mkBook(name, sheets); db.books.push(b); save(); openBook(b.id); }
+  toast(`Imported ${sheets.length} sheet${sheets.length === 1 ? '' : 's'}${cut ? `. Large sheets were cut to ${MAX_IMPORT_ROWS} rows and ${MAX_IMPORT_COLS} columns.` : ''}`);
+}
+
+/* ----- print and PDF ----- */
+function sheetPageHTML(s) {
+  const prevId = SH.sheetId, prevSel = SH.sel, prevMulti = SH.multi; SH.sheetId = s.id; SH.sel = null; SH.multi = [];
+  shInvalidate();
+  const holder = h('div', { class: 'sh-page pr-measure' }); holder.innerHTML = s.objects.slice().sort((a, b) => (a.z || 0) - (b.z || 0)).map(o => o.kind === 'table' ? tableHTML(o) : objHTML(o)).join('');
+  document.body.append(holder);
+  OBJ_SCOPE = '.pr-measure'; try { holder.querySelectorAll('.sh-conn').forEach(el => { const o = s.objects.find(x => x.id === el.dataset.id); if (o) el.outerHTML = connHTML(o); }); } finally { OBJ_SCOPE = '#sh-page'; }
+  s.objects.filter(o => o.kind === 'model').forEach(o => { const m = MODELS.get(o.id), host = holder.querySelector(`[data-id="${o.id}"] .model-host`); if (host) host.innerHTML = m ? `<img alt="3D object" src="${m.gl.domElement.toDataURL('image/png')}" style="width:100%;height:100%;object-fit:contain">` : '<span class="muted">3D object</span>'; });
+  holder.querySelectorAll('.sh-add,.sh-resize,.sh-grab,.ich-ctl input,.conn-h,.gl-nav').forEach(x => x.remove());
+  let w = 200, hh = 100; holder.querySelectorAll(':scope > .sh-obj').forEach(el => { w = Math.max(w, el.offsetLeft + el.offsetWidth + 20); hh = Math.max(hh, el.offsetTop + el.offsetHeight + 20); });
+  const html = holder.innerHTML; holder.remove();
+  SH.sheetId = prevId; SH.sel = prevSel; SH.multi = prevMulti; shInvalidate();
+  return { html, w, h: hh };
+}
+function openPrint() {
+  const b = curBook(); if (!b) return;
+  const st = { which: 'all', orient: 'landscape', fit: true };
+  const root = h('div', { class: 'print-view', role: 'dialog', 'aria-label': 'Print preview' });
+  const draw = () => {
+    const sheets = st.which === 'all' ? b.sheets : [curSheet()], pageW = st.orient === 'landscape' ? 940 : 690;
+    const pages = sheets.map(s => { const p = sheetPageHTML(s), z = st.fit ? Math.min(1, pageW / p.w) : 1; return `<section class="pr-page"><h2 class="pr-title">${esc(b.title || 'Spreadsheet')}${b.sheets.length > 1 ? ` · ${esc(s.name)}` : ''}</h2><div class="pr-body"><div class="sh-page pr-canvas" style="width:${p.w}px;height:${p.h}px;zoom:${z.toFixed(4)}">${p.html}</div></div></section>`; }).join('');
+    root.innerHTML = `<div class="pr-bar"><b>Print or save as PDF</b><div class="seg seg-sm"><button class="seg-b${st.which === 'all' ? ' on' : ''}" data-pw="all">All sheets</button><button class="seg-b${st.which === 'cur' ? ' on' : ''}" data-pw="cur">This sheet</button></div><div class="seg seg-sm"><button class="seg-b${st.orient === 'landscape' ? ' on' : ''}" data-po="landscape">Landscape</button><button class="seg-b${st.orient === 'portrait' ? ' on' : ''}" data-po="portrait">Portrait</button></div><label class="side-check"><input type="checkbox" data-pfit ${st.fit ? 'checked' : ''}> Fit to page width</label><span class="grow"></span><button class="btn" data-pclose>Close</button><button class="btn primary" data-pgo>${icon('download')} Print / Save PDF</button></div><p class="pr-tip muted">In the print dialog, choose “Save as PDF” as the printer to make a PDF. If nothing opens, this view blocks printing; open the app from its own file instead.</p><div class="pr-pages ${st.orient}">${pages}</div><style>@page{size:${st.orient};margin:12mm}</style>`;
+  };
+  root.addEventListener('click', e => {
+    const t = e.target.closest('button,input'); if (!t) return; const d = t.dataset;
+    if (d.pw) { st.which = d.pw; draw(); } else if (d.po) { st.orient = d.po; draw(); } else if ('pfit' in d) { st.fit = t.checked; draw(); }
+    else if ('pclose' in d) close(); else if ('pgo' in d) { try { window.print(); } catch { toast('Printing is blocked in this view'); } }
+  });
+  const key = e => { if (e.key === 'Escape') { e.stopPropagation(); close(); } };
+  const close = () => { root.remove(); document.body.classList.remove('printing'); document.removeEventListener('keydown', key, true); };
+  document.addEventListener('keydown', key, true);
+  document.body.append(root); document.body.classList.add('printing'); draw(); root.querySelector('[data-pgo]').focus();
+}
+
+/* ----- menus ----- */
+document.addEventListener('click', e => {
+  const b = e.target.closest('#view-sheets [data-sh="export"],#view-sheets [data-sh="import"]'); if (!b) return;
+  e.stopPropagation(); e.preventDefault();
+  const r = b.getBoundingClientRect(), x = Math.min(r.left, innerWidth - 260);
+  if (b.dataset.sh === 'import') { showMenu(x, r.bottom + 4, [{ label: 'Excel, Numbers or ODS file…', icon: 'upload', run: () => importWorkbook(false) }, { label: 'CSV file…', icon: 'upload', run: () => importCsv(false) }]); return; }
+  const t = (SH.sel?.t && findObj(SH.sel.t)) || (SH.sel?.obj && findObj(SH.sel.obj)?.kind === 'table' && findObj(SH.sel.obj)) || curSheet().objects.find(o => o.kind === 'table');
+  showMenu(x, r.bottom + 4, [
+    { label: 'Print or save as PDF…', icon: 'download', run: openPrint },
+    { label: 'Excel workbook (.xlsx)', icon: 'download', run: () => exportWorkbook('xlsx') },
+    { label: 'OpenDocument (.ods)', icon: 'download', run: () => exportWorkbook('ods') },
+    { label: t ? `“${t.name}” as CSV` : 'Table as CSV', icon: 'download', disabled: !t, run: () => exportTable(t, ',') },
+    { label: t ? `“${t.name}” as TSV` : 'Table as TSV', icon: 'download', disabled: !t, run: () => exportTable(t, '\t') },
+    '-', { label: 'Import Excel, Numbers or ODS as new sheets…', icon: 'upload', run: () => importWorkbook(true) },
+    { label: 'Import CSV as a new table…', icon: 'upload', run: () => importCsv(true) },
+  ]);
+}, true);
+document.addEventListener('keydown', e => { if (UI.view === 'sheets' && SH.bookId && (e.metaKey || e.ctrlKey) && e.key.toLowerCase() === 'p' && !modalOpen() && !$('.print-view')) { e.preventDefault(); openPrint(); } });
+</script>
 <script>
 /* ================= Sheets: template gallery ================= */
 const $C = (dec = 2, sym = '$') => ({ type: 'currency', sym, dec }), $P = (dec = 0) => ({ type: 'percent', dec }), $D = (style = 'medium') => ({ type: 'date', style });

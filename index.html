@@ -585,6 +585,18 @@ body.presenting-body #nav{display:none}
 .grid th.cref{cursor:pointer}
 .grid th.corner{border-radius:6px 0 0 0;cursor:pointer}
 .cw{position:absolute;right:-4px;top:0;bottom:0;width:8px;cursor:col-resize;z-index:2}
+.grid th.rn{position:relative}
+.rh{position:absolute;left:0;right:0;bottom:-4px;height:8px;cursor:row-resize;z-index:2}
+.grid tr.gap>*{border-top:3px double var(--accent)!important}
+.grid th.gap{border-left:3px double var(--accent)!important}
+.grid td.found{outline:2px solid var(--s3);outline-offset:-2px;background:color-mix(in srgb,var(--s3) 18%,transparent)}
+.border-row{display:flex;gap:4px;flex-wrap:wrap;margin-bottom:8px}
+.bd-btn{width:34px;height:34px;border:1px solid var(--border);border-radius:8px;background:var(--panel);color:var(--text);font-size:17px;cursor:pointer}
+.bd-btn:hover{background:var(--hover)}
+.chip-row{display:flex;flex-wrap:wrap;gap:4px;margin:6px 0}
+.chip-row .chip{font:12px ui-monospace,monospace;padding:4px 7px;border:1px solid var(--border);border-radius:6px;background:var(--panel);color:var(--text);cursor:pointer}
+.qf-list{max-height:200px;overflow:auto;border:1px solid var(--border);border-radius:8px;padding:4px 8px;margin:6px 0}
+.fr-opts{display:flex;gap:12px;flex-wrap:wrap;margin:8px 0}
 .grid td{background:var(--sh-cell);border:1px solid color-mix(in srgb,var(--border) 90%,transparent);height:28px;padding:3px 7px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;vertical-align:middle;cursor:cell;user-select:none;position:relative}
 .grid.nogrid td{border-color:transparent}
 .grid td.num{text-align:right;font-variant-numeric:tabular-nums}
@@ -4093,6 +4105,7 @@ function moveSel(dr, dc, extend) {
 function scrollCellIntoView() { const s = SH.sel; if (!s?.t) return; const td = $(`#sh-page .sh-table[data-id="${s.t}"] td[data-r="${s.ar}"][data-c="${s.ac}"]`); td?.scrollIntoView({ block: 'nearest', inline: 'nearest' }); }
 function beginEdit(initial, viaBar) {
   const s = SH.sel; if (!s || !s.t) return; const t = findObj(s.t); if (t.pivot) { toast('Pivot tables update automatically. Edit the source table instead.'); return; }
+  if (t.locked) { toast('This table is locked. Unlock it in the Table panel to edit.'); return; }
   const ty = tCell(t, s.ar, s.ac)?.f?.type; if (/checkbox|stars|slider|stepper|popup/.test(ty || '') && initial == null && !viaBar) return;
   commitEdit();
   const raw = String(tRaw(t, s.ar, s.ac)), fx = $('#sh-fx');
@@ -4148,6 +4161,7 @@ function bindSheetCanvas() {
     if (SH.edit) commitEdit();
     const fresh = () => { const el = $(`#sh-page [data-id="${id}"]`); return el; };
     if (t0.closest('.sh-resize') && o) { e.preventDefault(); shPush(); SH.drag = { mode: 'resize', o, sx: e.clientX, sy: e.clientY, w: o.w, h: o.h || fresh()?.offsetHeight }; return; }
+    if (t0.closest('[data-rh]') && o) { e.preventDefault(); shPush(); const r = +t0.closest('[data-rh]').dataset.rh, tr = t0.closest('tr'); SH.drag = { mode: 'rowh', o, r, sy: e.clientY, h: (o.rowH && o.rowH[r]) || tr.offsetHeight }; return; }
     if (t0.closest('[data-cw]') && o) { e.preventDefault(); shPush(); const c = +t0.closest('[data-cw]').dataset.cw; SH.drag = { mode: 'colw', o, c, sx: e.clientX, w: o.colW[c] }; return; }
     if (t0.closest('.sh-fill')) { e.preventDefault(); const r = selRange(); SH.drag = { mode: 'fill', o: findObj(SH.sel.t), src: r, to: r }; return; }
     if (t0.closest('[data-grp]') && o) { const k = t0.closest('[data-grp]').dataset.grp; o.collapsed[k] = !o.collapsed[k]; shSave(); shRender(); return; }
@@ -4173,6 +4187,7 @@ function bindSheetCanvas() {
       const grab = t0.closest('[data-grab]');
       if (o.kind === 'table' && !grab) return;
       e.preventDefault();
+      if (o.locked) { SH.sel = { obj: o.id }; shRender(); return; }
       if (!(SH.sel && SH.sel.obj === o.id)) { SH.sel = { obj: o.id }; shRender(); }
       SH.drag = { mode: 'move', o, sx: e.clientX, sy: e.clientY, ox: o.x, oy: o.y, pushed: false }; return;
     }
@@ -4188,6 +4203,9 @@ function bindSheetCanvas() {
     } else if (d.mode === 'resize') {
       d.o.w = Math.max(60, Math.round(d.w + e.clientX - d.sx)); if (d.o.kind !== 'text') d.o.h = Math.max(40, Math.round(d.h + e.clientY - d.sy));
       const el = $(`#sh-page [data-id="${d.o.id}"]`); if (d.o.kind === 'chart') { clearTimeout(d.tm); d.tm = setTimeout(() => { if (el) el.outerHTML = objHTML(d.o); }, 16); } else if (el) { el.style.width = d.o.w + 'px'; if (d.o.h) el.style.height = d.o.h + 'px'; if (d.o.kind === 'shape') el.querySelector('svg').outerHTML = shapeSVG(d.o); }
+    } else if (d.mode === 'rowh') {
+      d.o.rowH = d.o.rowH || {}; d.o.rowH[d.r] = Math.max(20, Math.round(d.h + e.clientY - d.sy));
+      const tr = $(`#sh-page .sh-table[data-id="${d.o.id}"] [data-rh="${d.r}"]`)?.closest('tr'); if (tr) tr.style.height = d.o.rowH[d.r] + 'px';
     } else if (d.mode === 'colw') {
       d.o.colW[d.c] = Math.max(36, Math.round(d.w + e.clientX - d.sx)); const tEl = $(`#sh-page .sh-table[data-id="${d.o.id}"]`);
       if (tEl) { tEl.querySelectorAll('col')[d.c + 1].style.width = d.o.colW[d.c] + 'px'; tEl.querySelector('table').style.width = 30 + d.o.colW.reduce((s, w) => s + w, 0) + 'px'; }
@@ -4202,7 +4220,7 @@ function bindSheetCanvas() {
   window.addEventListener('pointerup', () => {
     const d = SH.drag; if (!d) return; SH.drag = null;
     if (d.mode === 'move' && d.pushed) { shSave(); renderSheetCanvas(); }
-    else if (d.mode === 'resize' || d.mode === 'colw') { shSave(); shRender(); }
+    else if (d.mode === 'resize' || d.mode === 'colw' || d.mode === 'rowh') { shSave(); shRender(); }
     else if (d.mode === 'fill') { if (d.to.r2 !== d.src.r2 || d.to.c2 !== d.src.c2) autofill(d.o, d.src, d.to); else shRender(); }
     else if (d.mode === 'cells') placeFillHandle();
   });
@@ -4728,6 +4746,639 @@ document.addEventListener('paste', e => {
 
 <script>bindSide();</script>
 <script>
+/* ================= Sheets: engine extensions — arrays, names, cell context, 150+ more functions, custom formats ================= */
+const CTX = [];
+function cellVal(t, r, c) {
+  const key = t.id + ':' + r + ':' + c;
+  if (SH.cache.has(key)) return SH.cache.get(key);
+  const raw = String(tRaw(t, r, c)), f = tCell(t, r, c)?.f;
+  let v;
+  if (raw.startsWith('=') && raw.length > 1) {
+    if (SH.computing.has(key)) return ERR('#CYCLE');
+    SH.computing.add(key); CTX.push({ t, r, c });
+    try { v = evalFormula(raw.slice(1), t); } catch (e) { v = isErr(e) ? e : ERR('#ERROR'); }
+    CTX.pop(); SH.computing.delete(key);
+    if (Array.isArray(v)) v = v[0]?.[0] ?? '';
+  } else v = parseLiteral(raw);
+  if (f && f.type === 'checkbox') v = v === true || v === 1;
+  SH.cache.set(key, v); return v;
+}
+function parseFormula(src) {
+  const tk = tokenize(src); let p = 0;
+  const peek = () => tk[p], isOp = v => tk[p] && tk[p].k === 'op' && tk[p].v === v;
+  const eat = v => { if (!isOp(v)) throw ERR('#ERROR'); p++; };
+  const bin = (next, ops) => () => { let a = next(); while (tk[p] && tk[p].k === 'op' && ops.includes(tk[p].v)) { const op = tk[p++].v; a = { n: 'bin', op, a, b: next() }; } return a; };
+  const primary = () => {
+    const t = peek(); if (!t) throw ERR('#ERROR');
+    if (t.k === 'num') { p++; return { n: 'lit', v: t.v }; }
+    if (t.k === 'str') { p++; return { n: 'lit', v: t.v }; }
+    if (t.k === 'ref') { p++; return { n: 'ref', ...t }; }
+    if (t.k === 'id') {
+      p++; const name = t.v.toUpperCase();
+      if (isOp('(')) { p++; const args = []; if (!isOp(')')) { for (;;) { args.push(isOp(',') || isOp(')') ? { n: 'lit', v: '' } : cmp()); if (isOp(',')) { p++; continue; } break; } } eat(')'); return { n: 'fn', name, args }; }
+      if (name === 'TRUE' || name === 'FALSE') return { n: 'lit', v: name === 'TRUE' };
+      return { n: 'name', name: t.v };
+    }
+    if (isOp('(')) { p++; const e = cmp(); eat(')'); return e; }
+    if (isOp('{')) throw ERR('#ERROR');
+    throw ERR('#ERROR');
+  };
+  const postfix = () => { let a = primary(); while (isOp('%')) { p++; a = { n: 'pct', a }; } return a; };
+  const unary = () => { if (isOp('-')) { p++; return { n: 'neg', a: unary() }; } if (isOp('+')) { p++; return unary(); } return postfix(); };
+  const power = () => { const a = unary(); if (isOp('^')) { p++; return { n: 'bin', op: '^', a, b: power() }; } return a; };
+  const term = bin(power, ['*', '/']), add = bin(term, ['+', '-']), cat = bin(add, ['&']), cmp = bin(cat, ['=', '<>', '<', '>', '<=', '>=']);
+  const ast = cmp(); if (p < tk.length) throw ERR('#ERROR'); return ast;
+}
+function binOp(op, a, b) {
+  if (isErr(a)) return a; if (isErr(b)) return b;
+  try {
+    switch (op) {
+      case '+': return num(a) + num(b); case '-': return num(a) - num(b); case '*': return num(a) * num(b);
+      case '/': { const d = num(b); if (d === 0) return ERR('#DIV/0'); return num(a) / d; }
+      case '^': return Math.pow(num(a), num(b)); case '&': return txt(a) + txt(b);
+      default: {
+        const both = typeof a === 'number' && typeof b === 'number', x = both ? a : txt(a).toLowerCase(), y = both ? b : txt(b).toLowerCase();
+        return { '=': x === y, '<>': x !== y, '<': x < y, '>': x > y, '<=': x <= y, '>=': x >= y }[op];
+      }
+    }
+  } catch (e) { if (isErr(e)) return e; throw e; }
+}
+function arrMap(A, B, f) {
+  const g = v => Array.isArray(v) ? v : [[v]], a = g(A), b = g(B), R = Math.max(a.length, b.length), C = Math.max(a[0]?.length || 1, b[0]?.length || 1);
+  const at = (m, r, c) => m[m.length === 1 ? 0 : r]?.[m[0].length === 1 ? 0 : c] ?? '';
+  return Array.from({ length: R }, (_, r) => Array.from({ length: C }, (_, c) => f(at(a, r, c), at(b, r, c))));
+}
+const mapArr = (v, f) => Array.isArray(v) ? v.map(row => row.map(f)) : f(v);
+function resolveName(name) {
+  const b = curBook(); const n = b?.names && b.names[String(name).toLowerCase()];
+  return n ? n.ref : null;
+}
+function evalNode(nd, t) {
+  switch (nd.n) {
+    case 'lit': return nd.v;
+    case 'name': { const ref = resolveName(nd.name); if (!ref) throw ERR('#NAME'); return evalFormula(ref, t); }
+    case 'ref': {
+      const tb = resolveTable(nd.tbl, t); if (!tb) throw ERR('#REF');
+      if (nd.c2 == null) return cellVal(tb, nd.r1, nd.c1);
+      const r2 = Math.min(nd.r2, tb.rows.length - 1), out = [];
+      for (let r = Math.min(nd.r1, r2); r <= Math.max(nd.r1, r2); r++) { const row = []; for (let c = Math.min(nd.c1, nd.c2); c <= Math.max(nd.c1, nd.c2); c++) row.push(cellVal(tb, r, c)); out.push(row); }
+      return out;
+    }
+    case 'neg': return mapArr(evalNode(nd.a, t), v => isErr(v) ? v : -num(v));
+    case 'pct': return mapArr(evalNode(nd.a, t), v => isErr(v) ? v : num(v) / 100);
+    case 'bin': {
+      const A = evalNode(nd.a, t), B = evalNode(nd.b, t);
+      if (Array.isArray(A) || Array.isArray(B)) return arrMap(A, B, (x, y) => binOp(nd.op, x, y));
+      const r = binOp(nd.op, A, B); if (isErr(r)) throw r; return r;
+    }
+    case 'fn': {
+      const L = LAZY[nd.name]; if (L) return L(nd.args, t);
+      const fn = FN[nd.name]; if (!fn) throw ERR('#NAME');
+      const args = nd.args.map(a => evalNode(a, t));
+      if (!ERR_OK.has(nd.name)) for (const a of args) { if (isErr(a)) return a; if (Array.isArray(a)) for (const row of a) for (const v of row) if (isErr(v)) return v; }
+      return fn(args);
+    }
+  }
+  throw ERR('#ERROR');
+}
+/* context and reference functions */
+const curCtx = () => CTX[CTX.length - 1] || { r: 0, c: 0, t: null };
+Object.assign(LAZY, {
+  ROW: (a, t) => { const n = a[0]; if (!n || (n.n === 'lit' && n.v === '')) return curCtx().r + 1; if (n.n !== 'ref') throw ERR('#VALUE'); return n.r1 + 1; },
+  COLUMN: (a, t) => { const n = a[0]; if (!n || (n.n === 'lit' && n.v === '')) return curCtx().c + 1; if (n.n !== 'ref') throw ERR('#VALUE'); return n.c1 + 1; },
+  OFFSET: (a, t) => {
+    const n = a[0]; if (!n || n.n !== 'ref') throw ERR('#REF');
+    const dr = num(scalar(evalNode(a[1], t))), dc = num(scalar(evalNode(a[2], t))), h = a[3] ? num(scalar(evalNode(a[3], t))) : (n.r2 == null ? 1 : n.r2 - n.r1 + 1), w = a[4] ? num(scalar(evalNode(a[4], t))) : (n.c2 == null ? 1 : n.c2 - n.c1 + 1);
+    const r1 = n.r1 + dr, c1 = n.c1 + dc; if (r1 < 0 || c1 < 0) throw ERR('#REF');
+    return evalNode({ n: 'ref', tbl: n.tbl, r1, c1, r2: h === 1 && w === 1 ? null : r1 + h - 1, c2: h === 1 && w === 1 ? null : c1 + w - 1 }, t);
+  },
+  INDIRECT: (a, t) => evalFormula(txt(scalar(evalNode(a[0], t))), t),
+  ISNA: (a, t) => { try { const v = scalar(evalNode(a[0], t)); return isErr(v) && v.code === '#N/A'; } catch (e) { return isErr(e) && e.code === '#N/A'; } },
+  IFNA: (a, t) => { try { const v = scalar(evalNode(a[0], t)); return isErr(v) && v.code === '#N/A' ? evalNode(a[1], t) : v; } catch (e) { if (isErr(e) && e.code === '#N/A') return evalNode(a[1], t); throw e; } },
+  SWITCH: (a, t) => { const v = scalar(evalNode(a[0], t)); for (let i = 1; i + 1 < a.length; i += 2) if (lookEq(scalar(evalNode(a[i], t)), v)) return evalNode(a[i + 1], t); if (a.length % 2 === 0) return evalNode(a[a.length - 1], t); throw ERR('#N/A'); },
+});
+/* statistics helpers */
+const meanOf = n => sumOf(n) / n.length;
+const pairNums = (a, b) => { const x = grid(a).flat(), y = grid(b).flat(), px = [], py = []; for (let i = 0; i < Math.min(x.length, y.length); i++) if (typeof x[i] === 'number' && typeof y[i] === 'number') { px.push(x[i]); py.push(y[i]); } return [px, py]; };
+function regress(ys, xs) { const mx = meanOf(xs), my = meanOf(ys); let sxy = 0, sxx = 0, syy = 0; xs.forEach((x, i) => { sxy += (x - mx) * (ys[i] - my); sxx += (x - mx) ** 2; syy += (ys[i] - my) ** 2; }); if (!sxx) throw ERR('#DIV/0'); const b = sxy / sxx; return { b, a: my - b * mx, r: sxy / Math.sqrt(sxx * syy) }; }
+function erf(x) { const s = Math.sign(x), a = Math.abs(x), t = 1 / (1 + .3275911 * a); return s * (1 - (((((1.061405429 * t - 1.453152027) * t) + 1.421413741) * t - .284496736) * t + .254829592) * t * Math.exp(-a * a)); }
+const normCdf = z => .5 * (1 + erf(z / Math.SQRT2));
+function normInv(p) {
+  if (p <= 0 || p >= 1) throw ERR('#NUM');
+  const a = [-39.6968302866538, 220.946098424521, -275.928510446969, 138.357751867269, -30.6647980661472, 2.50662827745924], b = [-54.4760987982241, 161.585836858041, -155.698979859887, 66.8013118877197, -13.2806815528857], c = [-.00778489400243029, -.322396458041136, -2.40075827716184, -2.54973253934373, 4.37466414146497, 2.93816398269878], d = [.00778469570904146, .32246712907004, 2.445134137143, 3.75440866190742];
+  const pl = .02425; let q, r;
+  if (p < pl) { q = Math.sqrt(-2 * Math.log(p)); return (((((c[0] * q + c[1]) * q + c[2]) * q + c[3]) * q + c[4]) * q + c[5]) / ((((d[0] * q + d[1]) * q + d[2]) * q + d[3]) * q + 1); }
+  if (p > 1 - pl) { q = Math.sqrt(-2 * Math.log(1 - p)); return -(((((c[0] * q + c[1]) * q + c[2]) * q + c[3]) * q + c[4]) * q + c[5]) / ((((d[0] * q + d[1]) * q + d[2]) * q + d[3]) * q + 1); }
+  q = p - .5; r = q * q; return (((((a[0] * r + a[1]) * r + a[2]) * r + a[3]) * r + a[4]) * r + a[5]) * q / (((((b[0] * r + b[1]) * r + b[2]) * r + b[3]) * r + b[4]) * r + 1);
+}
+const fact = n => { n = Math.floor(n); if (n < 0) throw ERR('#NUM'); let f = 1; for (let i = 2; i <= n; i++) f *= i; return f; };
+const combin = (n, k) => { n = Math.floor(n); k = Math.floor(k); if (k < 0 || k > n) throw ERR('#NUM'); let r = 1; for (let i = 1; i <= k; i++) r = r * (n - k + i) / i; return Math.round(r); };
+const gcd2 = (a, b) => { a = Math.abs(Math.floor(a)); b = Math.abs(Math.floor(b)); while (b) [a, b] = [b, a % b]; return a; };
+const S = a => scalar(a), N1 = (a, i, d) => a[i] === undefined || a[i] === '' ? d : num(S(a[i]));
+const dayFrac = v => { const x = num(v); return x - Math.floor(x); };
+function cashflowIRR(vals, dates, guess = .1) {
+  let r = guess;
+  for (let i = 0; i < 200; i++) {
+    let f = 0, df = 0;
+    vals.forEach((v, k) => { const tt = dates ? (dates[k] - dates[0]) / 365 : k; f += v / (1 + r) ** tt; df -= tt * v / (1 + r) ** (tt + 1); });
+    const nr = r - f / df; if (!isFinite(nr)) break; if (Math.abs(nr - r) < 1e-10) return nr; r = nr;
+  }
+  throw ERR('#NUM');
+}
+const ROMAN = [[1000, 'M'], [900, 'CM'], [500, 'D'], [400, 'CD'], [100, 'C'], [90, 'XC'], [50, 'L'], [40, 'XL'], [10, 'X'], [9, 'IX'], [5, 'V'], [4, 'IV'], [1, 'I']];
+const uniqRows = rows => { const seen = new Set(), out = []; rows.forEach(r => { const k = JSON.stringify(r.map(v => typeof v === 'string' ? v.toLowerCase() : v)); if (!seen.has(k)) { seen.add(k); out.push(r); } }); return out; };
+Object.assign(FN, {
+  /* math & trig */
+  SIN: a => Math.sin(num(S(a[0]))), COS: a => Math.cos(num(S(a[0]))), TAN: a => Math.tan(num(S(a[0]))), ASIN: a => Math.asin(num(S(a[0]))), ACOS: a => Math.acos(num(S(a[0]))), ATAN: a => Math.atan(num(S(a[0]))),
+  ATAN2: a => Math.atan2(num(S(a[1])), num(S(a[0]))), SINH: a => Math.sinh(num(S(a[0]))), COSH: a => Math.cosh(num(S(a[0]))), TANH: a => Math.tanh(num(S(a[0]))),
+  ASINH: a => Math.asinh(num(S(a[0]))), ACOSH: a => Math.acosh(num(S(a[0]))), ATANH: a => Math.atanh(num(S(a[0]))),
+  DEGREES: a => num(S(a[0])) * 180 / Math.PI, RADIANS: a => num(S(a[0])) * Math.PI / 180,
+  FACT: a => fact(num(S(a[0]))), FACTDOUBLE: a => { let n = Math.floor(num(S(a[0]))), f = 1; for (; n > 1; n -= 2) f *= n; return f; },
+  COMBIN: a => combin(num(S(a[0])), num(S(a[1]))), COMBINA: a => combin(num(S(a[0])) + num(S(a[1])) - 1, num(S(a[1]))), PERMUT: a => fact(num(S(a[0]))) / fact(num(S(a[0])) - num(S(a[1]))),
+  GCD: a => numsOf(a).reduce((g, x) => gcd2(g, x), 0), LCM: a => numsOf(a).reduce((l, x) => l && x ? Math.abs(l * Math.floor(x)) / gcd2(l, x) : 0, 1),
+  EVEN: a => { const x = num(S(a[0])), s = Math.sign(x) || 1; return s * Math.ceil(Math.abs(x) / 2) * 2; }, ODD: a => { const x = num(S(a[0])), s = Math.sign(x) || 1; let v = Math.ceil(Math.abs(x)); if (v % 2 === 0) v++; return s * v; },
+  QUOTIENT: a => { const d = num(S(a[1])); if (!d) throw ERR('#DIV/0'); return Math.trunc(num(S(a[0])) / d); },
+  MROUND: a => { const m = num(S(a[1])); return m ? Math.round(num(S(a[0])) / m) * m : 0; }, SQRTPI: a => Math.sqrt(num(S(a[0])) * Math.PI),
+  'CEILING.MATH': a => FN.CEILING(a), 'FLOOR.MATH': a => FN.FLOOR(a), MULTINOMIAL: a => { const n = numsOf(a); return fact(sumOf(n)) / n.reduce((p, x) => p * fact(x), 1); },
+  SERIESSUM: a => { const x = num(S(a[0])), n = num(S(a[1])), m = num(S(a[2])); return numsOf([a[3]]).reduce((s, c, i) => s + c * x ** (n + i * m), 0); },
+  SUMX2MY2: a => { const [x, y] = pairNums(a[0], a[1]); return sumOf(x.map((v, i) => v * v - y[i] * y[i])); }, SUMX2PY2: a => { const [x, y] = pairNums(a[0], a[1]); return sumOf(x.map((v, i) => v * v + y[i] * y[i])); }, SUMXMY2: a => { const [x, y] = pairNums(a[0], a[1]); return sumOf(x.map((v, i) => (v - y[i]) ** 2)); },
+  BASE: a => Math.floor(num(S(a[0]))).toString(num(S(a[1]))).toUpperCase().padStart(N1(a, 2, 0), '0'), DECIMAL: a => parseInt(txt(S(a[0])), num(S(a[1]))),
+  DEC2BIN: a => Math.floor(num(S(a[0]))).toString(2).padStart(N1(a, 1, 0), '0'), BIN2DEC: a => parseInt(txt(S(a[0])), 2), DEC2HEX: a => Math.floor(num(S(a[0]))).toString(16).toUpperCase().padStart(N1(a, 1, 0), '0'), HEX2DEC: a => parseInt(txt(S(a[0])), 16),
+  DEC2OCT: a => Math.floor(num(S(a[0]))).toString(8).padStart(N1(a, 1, 0), '0'), OCT2DEC: a => parseInt(txt(S(a[0])), 8), BIN2HEX: a => parseInt(txt(S(a[0])), 2).toString(16).toUpperCase(), HEX2BIN: a => parseInt(txt(S(a[0])), 16).toString(2),
+  ROMAN: a => { let n = Math.floor(num(S(a[0]))), s = ''; if (n < 1 || n > 3999) throw ERR('#VALUE'); for (const [v, r] of ROMAN) while (n >= v) { s += r; n -= v; } return s; },
+  ARABIC: a => { const s = txt(S(a[0])).toUpperCase(); let i = 0, n = 0; for (const [v, r] of ROMAN) while (s.startsWith(r, i)) { n += v; i += r.length; } if (i !== s.length) throw ERR('#VALUE'); return n; },
+  /* statistics */
+  'STDEV.S': a => FN.STDEV(a), 'STDEV.P': a => FN.STDEVP(a), 'VAR.S': a => FN.VAR(a), 'VAR.P': a => FN.VARP(a), 'MODE.SNGL': a => FN.MODE(a), 'PERCENTILE.INC': a => FN.PERCENTILE(a), 'QUARTILE.INC': a => FN.QUARTILE(a),
+  STDEVA: a => FN.STDEV([flat(a).filter(v => v !== '').map(v => typeof v === 'number' ? v : typeof v === 'boolean' ? +v : 0)]), VARA: a => FN.VAR([flat(a).filter(v => v !== '').map(v => typeof v === 'number' ? v : typeof v === 'boolean' ? +v : 0)]),
+  MAXA: a => { const n = flat(a).filter(v => v !== '').map(v => typeof v === 'number' ? v : typeof v === 'boolean' ? +v : 0); return n.length ? Math.max(...n) : 0; }, MINA: a => { const n = flat(a).filter(v => v !== '').map(v => typeof v === 'number' ? v : typeof v === 'boolean' ? +v : 0); return n.length ? Math.min(...n) : 0; },
+  AVEDEV: a => { const n = numsOf(a), m = meanOf(n); return meanOf(n.map(x => Math.abs(x - m))); }, DEVSQ: a => { const n = numsOf(a), m = meanOf(n); return sumOf(n.map(x => (x - m) ** 2)); },
+  GEOMEAN: a => { const n = numsOf(a); if (n.some(x => x <= 0)) throw ERR('#NUM'); return Math.exp(meanOf(n.map(Math.log))); }, HARMEAN: a => { const n = numsOf(a); if (n.some(x => x <= 0)) throw ERR('#NUM'); return n.length / sumOf(n.map(x => 1 / x)); },
+  SKEW: a => { const n = numsOf(a), k = n.length, m = meanOf(n), s = Math.sqrt(FN.VAR([n])); return k / ((k - 1) * (k - 2)) * sumOf(n.map(x => ((x - m) / s) ** 3)); },
+  KURT: a => { const n = numsOf(a), k = n.length, m = meanOf(n), s = Math.sqrt(FN.VAR([n])); return k * (k + 1) / ((k - 1) * (k - 2) * (k - 3)) * sumOf(n.map(x => ((x - m) / s) ** 4)) - 3 * (k - 1) ** 2 / ((k - 2) * (k - 3)); },
+  CORREL: a => { const [x, y] = pairNums(a[0], a[1]); return regress(y, x).r; }, PEARSON: a => FN.CORREL(a), RSQ: a => FN.CORREL(a) ** 2,
+  COVAR: a => { const [x, y] = pairNums(a[0], a[1]), mx = meanOf(x), my = meanOf(y); return sumOf(x.map((v, i) => (v - mx) * (y[i] - my))) / x.length; }, 'COVARIANCE.P': a => FN.COVAR(a),
+  'COVARIANCE.S': a => { const [x, y] = pairNums(a[0], a[1]), mx = meanOf(x), my = meanOf(y); return sumOf(x.map((v, i) => (v - mx) * (y[i] - my))) / (x.length - 1); },
+  SLOPE: a => { const [y, x] = pairNums(a[0], a[1]); return regress(y, x).b; }, INTERCEPT: a => { const [y, x] = pairNums(a[0], a[1]); return regress(y, x).a; },
+  FORECAST: a => { const [y, x] = pairNums(a[1], a[2]), g = regress(y, x); return g.a + g.b * num(S(a[0])); }, 'FORECAST.LINEAR': a => FN.FORECAST(a),
+  STEYX: a => { const [y, x] = pairNums(a[0], a[1]), g = regress(y, x); return Math.sqrt(sumOf(y.map((v, i) => (v - g.a - g.b * x[i]) ** 2)) / (y.length - 2)); },
+  STANDARDIZE: a => (num(S(a[0])) - num(S(a[1]))) / num(S(a[2])),
+  PERCENTRANK: a => { const s = statSorted([a[0]]), x = num(S(a[1])); const below = s.filter(v => v < x).length; return +(below / (s.length - 1)).toFixed(N1(a, 2, 3)); },
+  'NORM.DIST': a => FN.NORMDIST(a), NORMDIST: a => { const x = num(S(a[0])), m = num(S(a[1])), sd = num(S(a[2])); return truthy(a[3] ?? true) ? normCdf((x - m) / sd) : Math.exp(-(((x - m) / sd) ** 2) / 2) / (sd * Math.sqrt(2 * Math.PI)); },
+  NORMSDIST: a => normCdf(num(S(a[0]))), 'NORM.S.DIST': a => normCdf(num(S(a[0]))), NORMINV: a => num(S(a[1])) + num(S(a[2])) * normInv(num(S(a[0]))), 'NORM.INV': a => FN.NORMINV(a), NORMSINV: a => normInv(num(S(a[0]))), 'NORM.S.INV': a => normInv(num(S(a[0]))),
+  CONFIDENCE: a => normInv(1 - num(S(a[0])) / 2) * num(S(a[1])) / Math.sqrt(num(S(a[2]))), 'CONFIDENCE.NORM': a => FN.CONFIDENCE(a),
+  BINOMDIST: a => { const k = Math.floor(num(S(a[0]))), n = num(S(a[1])), p = num(S(a[2])), pmf = i => combin(n, i) * p ** i * (1 - p) ** (n - i); if (truthy(a[3])) { let s = 0; for (let i = 0; i <= k; i++) s += pmf(i); return s; } return pmf(k); },
+  POISSON: a => { const k = Math.floor(num(S(a[0]))), l = num(S(a[1])), pmf = i => Math.exp(-l) * l ** i / fact(i); if (truthy(a[2])) { let s = 0; for (let i = 0; i <= k; i++) s += pmf(i); return s; } return pmf(k); },
+  EXPONDIST: a => { const x = num(S(a[0])), l = num(S(a[1])); return truthy(a[2]) ? 1 - Math.exp(-l * x) : l * Math.exp(-l * x); },
+  COUNTUNIQUE: a => new Set(flat(a).filter(v => v !== '').map(v => typeof v === 'string' ? v.toLowerCase() : v)).size,
+  /* arrays */
+  TRANSPOSE: a => { const g = grid(a[0]); return g[0].map((_, c) => g.map(r => r[c])); },
+  SORT: a => { const g = grid(a[0]).map(r => r.slice()), c = N1(a, 1, 1) - 1, asc = N1(a, 2, 1) >= 0; return g.sort((x, y) => { const p = x[c], q = y[c]; const r = typeof p === 'number' && typeof q === 'number' ? p - q : txt(p).localeCompare(txt(q), undefined, { numeric: true }); return asc ? r : -r; }); },
+  FILTER: a => { const g = grid(a[0]), cond = grid(a[1]).flat(); const out = g.filter((_, i) => truthy(cond[i] ?? false)); if (!out.length) { if (a[2] !== undefined) return S(a[2]); throw ERR('#N/A'); } return out; },
+  UNIQUE: a => uniqRows(grid(a[0])), SEQUENCE: a => { const r = N1(a, 0, 1), c = N1(a, 1, 1), st = N1(a, 2, 1), sp = N1(a, 3, 1); return Array.from({ length: r }, (_, i) => Array.from({ length: c }, (_, j) => st + (i * c + j) * sp)); },
+  LOOKUP: a => { const v = S(a[0]), look = grid(a[1]).flat(), res = a[2] ? grid(a[2]).flat() : look; let hit = -1; look.forEach((x, i) => { if (lookLe(x, v)) hit = i; }); if (hit < 0) throw ERR('#N/A'); return res[hit]; },
+  ADDRESS: a => { const r = num(S(a[0])), c = num(S(a[1])), abs = N1(a, 2, 1); return (abs === 1 || abs === 3 ? '$' : '') + colName(c - 1) + (abs === 1 || abs === 2 ? '$' : '') + r; },
+  HYPERLINK: a => txt(S(a[1] ?? a[0])),
+  /* logical & information */
+  ISLOGICAL: a => typeof S(a[0]) === 'boolean', ISNONTEXT: a => typeof S(a[0]) !== 'string' || S(a[0]) === '', NA: () => { throw ERR('#N/A'); },
+  N: a => { const v = S(a[0]); return typeof v === 'number' ? v : typeof v === 'boolean' ? +v : 0; }, TYPE: a => { const v = a[0]; if (Array.isArray(v) && v.length * (v[0]?.length || 0) > 1) return 64; const s = S(v); return typeof s === 'number' ? 1 : typeof s === 'string' ? 2 : typeof s === 'boolean' ? 4 : isErr(s) ? 16 : 1; },
+  /* text */
+  CHAR: a => String.fromCharCode(num(S(a[0]))), CODE: a => txt(S(a[0])).charCodeAt(0) || 0, UNICHAR: a => String.fromCodePoint(num(S(a[0]))), UNICODE: a => txt(S(a[0])).codePointAt(0) || 0,
+  CLEAN: a => txt(S(a[0])).replace(/[\x00-\x1f]/g, ''), DOLLAR: a => fmtValue(num(S(a[0])), { type: 'currency', sym: '$', dec: N1(a, 1, 2) }, ''),
+  FIXED: a => num(S(a[0])).toLocaleString('en-US', { minimumFractionDigits: N1(a, 1, 2), maximumFractionDigits: N1(a, 1, 2), useGrouping: !truthy(a[2] ?? false) }),
+  NUMBERVALUE: a => parseFloat(txt(S(a[0])).replace(new RegExp('\\' + (a[2] !== undefined ? txt(S(a[2])) : ','), 'g'), '').replace(a[1] !== undefined ? txt(S(a[1])) : '.', '.')),
+  TEXTBEFORE: a => { const s = txt(S(a[0])), d = txt(S(a[1])), i = s.indexOf(d); if (i < 0) throw ERR('#N/A'); return s.slice(0, i); },
+  TEXTAFTER: a => { const s = txt(S(a[0])), d = txt(S(a[1])), i = s.indexOf(d); if (i < 0) throw ERR('#N/A'); return s.slice(i + d.length); },
+  REGEX: a => txt(S(a[0])), REGEXMATCH: a => new RegExp(txt(S(a[1]))).test(txt(S(a[0]))),
+  REGEXEXTRACT: a => { const m = txt(S(a[0])).match(new RegExp(txt(S(a[1])))); if (!m) throw ERR('#N/A'); return m[1] ?? m[0]; },
+  REGEXREPLACE: a => txt(S(a[0])).replace(new RegExp(txt(S(a[1])), 'g'), txt(S(a[2]))),
+  SPLIT: a => [txt(S(a[0])).split(txt(S(a[1])))], WORDCOUNT: a => (txt(S(a[0])).trim().match(/\S+/g) || []).length, PLAINTEXT: a => txt(S(a[0])),
+  /* date & time */
+  TIME: a => (num(S(a[0])) * 3600 + num(S(a[1])) * 60 + num(S(a[2]))) / 86400,
+  HOUR: a => Math.floor(dayFrac(S(a[0])) * 24 + 1e-9), MINUTE: a => Math.floor(dayFrac(S(a[0])) * 1440 + 1e-9) % 60, SECOND: a => Math.round(dayFrac(S(a[0])) * 86400) % 60,
+  TIMEVALUE: a => { const m = txt(S(a[0])).trim().match(/^(\d{1,2}):(\d{2})(?::(\d{2}))?\s*(am|pm)?$/i); if (!m) throw ERR('#VALUE'); let hh = +m[1]; if (m[4]) hh = hh % 12 + (/pm/i.test(m[4]) ? 12 : 0); return (hh * 3600 + +m[2] * 60 + (+m[3] || 0)) / 86400; },
+  DATEVALUE: a => { const v = parseLiteral(txt(S(a[0]))); if (typeof v !== 'number') { const d = Date.parse(txt(S(a[0]))); if (isNaN(d)) throw ERR('#VALUE'); const x = new Date(d); return toSerial(x.getFullYear(), x.getMonth() + 1, x.getDate()); } return v; },
+  DAYS360: a => { let [y1, m1, d1] = dateParts(S(a[0])), [y2, m2, d2] = dateParts(S(a[1])); if (d1 === 31) d1 = 30; if (d2 === 31 && d1 >= 30) d2 = 30; return (y2 - y1) * 360 + (m2 - m1) * 30 + (d2 - d1); },
+  YEARFRAC: a => Math.abs(num(S(a[1])) - num(S(a[0]))) / 365.25,
+  WORKDAY: a => { let d = Math.floor(num(S(a[0]))), n = num(S(a[1])); const step = n < 0 ? -1 : 1; while (n) { d += step; const w = fromSerial(d).getUTCDay(); if (w && w < 6) n -= step; } return d; },
+  ISOWEEKNUM: a => { const d = fromSerial(num(S(a[0]))), t = new Date(Date.UTC(d.getUTCFullYear(), d.getUTCMonth(), d.getUTCDate())); const day = t.getUTCDay() || 7; t.setUTCDate(t.getUTCDate() + 4 - day); const y0 = new Date(Date.UTC(t.getUTCFullYear(), 0, 1)); return Math.ceil(((t - y0) / 864e5 + 1) / 7); },
+  DURATION: a => N1(a, 0, 0) * 168 + N1(a, 1, 0) * 24 + N1(a, 2, 0) + N1(a, 3, 0) / 60 + N1(a, 4, 0) / 3600, DUR2HOURS: a => num(S(a[0])), DUR2MINUTES: a => num(S(a[0])) * 60, DUR2SECONDS: a => num(S(a[0])) * 3600, DUR2DAYS: a => num(S(a[0])) / 24, DUR2WEEKS: a => num(S(a[0])) / 168,
+  /* financial */
+  EFFECT: a => (1 + num(S(a[0])) / num(S(a[1]))) ** num(S(a[1])) - 1, NOMINAL: a => num(S(a[1])) * ((1 + num(S(a[0]))) ** (1 / num(S(a[1]))) - 1),
+  IRR: a => cashflowIRR(numsOf([a[0]]), null, N1(a, 1, .1)), XIRR: a => cashflowIRR(numsOf([a[0]]), numsOf([a[1]]), N1(a, 2, .1)),
+  XNPV: a => { const r = num(S(a[0])), v = numsOf([a[1]]), d = numsOf([a[2]]); return sumOf(v.map((x, i) => x / (1 + r) ** ((d[i] - d[0]) / 365))); },
+  SLN: a => (num(S(a[0])) - num(S(a[1]))) / num(S(a[2])), SYD: a => { const c = num(S(a[0])), s = num(S(a[1])), l = num(S(a[2])), p = num(S(a[3])); return (c - s) * (l - p + 1) * 2 / (l * (l + 1)); },
+  DDB: a => { const c = num(S(a[0])), s = num(S(a[1])), l = num(S(a[2])), p = num(S(a[3])), f = N1(a, 4, 2); let book = c, dep = 0; for (let i = 1; i <= p; i++) { dep = Math.min(book * f / l, Math.max(0, book - s)); book -= dep; } return dep; },
+  DB: a => { const c = num(S(a[0])), s = num(S(a[1])), l = num(S(a[2])), p = num(S(a[3])), rate = +(1 - (s / c) ** (1 / l)).toFixed(3); let book = c, dep = 0; for (let i = 1; i <= p; i++) { dep = book * rate; book -= dep; } return dep; },
+  CUMIPMT: a => { const r = num(S(a[0])), n = num(S(a[1])), pv = num(S(a[2])), s = num(S(a[3])), e = num(S(a[4])); let t = 0; for (let k = s; k <= e; k++) t += FN.IPMT([r, k, n, pv]); return t; },
+  CUMPRINC: a => { const r = num(S(a[0])), n = num(S(a[1])), pv = num(S(a[2])), s = num(S(a[3])), e = num(S(a[4])); let t = 0; for (let k = s; k <= e; k++) t += FN.PPMT([r, k, n, pv]); return t; },
+  FVSCHEDULE: a => numsOf([a[1]]).reduce((p, r) => p * (1 + r), num(S(a[0]))), PDURATION: a => (Math.log(num(S(a[2]))) - Math.log(num(S(a[1])))) / Math.log(1 + num(S(a[0]))), RRI: a => (num(S(a[2])) / num(S(a[1]))) ** (1 / num(S(a[0]))) - 1,
+});
+ERR_OK.add('ISNA'); ERR_OK.add('TYPE');
+FN_DOCS.push(
+  ...[['SIN', 'SIN(angle)', 'Sine of an angle in radians.'], ['COS', 'COS(angle)', 'Cosine.'], ['TAN', 'TAN(angle)', 'Tangent.'], ['ASIN', 'ASIN(number)', 'Arcsine.'], ['ACOS', 'ACOS(number)', 'Arccosine.'], ['ATAN', 'ATAN(number)', 'Arctangent.'], ['ATAN2', 'ATAN2(x, y)', 'Angle of a point.'], ['SINH', 'SINH(number)', 'Hyperbolic sine.'], ['COSH', 'COSH(number)', 'Hyperbolic cosine.'], ['TANH', 'TANH(number)', 'Hyperbolic tangent.'], ['ASINH', 'ASINH(number)', 'Inverse hyperbolic sine.'], ['ACOSH', 'ACOSH(number)', 'Inverse hyperbolic cosine.'], ['ATANH', 'ATANH(number)', 'Inverse hyperbolic tangent.'], ['DEGREES', 'DEGREES(radians)', 'Radians to degrees.'], ['RADIANS', 'RADIANS(degrees)', 'Degrees to radians.']].map(x => [...x, 'Trigonometric']),
+  ...[['FACT', 'FACT(n)', 'Factorial.'], ['FACTDOUBLE', 'FACTDOUBLE(n)', 'Double factorial.'], ['COMBIN', 'COMBIN(n, k)', 'Combinations.'], ['COMBINA', 'COMBINA(n, k)', 'Combinations with repetition.'], ['PERMUT', 'PERMUT(n, k)', 'Permutations.'], ['GCD', 'GCD(number, …)', 'Greatest common divisor.'], ['LCM', 'LCM(number, …)', 'Least common multiple.'], ['EVEN', 'EVEN(number)', 'Rounds up to an even number.'], ['ODD', 'ODD(number)', 'Rounds up to an odd number.'], ['QUOTIENT', 'QUOTIENT(a, b)', 'Whole-number division.'], ['MROUND', 'MROUND(number, multiple)', 'Rounds to the nearest multiple.'], ['SQRTPI', 'SQRTPI(number)', 'Square root of number × π.'], ['MULTINOMIAL', 'MULTINOMIAL(number, …)', 'Multinomial coefficient.'], ['SERIESSUM', 'SERIESSUM(x, n, m, coefficients)', 'Sum of a power series.'], ['SUMX2MY2', 'SUMX2MY2(range, range)', 'Sum of x² − y².'], ['SUMX2PY2', 'SUMX2PY2(range, range)', 'Sum of x² + y².'], ['SUMXMY2', 'SUMXMY2(range, range)', 'Sum of (x − y)².'], ['BASE', 'BASE(number, radix, length)', 'Converts to another base.'], ['DECIMAL', 'DECIMAL(text, radix)', 'Converts from another base.'], ['DEC2BIN', 'DEC2BIN(number)', 'Decimal to binary.'], ['BIN2DEC', 'BIN2DEC(text)', 'Binary to decimal.'], ['DEC2HEX', 'DEC2HEX(number)', 'Decimal to hex.'], ['HEX2DEC', 'HEX2DEC(text)', 'Hex to decimal.'], ['DEC2OCT', 'DEC2OCT(number)', 'Decimal to octal.'], ['OCT2DEC', 'OCT2DEC(text)', 'Octal to decimal.'], ['BIN2HEX', 'BIN2HEX(text)', 'Binary to hex.'], ['HEX2BIN', 'HEX2BIN(text)', 'Hex to binary.'], ['ROMAN', 'ROMAN(number)', 'Roman numerals.'], ['ARABIC', 'ARABIC(text)', 'Roman numerals to a number.'], ['CEILING.MATH', 'CEILING.MATH(number, multiple)', 'Rounds up to a multiple.'], ['FLOOR.MATH', 'FLOOR.MATH(number, multiple)', 'Rounds down to a multiple.']].map(x => [...x, 'Numeric']),
+  ...[['STDEV.S', 'STDEV.S(value, …)', 'Sample standard deviation.'], ['STDEV.P', 'STDEV.P(value, …)', 'Population standard deviation.'], ['VAR.S', 'VAR.S(value, …)', 'Sample variance.'], ['VAR.P', 'VAR.P(value, …)', 'Population variance.'], ['STDEVA', 'STDEVA(value, …)', 'Standard deviation counting text as 0.'], ['VARA', 'VARA(value, …)', 'Variance counting text as 0.'], ['MAXA', 'MAXA(value, …)', 'Largest value, counting text as 0.'], ['MINA', 'MINA(value, …)', 'Smallest value, counting text as 0.'], ['AVERAGEA', 'AVERAGEA(value, …)', 'Average counting text as 0.'], ['AVEDEV', 'AVEDEV(value, …)', 'Average absolute deviation.'], ['DEVSQ', 'DEVSQ(value, …)', 'Sum of squared deviations.'], ['GEOMEAN', 'GEOMEAN(value, …)', 'Geometric mean.'], ['HARMEAN', 'HARMEAN(value, …)', 'Harmonic mean.'], ['SKEW', 'SKEW(value, …)', 'Skewness.'], ['KURT', 'KURT(value, …)', 'Kurtosis.'], ['CORREL', 'CORREL(range, range)', 'Correlation coefficient.'], ['PEARSON', 'PEARSON(range, range)', 'Pearson correlation.'], ['RSQ', 'RSQ(range, range)', 'R squared.'], ['COVAR', 'COVAR(range, range)', 'Population covariance.'], ['COVARIANCE.S', 'COVARIANCE.S(range, range)', 'Sample covariance.'], ['SLOPE', 'SLOPE(y-range, x-range)', 'Slope of the best-fit line.'], ['INTERCEPT', 'INTERCEPT(y-range, x-range)', 'Y-intercept of the best-fit line.'], ['FORECAST', 'FORECAST(x, y-range, x-range)', 'Predicts a value from a trend.'], ['STEYX', 'STEYX(y-range, x-range)', 'Standard error of the trend.'], ['STANDARDIZE', 'STANDARDIZE(x, mean, std-dev)', 'Z-score.'], ['PERCENTRANK', 'PERCENTRANK(range, value)', 'Rank as a percentage.'], ['NORMDIST', 'NORMDIST(x, mean, std-dev, cumulative)', 'Normal distribution.'], ['NORMSDIST', 'NORMSDIST(z)', 'Standard normal distribution.'], ['NORMINV', 'NORMINV(probability, mean, std-dev)', 'Inverse normal distribution.'], ['NORMSINV', 'NORMSINV(probability)', 'Inverse standard normal.'], ['CONFIDENCE', 'CONFIDENCE(alpha, std-dev, size)', 'Confidence interval.'], ['BINOMDIST', 'BINOMDIST(k, n, p, cumulative)', 'Binomial distribution.'], ['POISSON', 'POISSON(k, mean, cumulative)', 'Poisson distribution.'], ['EXPONDIST', 'EXPONDIST(x, rate, cumulative)', 'Exponential distribution.'], ['COUNTUNIQUE', 'COUNTUNIQUE(range)', 'Counts distinct values.']].map(x => [...x, 'Statistical']),
+  ...[['TRANSPOSE', 'TRANSPOSE(range)', 'Swaps rows and columns.'], ['SORT', 'SORT(range, column, ascending)', 'Sorted copy of a range.'], ['FILTER', 'FILTER(range, condition-range)', 'Rows that meet a condition, e.g. =SUM(FILTER(B2:B9,A2:A9="Won")).'], ['UNIQUE', 'UNIQUE(range)', 'Distinct rows.'], ['SEQUENCE', 'SEQUENCE(rows, columns, start, step)', 'A sequence of numbers.'], ['LOOKUP', 'LOOKUP(value, look-in, result)', 'Approximate lookup.'], ['OFFSET', 'OFFSET(ref, rows, columns, height, width)', 'A range shifted from a reference.'], ['INDIRECT', 'INDIRECT("B2")', 'A reference from text.'], ['ADDRESS', 'ADDRESS(row, column, type)', 'A cell address as text.'], ['ROW', 'ROW(cell)', 'Row number.'], ['COLUMN', 'COLUMN(cell)', 'Column number.'], ['HYPERLINK', 'HYPERLINK(url, text)', 'Link text.']].map(x => [...x, 'Reference']),
+  ...[['IFNA', 'IFNA(value, if-na)', 'Fallback for #N/A.'], ['SWITCH', 'SWITCH(value, match, result, …, default)', 'Picks a result by matching a value.'], ['ISNA', 'ISNA(value)', 'True for #N/A.'], ['ISLOGICAL', 'ISLOGICAL(value)', 'True for TRUE/FALSE.'], ['ISNONTEXT', 'ISNONTEXT(value)', 'True if not text.'], ['NA', 'NA()', 'The #N/A error.'], ['N', 'N(value)', 'Converts to a number.'], ['TYPE', 'TYPE(value)', 'The type of a value.']].map(x => [...x, 'Logical']),
+  ...[['CHAR', 'CHAR(code)', 'Character from a code.'], ['CODE', 'CODE(text)', 'Code of the first character.'], ['UNICHAR', 'UNICHAR(code)', 'Unicode character.'], ['UNICODE', 'UNICODE(text)', 'Unicode code point.'], ['CLEAN', 'CLEAN(text)', 'Removes control characters.'], ['DOLLAR', 'DOLLAR(number, decimals)', 'Formats as currency text.'], ['FIXED', 'FIXED(number, decimals)', 'Formats with fixed decimals.'], ['NUMBERVALUE', 'NUMBERVALUE(text, decimal, group)', 'Text to number with separators.'], ['TEXTBEFORE', 'TEXTBEFORE(text, delimiter)', 'Text before a delimiter.'], ['TEXTAFTER', 'TEXTAFTER(text, delimiter)', 'Text after a delimiter.'], ['REGEXMATCH', 'REGEXMATCH(text, pattern)', 'True if the pattern matches.'], ['REGEXEXTRACT', 'REGEXEXTRACT(text, pattern)', 'Matching text.'], ['REGEXREPLACE', 'REGEXREPLACE(text, pattern, new)', 'Replaces pattern matches.'], ['SPLIT', 'SPLIT(text, delimiter)', 'Splits text into a row.'], ['WORDCOUNT', 'WORDCOUNT(text)', 'Number of words.'], ['PLAINTEXT', 'PLAINTEXT(text)', 'Text without formatting.']].map(x => [...x, 'Text']),
+  ...[['TIME', 'TIME(hour, minute, second)', 'A time of day.'], ['HOUR', 'HOUR(time)', 'Hour of a time.'], ['MINUTE', 'MINUTE(time)', 'Minute of a time.'], ['SECOND', 'SECOND(time)', 'Second of a time.'], ['TIMEVALUE', 'TIMEVALUE("9:30 AM")', 'Time from text.'], ['DATEVALUE', 'DATEVALUE("2026-10-25")', 'Date from text.'], ['DAYS360', 'DAYS360(start, end)', 'Days on a 360-day year.'], ['YEARFRAC', 'YEARFRAC(start, end)', 'Fraction of a year.'], ['WORKDAY', 'WORKDAY(start, days)', 'Date a number of workdays away.'], ['ISOWEEKNUM', 'ISOWEEKNUM(date)', 'ISO week number.'], ['DURATION', 'DURATION(weeks, days, hours, minutes, seconds)', 'Builds a duration.'], ['DUR2HOURS', 'DUR2HOURS(duration)', 'Duration in hours.'], ['DUR2MINUTES', 'DUR2MINUTES(duration)', 'Duration in minutes.'], ['DUR2SECONDS', 'DUR2SECONDS(duration)', 'Duration in seconds.'], ['DUR2DAYS', 'DUR2DAYS(duration)', 'Duration in days.'], ['DUR2WEEKS', 'DUR2WEEKS(duration)', 'Duration in weeks.']].map(x => [...x, 'Date & Time']),
+  ...[['EFFECT', 'EFFECT(nominal-rate, periods)', 'Effective annual rate.'], ['NOMINAL', 'NOMINAL(effective-rate, periods)', 'Nominal annual rate.'], ['IRR', 'IRR(cash-flows)', 'Internal rate of return.'], ['XIRR', 'XIRR(cash-flows, dates)', 'IRR for irregular dates.'], ['XNPV', 'XNPV(rate, cash-flows, dates)', 'NPV for irregular dates.'], ['SLN', 'SLN(cost, salvage, life)', 'Straight-line depreciation.'], ['SYD', 'SYD(cost, salvage, life, period)', 'Sum-of-years depreciation.'], ['DDB', 'DDB(cost, salvage, life, period)', 'Double-declining depreciation.'], ['DB', 'DB(cost, salvage, life, period)', 'Fixed-declining depreciation.'], ['CUMIPMT', 'CUMIPMT(rate, periods, pv, start, end)', 'Cumulative interest paid.'], ['CUMPRINC', 'CUMPRINC(rate, periods, pv, start, end)', 'Cumulative principal paid.'], ['FVSCHEDULE', 'FVSCHEDULE(principal, rates)', 'Future value with varying rates.'], ['PDURATION', 'PDURATION(rate, pv, fv)', 'Periods to reach a value.'], ['RRI', 'RRI(periods, pv, fv)', 'Equivalent growth rate.']].map(x => [...x, 'Financial']),
+);
+
+/* ----- custom number formats ----- */
+FORMATS.splice(FORMATS.findIndex(f => f[0] === 'text'), 0, ['custom', 'Custom']);
+function customDate(v, p) {
+  const d = fromSerial(v), Y = d.getUTCFullYear(), Mo = d.getUTCMonth(), Da = d.getUTCDate(), W = d.getUTCDay(), fr = v - Math.floor(v), H = Math.floor(fr * 24 + 1e-9), Mi = Math.floor(fr * 1440 + 1e-9) % 60, Se = Math.round(fr * 86400) % 60;
+  const mon = (l) => new Date(Date.UTC(2000, Mo, 1)).toLocaleString('en-US', { month: l, timeZone: 'UTC' }), wd = (l) => new Date(Date.UTC(2023, 0, 1 + W)).toLocaleString('en-US', { weekday: l, timeZone: 'UTC' });
+  const ampm = /am\/pm/i.test(p), H12 = ampm ? (H % 12 || 12) : H;
+  return p.replace(/"([^"]*)"|yyyy|yy|mmmm|mmm|dddd|ddd|dd|d|hh|h|mm|m|ss|s|am\/pm/gi, (t, lit, off, all) => {
+    if (lit !== undefined) return lit;
+    const k = t.toLowerCase(), prevH = /h[^a-z]*$/i.test(all.slice(0, off));
+    switch (k) {
+      case 'yyyy': return Y; case 'yy': return String(Y).slice(-2); case 'mmmm': return mon('long'); case 'mmm': return mon('short');
+      case 'dddd': return wd('long'); case 'ddd': return wd('short'); case 'dd': return String(Da).padStart(2, '0'); case 'd': return Da;
+      case 'hh': return String(H12).padStart(2, '0'); case 'h': return H12; case 'ss': return String(Se).padStart(2, '0'); case 's': return Se;
+      case 'mm': return prevH ? String(Mi).padStart(2, '0') : String(Mo + 1).padStart(2, '0'); case 'm': return prevH ? Mi : Mo + 1;
+      case 'am/pm': return H < 12 ? 'AM' : 'PM';
+    }
+    return t;
+  });
+}
+function customFmt(v, pat) {
+  pat = String(pat || '');
+  const secs = pat.split(';'); let p = secs[0], neg = v < 0;
+  if (v < 0 && secs[1] !== undefined) { p = secs[1]; v = -v; neg = false; } else if (v === 0 && secs[2] !== undefined) p = secs[2];
+  const bare = p.replace(/"[^"]*"/g, '');
+  if (/[ymdhs]/i.test(bare) && !/[0#?]/.test(bare)) return customDate(v, p);
+  const m = bare.match(/[0#?,]*\.?[0#?]+|[0#?,]+/); if (!m) return p.replace(/"([^"]*)"/g, '$1');
+  const np = m[0], [ip, dp = ''] = np.split('.'), maxD = dp.length, minD = (dp.match(/0/g) || []).length, minI = (ip.match(/0/g) || []).length;
+  let x = Math.abs(v); if (bare.includes('%')) x *= 100;
+  let s = x.toLocaleString('en-US', { minimumFractionDigits: minD, maximumFractionDigits: maxD, useGrouping: ip.includes(','), minimumIntegerDigits: Math.max(1, minI) });
+  if (!minI && s.startsWith('0.')) s = s.slice(1);
+  const i = p.indexOf(np); const out = (p.slice(0, i) + '\u0000' + p.slice(i + np.length)).replace(/"([^"]*)"/g, '$1').replace('\u0000', s);
+  return (neg ? '−' : '') + out;
+}
+const _fmtValue0 = fmtValue;
+fmtValue = function (v, f, raw) {
+  if (f && f.type === 'custom' && typeof v === 'number') { try { return customFmt(v, f.pattern || '#,##0.00'); } catch { return String(v); } }
+  return _fmtValue0(v, f, raw);
+};
+
+/* ----- smart autofill series: numbers, dates, months, weekdays, text with numbers ----- */
+const MONTH_L = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'], MONTH_S = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+const DAY_L = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'], DAY_S = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
+function fillSeries(t, cells) {
+  // cells: [{r, c}] source cells in order. Returns i => raw string for position i (0-based from first source), or null to copy.
+  const raws = cells.map(x => String(tRaw(t, x.r, x.c))), vals = cells.map(x => cellVal(t, x.r, x.c)), fmts = cells.map(x => tCell(t, x.r, x.c)?.f?.type || autoFmt(tRaw(t, x.r, x.c))?.type);
+  if (raws.some(r => r.startsWith('='))) return null;
+  const lists = [[MONTH_L, false], [MONTH_S, false], [DAY_L, false], [DAY_S, false]];
+  for (const [list] of lists) {
+    const idx = raws.map(r => list.findIndex(x => x.toLowerCase() === r.trim().toLowerCase()));
+    if (idx.every(i => i >= 0)) {
+      const step = idx.length > 1 ? ((idx[1] - idx[0]) % list.length + list.length) % list.length || 1 : 1, upper = raws[0] === raws[0].toUpperCase();
+      return i => { const s = list[(idx[0] + step * i) % list.length]; return upper ? s.toUpperCase() : s; };
+    }
+  }
+  if (vals.every(v => typeof v === 'number') && fmts.every(f => f === 'date')) {
+    const parts = vals.map(v => dateParts(v));
+    if (vals.length > 1) {
+      const dm = (parts[1][0] - parts[0][0]) * 12 + parts[1][1] - parts[0][1];
+      if (parts[1][2] === parts[0][2] && dm) return i => { const s = addMonths(vals[0], dm * i), [y, m, d] = dateParts(s); return iso(y, m, d); };
+      const dd = vals[1] - vals[0]; return i => { const [y, m, d] = dateParts(vals[0] + dd * i); return iso(y, m, d); };
+    }
+    return i => { const [y, m, d] = dateParts(vals[0] + i); return iso(y, m, d); };
+  }
+  if (vals.every(v => typeof v === 'number') && vals.length >= 2) { const step = vals[1] - vals[0]; return i => String(+(vals[0] + step * i).toPrecision(12)); }
+  const tm = raws.map(r => r.match(/^(.*?)(\d+)(\D*)$/));
+  if (tm.every(Boolean) && tm.every(m => m[1] === tm[0][1] && m[3] === tm[0][3])) {
+    const n = tm.map(m => +m[2]), step = n.length > 1 ? n[1] - n[0] : 1, pad = tm[0][2].length;
+    return i => tm[0][1] + String(n[0] + step * i).padStart(tm[0][2].startsWith('0') ? pad : 1, '0') + tm[0][3];
+  }
+  return null;
+}
+function autofill(t, src, to) {
+  shPush();
+  const h = src.r2 - src.r1 + 1, w = src.c2 - src.c1 + 1;
+  if (to.r2 > src.r2) for (let c = src.c1; c <= src.c2; c++) {
+    const cells = []; for (let r = src.r1; r <= src.r2; r++) cells.push({ r, c }); const ser = fillSeries(t, cells);
+    for (let r = src.r2 + 1; r <= to.r2; r++) {
+      const sr = src.r1 + (r - src.r1) % h, base = tCell(t, sr, c), raw = String(base?.v ?? '');
+      const v = raw.startsWith('=') ? shiftFormula(raw, r - sr, 0) : ser ? ser(r - src.r1) : raw;
+      ensureSize(t, r + 1, c + 1); t.rows[r][c] = base || v ? { ...JSON.parse(JSON.stringify(base || {})), v } : null;
+    }
+  }
+  if (to.c2 > src.c2) for (let r = src.r1; r <= src.r2; r++) {
+    const cells = []; for (let c = src.c1; c <= src.c2; c++) cells.push({ r, c }); const ser = fillSeries(t, cells);
+    for (let c = src.c2 + 1; c <= to.c2; c++) {
+      const sc = src.c1 + (c - src.c1) % w, base = tCell(t, r, sc), raw = String(base?.v ?? '');
+      const v = raw.startsWith('=') ? shiftFormula(raw, 0, c - sc) : ser ? ser(c - src.c1) : raw;
+      ensureSize(t, r + 1, c + 1); t.rows[r][c] = base || v ? { ...JSON.parse(JSON.stringify(base || {})), v } : null;
+    }
+  }
+  SH.sel = { t: t.id, r1: to.r1, c1: to.c1, r2: to.r2, c2: to.c2, ar: to.r1, ac: to.c1 };
+  shSave(); shRender();
+}
+</script>
+<script>
+/* ================= Sheets: more table features ================= */
+RULE_OPS.push(['in', 'is one of']);
+const _ruleTest0 = ruleTest;
+ruleTest = function (v, s, op, a, b) { if (op === 'in') return (Array.isArray(a) ? a : []).includes(s === '' ? '(blank)' : s); return _ruleTest0(v, s, op, a, b); };
+const BORDER_SIDES = { t: 'top', b: 'bottom', l: 'left', r: 'right' };
+cellStyleCss = (function (orig) {
+  return function (cell, rule) {
+    let css = orig(cell, rule); const bd = cell?.s?.bd; if (!bd) return css;
+    const col = cell.s.bc ? `var(--cc-${cell.s.bc})` : 'var(--text)';
+    for (const [k, side] of Object.entries(BORDER_SIDES)) if (bd[k]) css += `;border-${side}:2px solid ${col}`;
+    return css;
+  };
+})(cellStyleCss);
+const isHidR = (t, r) => (t.hidR || []).includes(r), isHidC = (t, c) => (t.hidC || []).includes(c);
+function tableHTML(t) {
+  if (t.pivot) buildPivotInto(t);
+  const sel = SH.sel && SH.sel.t === t.id ? selRange() : null, objSel = SH.sel && (SH.sel.t === t.id || SH.sel.obj === t.id || (SH.sel.more || []).includes(t.id));
+  const view = tableView(t).filter(e => e.kind === 'g' || !isHidR(t, e.r)), H = t.headerRows || 0, HC = t.headerCols || 0, F = t.footerRows || 0;
+  const cols = []; for (let c = 0; c < t.cols; c++) if (!isHidC(t, c)) cols.push(c);
+  const numericCols = []; for (let c = 0; c < t.cols; c++) { let any = false; for (let r = H; r < t.rows.length - F; r++) if (typeof cellVal(t, r, c) === 'number') { any = true; break; } numericCols.push(any); }
+  const width = 30 + cols.reduce((s, c) => s + (t.colW[c] || 110), 0);
+  const leftOf = {}; let acc = 0; cols.forEach(c => { leftOf[c] = acc; acc += t.colW[c] || 110; });
+  let html = `<table class="grid style-${t.style}${t.banded ? ' banded' : ''}${t.grid === false ? ' nogrid' : ''}${t.freezeH ? ' freeze-h' : ''}${t.freezeC ? ' freeze-c' : ''}" style="width:${width}px"><colgroup><col style="width:30px">${cols.map(c => `<col style="width:${t.colW[c] || 110}px">`).join('')}</colgroup>`;
+  html += `<tr class="refs"><th class="corner" data-selall="1" title="Select the table"></th>${cols.map((c, i) => `<th class="cref${sel && c >= sel.c1 && c <= sel.c2 ? ' on' : ''}${i && cols[i - 1] !== c - 1 ? ' gap' : ''}" data-col="${c}" title="${i && cols[i - 1] !== c - 1 ? 'Hidden columns before this one' : ''}">${colName(c)}<span class="cw" data-cw="${c}"></span></th>`).join('')}</tr>`;
+  let prevR = -1;
+  for (const e of view) {
+    if (e.kind === 'g') {
+      const sums = cols.map(c => c !== t.groupBy && numericCols[c] ? fmtValue(sumOf(e.rows.map(r => cellVal(t, r, c)).filter(v => typeof v === 'number')), tCell(t, e.rows[0], c)?.f, tRaw(t, e.rows[0], c)) : '');
+      html += `<tr class="grp"><th class="rn"></th>${cols.map((c, i) => i === 0 ? `<td data-grp="${esc(e.key)}"><button class="grp-tog" data-grp="${esc(e.key)}">${t.collapsed[e.key] ? '▸' : '▾'}</button> <b>${esc(e.key)}</b> <span class="muted">(${e.rows.length})</span>${sums[0] ? ' · ' + esc(sums[0]) : ''}</td>` : `<td class="num">${esc(sums[i])}</td>`).join('')}</tr>`;
+      continue;
+    }
+    const r = e.r, cls = e.kind === 'h' ? 'hr' : e.kind === 'f' ? 'fr' : (t.banded && e.i % 2 ? 'band' : '');
+    const gap = prevR >= 0 && r > prevR + 1 && e.kind !== 'f' && t.groupBy == null && !(t.filterOn && t.filters.length) && (t.hidR || []).some(x => x > prevR && x < r); prevR = r;
+    const rh = t.rowH?.[r];
+    html += `<tr class="${cls}${gap ? ' gap' : ''}"${rh ? ` style="height:${rh}px"` : ''}><th class="rn${sel && r >= sel.r1 && r <= sel.r2 ? ' on' : ''}" data-row="${r}">${r + 1}<span class="rh" data-rh="${r}"></span></th>`;
+    for (const c of cols) {
+      const m = mergeAt(t, r, c); if (m && (m.r !== r || m.c !== c)) continue;
+      const x = cellShown(t, r, c), cell = tCell(t, r, c), rule = e.kind === 'b' ? ruleFor(t, r, c, x.v, x.s) : null;
+      const isNum = typeof x.v === 'number' && !cell?.f?.type?.match(/checkbox|stars|slider|stepper|popup|text/);
+      const k = [c < HC ? 'hc' : '', isNum ? 'num' : '', isErr(x.v) ? 'err' : '', String(tRaw(t, r, c)).startsWith('=') ? 'fx' : ''];
+      if (sel && r >= sel.r1 && r <= sel.r2 && c >= sel.c1 && c <= sel.c2) k.push('sel');
+      if (SH.sel && SH.sel.t === t.id && SH.sel.ar === r && SH.sel.ac === c) k.push('act');
+      if (SH.find && SH.find.t === t.id && SH.find.r === r && SH.find.c === c) k.push('found');
+      let st = cellStyleCss(cell, rule);
+      if (t.freezeH && e.kind === 'h') st += `;position:sticky;top:${r * 29}px;z-index:${c < HC ? 4 : 3}`;
+      else if (t.freezeC && c < HC) st += `;position:sticky;left:${leftOf[c]}px;z-index:2`;
+      html += `<td data-r="${r}" data-c="${c}" class="${k.filter(Boolean).join(' ')}"${m ? ` rowspan="${m.rs}" colspan="${Math.max(1, cols.filter(x => x >= m.c && x < m.c + m.cs).length)}"` : ''} style="${st}"${isErr(x.v) ? ` title="${esc({ '#CYCLE': 'This formula refers to itself', '#NAME': 'Unknown function or range name', '#REF': 'A referenced table or cell doesn’t exist', '#DIV/0': 'Division by zero', '#N/A': 'No matching value' }[x.v.code] || 'This formula has an error')}"` : ''}>${cellInner(t, r, c, x)}</td>`;
+    }
+    html += '</tr>';
+  }
+  html += '</table>';
+  const pills = (t.pivot ? ' <span class="pill">Pivot</span>' : '') + (t.filterOn && t.filters.length ? ' <span class="pill">Filtered</span>' : '') + ((t.hidR || []).length || (t.hidC || []).length ? ' <span class="pill">Hidden rows/columns</span>' : '') + (t.locked ? ' <span class="pill">Locked</span>' : '');
+  const name = t.showName !== false ? `<div class="sh-tname" data-grab="${t.id}">${esc(t.name)}${pills}</div>` : '';
+  return `<div class="sh-obj sh-table${objSel ? ' sel-obj' : ''}${SH.sel && SH.sel.obj === t.id ? ' whole' : ''}" data-id="${t.id}" style="left:${t.x}px;top:${t.y}px;z-index:${t.z || 1}">${name}<div class="sh-grab" data-grab="${t.id}" title="Drag to move the table">${icon('more')}</div>${html}${objSel && !t.pivot && !t.locked ? `<button class="sh-add sh-addcol" data-sh="addcol" title="Add a column">+</button><button class="sh-add sh-addrow" data-sh="addrow" title="Add a row">+</button>` : ''}</div>`;
+}
+
+/* ----- sort by several columns ----- */
+function sortTableMulti(t, rules) {
+  rules = rules.filter(r => r.c != null && r.c < t.cols); if (!rules.length) return;
+  shPush(); shInvalidate();
+  const H = t.headerRows || 0, F = t.footerRows || 0, body = t.rows.slice(H, t.rows.length - F);
+  const keyed = body.map((row, i) => ({ row, from: H + i, k: rules.map(ru => cellVal(t, H + i, ru.c)) }));
+  keyed.sort((a, b) => { for (let j = 0; j < rules.length; j++) { const x = a.k[j], y = b.k[j]; if (x === '' && y !== '') return 1; if (y === '' && x !== '') return -1; let r = typeof x === 'number' && typeof y === 'number' ? x - y : String(x).localeCompare(String(y), undefined, { numeric: true }); if (rules[j].desc) r = -r; if (r) return r; } return 0; });
+  keyed.forEach((k, i) => { const d = H + i - k.from; if (d) k.row.forEach(cell => { if (cell && String(cell.v).startsWith('=')) cell.v = shiftFormula(cell.v, d, 0); }); });
+  t.rows.splice(H, body.length, ...keyed.map(k => k.row));
+  shSave(); shRender(); toast('Sorted by ' + rules.map(r => colTitle(t, r.c) + (r.desc ? ' ↓' : ' ↑')).join(', then '));
+}
+function sortTable(t, c, desc) { sortTableMulti(t, [{ c, desc }]); }
+
+/* ----- snapshot, hide/unhide, borders ----- */
+function snapshotTable(t) {
+  shInvalidate();
+  const n = JSON.parse(JSON.stringify(t)); n.id = uid('tb_'); n.name = t.name + ' snapshot'; n.pivot = null; n.x = t.x; n.y = t.y + ($(`#sh-page [data-id="${t.id}"]`)?.offsetHeight || t.rows.length * 30 + 40) + 40;
+  n.rows.forEach((row, r) => row.forEach((cell, c) => { if (!cell) return; const v = cellVal(t, r, c); if (String(cell.v).startsWith('=')) cell.v = isErr(v) ? v.code : typeof v === 'boolean' ? (v ? 'TRUE' : 'FALSE') : typeof v === 'number' ? String(+v.toPrecision(15)) : String(v); }));
+  insertObj(n); toast('Snapshot created. It holds values only and won’t recalculate.');
+}
+function hideSel(kind) {
+  const t = findObj(SH.sel.t), r = selRange(); shPush();
+  if (kind === 'rows') { t.hidR = [...new Set([...(t.hidR || []), ...Array.from({ length: r.r2 - r.r1 + 1 }, (_, i) => r.r1 + i)])]; if (t.hidR.length >= t.rows.length) t.hidR.pop(); }
+  else { t.hidC = [...new Set([...(t.hidC || []), ...Array.from({ length: r.c2 - r.c1 + 1 }, (_, i) => r.c1 + i)])]; if (t.hidC.length >= t.cols) t.hidC.pop(); }
+  SH.sel = { obj: t.id }; shSave(); shRender();
+}
+function unhideAll(t) { shPush(); t.hidR = []; t.hidC = []; shSave(); shRender(); }
+function applyBorders(mode) {
+  const r = selRange();
+  selCells((cell, rr, c) => {
+    const s = cell.s = { ...(cell.s || {}) }; let bd = { ...(s.bd || {}) };
+    if (mode === 'none') bd = {};
+    else if (mode === 'all') bd = { t: 1, b: 1, l: 1, r: 1 };
+    else if (mode === 'outer') { if (rr === r.r1) bd.t = 1; if (rr === r.r2) bd.b = 1; if (c === r.c1) bd.l = 1; if (c === r.c2) bd.r = 1; }
+    else if (mode === 'top' && rr === r.r1) bd.t = 1; else if (mode === 'bottom' && rr === r.r2) bd.b = 1; else if (mode === 'left' && c === r.c1) bd.l = 1; else if (mode === 'right' && c === r.c2) bd.r = 1;
+    if (Object.keys(bd).length) s.bd = bd; else delete s.bd;
+  });
+}
+
+/* ----- Find & Replace ----- */
+function findAll(q, opts) {
+  const out = [], b = curBook(); if (!q) return out; shInvalidate();
+  const norm = s => opts.case ? s : s.toLowerCase(), nq = norm(q);
+  b.sheets.forEach(s => s.objects.forEach(o => { if (o.kind !== 'table') return; o.rows.forEach((row, r) => row.forEach((cell, c) => { if (!cell) return; const raw = String(cell.v ?? ''), shown = cellShown(o, r, c).s; const hay = opts.formulas ? raw : (raw.startsWith('=') ? shown : raw); if (opts.whole ? norm(hay) === nq : norm(hay).includes(nq)) out.push({ s: s.id, t: o.id, r, c }); })); }));
+  return out;
+}
+function openFind() {
+  if ($('.find-modal')) { $('.find-modal input').focus(); return; }
+  const m = modal(`<h2>Find &amp; Replace</h2><div class="form-grid"><label class="full">Find<input class="inp" id="fr-q" placeholder="Text or number"></label><label class="full">Replace with<input class="inp" id="fr-r" placeholder="Leave empty to delete the match"></label></div>
+    <div class="fr-opts"><label class="side-check"><input type="checkbox" id="fr-case"> Match case</label><label class="side-check"><input type="checkbox" id="fr-whole"> Whole cell</label><label class="side-check"><input type="checkbox" id="fr-f"> Search formulas</label></div>
+    <p class="muted" id="fr-count" style="font-size:13px;margin:8px 0 0">Type to search every table in this spreadsheet.</p>
+    <div class="modal-actions" style="flex-wrap:wrap"><button class="btn" data-fr="prev">Previous</button><button class="btn" data-fr="next">Next</button><button class="btn" data-fr="one">Replace</button><button class="btn primary" data-fr="all">Replace all</button></div>`, { cls: 'find-modal', onClose: () => { SH.find = null; shRender(); } });
+  m.style.width = 'min(480px,100%)';
+  let hits = [], i = -1;
+  const opts = () => ({ case: $('#fr-case').checked, whole: $('#fr-whole').checked, formulas: $('#fr-f').checked });
+  const show = () => {
+    const h = hits[i]; $('#fr-count').textContent = hits.length ? `${i + 1} of ${hits.length} matches` : ($('#fr-q').value ? 'No matches' : 'Type to search every table in this spreadsheet.');
+    if (!h) { SH.find = null; shRender(); return; }
+    if (SH.sheetId !== h.s) { SH.sheetId = h.s; renderSheetEditor(); }
+    SH.find = h; SH.sel = { t: h.t, r1: h.r, c1: h.c, r2: h.r, c2: h.c, ar: h.r, ac: h.c }; shRender(); scrollCellIntoView();
+  };
+  const run = () => { hits = findAll($('#fr-q').value, opts()); i = hits.length ? 0 : -1; show(); };
+  m.addEventListener('input', e => { if (e.target.id === 'fr-q') run(); });
+  m.addEventListener('change', run);
+  m.addEventListener('keydown', e => { if (e.key === 'Enter') { e.preventDefault(); if (hits.length) { i = (i + 1) % hits.length; show(); } } });
+  m.addEventListener('click', e => {
+    const a = e.target.closest('[data-fr]')?.dataset.fr; if (!a || !hits.length) return;
+    const q = $('#fr-q').value, rep = $('#fr-r').value, o = opts();
+    const doRep = h => { const t = findObj(h.t), raw = String(tRaw(t, h.r, h.c)); const nv = o.whole ? rep : raw.split(o.case ? q : new RegExp(q.replace(/[.*+?^${}()|[\]\\]/g, '\\$&'), 'gi')).join(rep); setRaw(t, h.r, h.c, nv); };
+    if (a === 'next') { i = (i + 1) % hits.length; show(); }
+    else if (a === 'prev') { i = (i - 1 + hits.length) % hits.length; show(); }
+    else if (a === 'one') { shPush(); doRep(hits[i]); shSave(); run(); }
+    else if (a === 'all') { shPush(); const n = hits.length; hits.forEach(doRep); shSave(); run(); toast(`Replaced ${n} match${n === 1 ? '' : 'es'}`); }
+  });
+  $('#fr-q').focus();
+}
+
+/* ----- named ranges ----- */
+function openNames(prefill) {
+  const b = curBook(); b.names = b.names || {};
+  const m = modal(''); m.style.width = 'min(520px,100%)';
+  const draw = () => {
+    const list = Object.values(b.names);
+    m.innerHTML = `<h2>Named ranges</h2><p class="muted" style="font-size:13px;margin-top:-6px">Give cells a name, then use it in formulas, e.g. <code>=SUM(Expenses)</code>.</p>
+      <div class="pick-list">${list.map(n => `<div class="mini-row"><b class="grow">${esc(n.name)}</b><code>${esc(n.ref)}</code><button class="x-btn" data-del="${esc(n.name.toLowerCase())}" title="Delete">${icon('x')}</button></div>`).join('') || '<div class="muted" style="font-size:13px">No names yet.</div>'}</div>
+      <form class="label-new"><input class="inp" id="nm-name" placeholder="Name, e.g. TaxRate" pattern="[A-Za-z_][A-Za-z0-9_]*" required><input class="inp" id="nm-ref" placeholder="Table 1::B2:B9" value="${esc(prefill || '')}" required><button class="btn primary">Add</button></form>`;
+  };
+  m.addEventListener('click', e => { const d = e.target.closest('[data-del]'); if (d) { shPush(); delete b.names[d.dataset.del]; shSave(); shRender(); draw(); } });
+  m.addEventListener('submit', e => {
+    e.preventDefault(); const name = $('#nm-name').value.trim(), ref = $('#nm-ref').value.trim();
+    if (!/^[A-Za-z_][A-Za-z0-9_]*$/.test(name) || /^[A-Za-z]{1,3}\d+$/.test(name) || FN[name.toUpperCase()]) { toast('Use a name that isn’t a cell address or function, like TaxRate'); return; }
+    try { parseFormula(ref); } catch { toast('That range isn’t valid. Try Table 1::B2:B9'); return; }
+    shPush(); b.names[name.toLowerCase()] = { name, ref }; shSave(); shRender(); prefill = ''; draw();
+  });
+  draw();
+}
+const selRefText = () => { const r = selRange(), t = findObj(SH.sel.t); return `${t.name}::${refName(r.r1, r.c1)}${r.r1 !== r.r2 || r.c1 !== r.c2 ? ':' + refName(r.r2, r.c2) : ''}`; };
+
+/* ----- pivot tables: several value fields, date grouping ----- */
+const PV_FN = [['sum', 'Sum'], ['avg', 'Average'], ['count', 'Count'], ['min', 'Min'], ['max', 'Max']];
+function pivotVals(p) { if (!p.vals) p.vals = [{ c: p.val ?? 0, fn: p.fn || 'sum' }]; return p.vals; }
+function pivotKey(src, r, c, grp) {
+  const v = cellVal(src, r, c), isDate = typeof v === 'number' && ((tCell(src, r, c)?.f?.type || autoFmt(tRaw(src, r, c))?.type) === 'date');
+  if (grp && grp !== 'none' && isDate) {
+    const [y, m] = dateParts(v);
+    if (grp === 'year') return { k: String(y), s: y }; if (grp === 'quarter') return { k: `Q${Math.ceil(m / 3)} ${y}`, s: y * 10 + Math.ceil(m / 3) };
+    return { k: `${MONTHS[m - 1]} ${y}`, s: y * 100 + m };
+  }
+  const s = cellShown(src, r, c).s || '(blank)'; return { k: s, s: typeof v === 'number' ? v : s };
+}
+function buildPivotInto(t) {
+  const p = t.pivot, src = findObj(p.src); if (!src) { t.rows = [[{ v: 'Source table was deleted' }]]; t.cols = 1; return; }
+  const vals = pivotVals(p), H = src.headerRows || 0, F = src.footerRows || 0, hasCols = p.cols != null && p.cols !== '';
+  const rowKeys = new Map(), colKeys = new Map(), agg = new Map();
+  for (let r = H; r < src.rows.length - F; r++) {
+    if (!(src.rows[r] || []).some(c => c && c.v !== '' && c.v != null)) continue;
+    const rk = pivotKey(src, r, p.rows, p.dateGroup), ck = hasCols ? pivotKey(src, r, +p.cols, p.colDateGroup) : { k: 'Total', s: 0 };
+    rowKeys.set(rk.k, rk.s); colKeys.set(ck.k, ck.s);
+    vals.forEach((vf, j) => { const k = rk.k + '\u0001' + ck.k + '\u0001' + j, v = cellVal(src, r, vf.c); if (!agg.has(k)) agg.set(k, []); if (typeof v === 'number' || vf.fn === 'count') agg.get(k).push(v); });
+  }
+  const order = m => [...m.keys()].sort((a, b) => { const x = m.get(a), y = m.get(b); return typeof x === 'number' && typeof y === 'number' ? x - y : String(x).localeCompare(String(y), undefined, { numeric: true }); });
+  const RK = order(rowKeys), CK = order(colKeys);
+  const fnv = (list, fn) => { const n = list.filter(v => typeof v === 'number'); switch (fn) { case 'avg': return n.length ? sumOf(n) / n.length : ''; case 'count': return list.length; case 'min': return n.length ? Math.min(...n) : ''; case 'max': return n.length ? Math.max(...n) : ''; default: return sumOf(n); } };
+  const fmtOf = vf => vf.fn === 'count' ? null : tCell(src, H, vf.c)?.f || autoFmt(tRaw(src, H, vf.c));
+  const cell = (v, vf) => v === '' ? null : { v: String(+(+v).toPrecision(12)), ...(fmtOf(vf) ? { f: fmtOf(vf) } : {}) };
+  const vt = vf => `${PV_FN.find(x => x[0] === vf.fn)?.[1] || 'Sum'} of ${colTitle(src, vf.c)}`, multi = vals.length > 1;
+  const head = [{ v: colTitle(src, p.rows) }];
+  if (hasCols) { CK.forEach(ck => vals.forEach(vf => head.push({ v: multi ? `${ck} · ${vt(vf)}` : ck }))); vals.forEach(vf => head.push({ v: multi ? `Total · ${vt(vf)}` : 'Grand Total' })); }
+  else vals.forEach(vf => head.push({ v: vt(vf) }));
+  const rows = [head], gather = (rks, cks, j) => rks.flatMap(rk => cks.flatMap(ck => agg.get(rk + '\u0001' + ck + '\u0001' + j) || []));
+  RK.forEach(rk => { const row = [{ v: rk }]; if (hasCols) { CK.forEach(ck => vals.forEach((vf, j) => { const l = agg.get(rk + '\u0001' + ck + '\u0001' + j) || []; row.push(l.length ? cell(fnv(l, vf.fn), vf) : null); })); vals.forEach((vf, j) => row.push(cell(fnv(gather([rk], CK, j), vf.fn), vf))); } else vals.forEach((vf, j) => row.push(cell(fnv(gather([rk], CK, j), vf.fn), vf))); rows.push(row); });
+  const tot = [{ v: 'Grand Total' }];
+  if (hasCols) { CK.forEach(ck => vals.forEach((vf, j) => tot.push(cell(fnv(gather(RK, [ck], j), vf.fn), vf)))); vals.forEach((vf, j) => tot.push(cell(fnv(gather(RK, CK, j), vf.fn), vf))); }
+  else vals.forEach((vf, j) => tot.push(cell(fnv(gather(RK, CK, j), vf.fn), vf)));
+  rows.push(tot);
+  t.rows = rows; t.cols = head.length; t.headerRows = 1; t.headerCols = 1; t.footerRows = 1; t.colW = t.colW || []; while (t.colW.length < t.cols) t.colW.push(multi ? 150 : 120); t.colW.length = t.cols;
+}
+function pivotSide(t) {
+  const src = findObj(t.pivot.src), cols = src ? Array.from({ length: src.cols }, (_, c) => [c, colTitle(src, c)]) : [], vals = pivotVals(t.pivot);
+  const o = (sel, list) => list.map(([c, n]) => `<option value="${c}" ${String(c) === String(sel) ? 'selected' : ''}>${esc(n)}</option>`).join('');
+  const grp = (key, cur) => `<select class="inp" data-pvx="${key}">${[['none', 'No date grouping'], ['month', 'By month'], ['quarter', 'By quarter'], ['year', 'By year']].map(([v, l]) => `<option value="${v}" ${(cur || 'none') === v ? 'selected' : ''}>${l}</option>`).join('')}</select>`;
+  return `<div class="side-sec"><label class="side-lab">Name<input class="inp" data-tprop="name" value="${esc(t.name)}"></label></div><div class="side-sec"><div class="side-title">Pivot options</div><p class="muted side-tip">Source: ${esc(src?.name || 'deleted table')}. Updates automatically.</p>
+    <label class="side-lab">Rows<select class="inp" data-pvx="rows">${o(t.pivot.rows, cols)}</select></label>${grp('dateGroup', t.pivot.dateGroup)}
+    <label class="side-lab">Columns<select class="inp" data-pvx="cols"><option value="">None</option>${o(t.pivot.cols, cols)}</select></label>${t.pivot.cols !== '' && t.pivot.cols != null ? grp('colDateGroup', t.pivot.colDateGroup) : ''}
+    <div class="side-sub">Values</div>${vals.map((vf, j) => `<div class="rule-row"><select class="inp" data-pvv="${j}" data-k="fn">${PV_FN.map(([v, l]) => `<option value="${v}" ${vf.fn === v ? 'selected' : ''}>${l}</option>`).join('')}</select><select class="inp" data-pvv="${j}" data-k="c">${o(vf.c, cols)}</select>${vals.length > 1 ? `<button class="x-btn" data-pvdel="${j}" title="Remove">${icon('x')}</button>` : ''}</div>`).join('')}
+    <button class="btn wide" data-pvadd>Add a value field</button><button class="btn wide" data-sh="chart-pivot">${ICON_CHART} Chart this pivot table</button></div>${sideStylesBlock(t)}`;
+}
+
+/* ----- side panels (extended) ----- */
+function sideTable(t) {
+  if (t.pivot) return pivotSide(t);
+  const hid = (t.hidR || []).length + (t.hidC || []).length;
+  return `<div class="side-sec"><label class="side-lab">Table name<input class="inp" data-tprop="name" value="${esc(t.name)}"></label><label class="side-check"><input type="checkbox" data-tcheck="showName" ${t.showName !== false ? 'checked' : ''}> Show table name</label><label class="side-check"><input type="checkbox" data-tcheck="locked" ${t.locked ? 'checked' : ''}> Lock table (no moving or editing)</label></div>
+  ${sideStylesBlock(t)}
+  <div class="side-sec"><div class="side-title">Headers &amp; footer</div>${stepperRow('Header rows', 'headerRows', t.headerRows || 0, 0, 5)}<label class="side-check"><input type="checkbox" data-tcheck="freezeH" ${t.freezeH ? 'checked' : ''}> Freeze header rows</label>${stepperRow('Header columns', 'headerCols', t.headerCols || 0, 0, 5)}<label class="side-check"><input type="checkbox" data-tcheck="freezeC" ${t.freezeC ? 'checked' : ''}> Freeze header columns</label>${stepperRow('Footer rows', 'footerRows', t.footerRows || 0, 0, 5)}</div>
+  <div class="side-sec"><div class="side-title">Rows &amp; columns</div>${stepperRow('Rows', 'rowsN', t.rows.length, 1, 999)}${stepperRow('Columns', 'colsN', t.cols, 1, 52)}
+  <div class="btn-grid"><button class="btn" data-top="rowAbove">Row above</button><button class="btn" data-top="rowBelow">Row below</button><button class="btn" data-top="colBefore">Column before</button><button class="btn" data-top="colAfter">Column after</button><button class="btn" data-top="delRows">Delete rows</button><button class="btn" data-top="delCols">Delete columns</button><button class="btn" data-top="merge">Merge cells</button><button class="btn" data-top="unmerge">Unmerge</button><button class="btn" data-x="hideRows">Hide rows</button><button class="btn" data-x="hideCols">Hide columns</button></div>${hid ? `<button class="btn wide" data-x="unhide">Unhide ${hid} hidden row${hid === 1 ? '' : 's'}/column${hid === 1 ? '' : 's'}</button>` : ''}${t.rowH && Object.keys(t.rowH).length ? '<button class="btn wide" data-x="rowhReset">Reset row heights</button>' : ''}</div>
+  <div class="side-sec"><button class="btn wide" data-sh="pivot">${ICON_PIVOT} Create pivot table</button><button class="btn wide" data-x="snapshot">${icon('copy')} Create snapshot</button><button class="btn wide" data-x="names">Named ranges…</button><button class="btn wide" data-sh="exp-csv">${icon('download')} Export as CSV</button></div>`;
+}
+const FMT_PRESETS = ['#,##0.00', '#,##0 "units"', '$#,##0;($#,##0)', '0.0%', '000-000', 'yyyy-mm-dd', 'mmm d, yyyy', 'dddd', 'h:mm AM/PM'];
+function sideCell(t) {
+  const s = SH.sel, cell = tCell(t, s.ar, s.ac) || {}, f = cell.f || { type: 'auto' }, st = cell.s || {};
+  let opts = '';
+  if (['number', 'currency', 'percent', 'scientific'].includes(f.type)) opts += `${stepperRow('Decimals', 'dec', f.dec ?? (f.type === 'percent' ? 0 : 2), 0, 8)}`;
+  if (f.type === 'number') opts += `<label class="side-check"><input type="checkbox" data-fcheck="sep" ${f.sep !== false ? 'checked' : ''}> Thousands separator</label>`;
+  if (f.type === 'currency') opts += `<label class="side-lab">Currency<select class="inp" data-fprop="sym">${['$', '€', '£', '¥'].map(x => `<option ${f.sym === x ? 'selected' : ''}>${x}</option>`).join('')}</select></label>`;
+  if (f.type === 'date') opts += `<label class="side-lab">Date format<select class="inp" data-fprop="style">${[['medium', 'Jan 5, 2026'], ['short', '1/5/26'], ['long', 'Monday, January 5, 2026'], ['iso', '2026-01-05'], ['monthyear', 'Jan 2026'], ['datetime', 'Jan 5, 2026, 9:30 AM']].map(([v, l]) => `<option value="${v}" ${f.style === v ? 'selected' : ''}>${l}</option>`).join('')}</select></label>`;
+  if (f.type === 'slider' || f.type === 'stepper') opts += `<div class="mini-form"><label>Minimum<input class="inp" type="number" data-fprop="min" value="${f.min ?? 0}"></label><label>Maximum<input class="inp" type="number" data-fprop="max" value="${f.max ?? 100}"></label><label>Increment<input class="inp" type="number" data-fprop="step" value="${f.step ?? 1}"></label></div>`;
+  if (f.type === 'popup') opts += `<label class="side-lab">Menu items (one per line)<textarea class="inp" data-fprop="options" rows="5">${esc((f.options || []).join('\n'))}</textarea></label>`;
+  if (f.type === 'custom') opts += `<label class="side-lab">Pattern<input class="inp" data-fprop="pattern" value="${esc(f.pattern || '#,##0.00')}" spellcheck="false"></label><div class="chip-row">${FMT_PRESETS.map(p => `<button class="chip" data-fpreset="${esc(p)}">${esc(p)}</button>`).join('')}</div><p class="muted side-tip"># and 0 are digits, “text” is shown as-is, ; separates negative numbers. Dates use yyyy, mmm, dd, h:mm.</p>`;
+  const r = selRange(), rules = (t.rules || []).map((ru, i) => ({ ru, i })).filter(({ ru }) => !(ru.r2 < r.r1 || ru.r1 > r.r2 || ru.c2 < r.c1 || ru.c1 > r.c2));
+  return `<div class="side-sec"><div class="side-title">Data format</div><select class="inp" data-cfmt>${FORMATS.map(([v, l]) => `<option value="${v}" ${f.type === v ? 'selected' : ''}>${l}</option>`).join('')}</select>${opts}</div>
+  <div class="side-sec"><div class="side-title">Text</div><div class="seg seg-sm"><button class="seg-b${st.b ? ' on' : ''}" data-cstyle="b"><b>B</b></button><button class="seg-b${st.i ? ' on' : ''}" data-cstyle="i"><i>I</i></button><button class="seg-b${st.u ? ' on' : ''}" data-cstyle="u"><u>U</u></button></div>
+    <div class="seg seg-sm">${[['', 'Auto'], ['left', 'Left'], ['center', 'Center'], ['right', 'Right']].map(([v, l]) => `<button class="seg-b${(st.align || '') === v ? ' on' : ''}" data-calign="${v}">${l}</button>`).join('')}</div>
+    <label class="side-check"><input type="checkbox" data-ccheck="wrap" ${st.wrap ? 'checked' : ''}> Wrap text in cell</label>
+    <div class="side-sub">Text color</div>${swRow('data-ccolor', st.color)}<div class="side-sub">Fill</div>${swRow('data-cfill', st.fill)}</div>
+  <div class="side-sec"><div class="side-title">Borders</div><div class="border-row">${[['all', '▦', 'All borders'], ['outer', '▢', 'Outside border'], ['top', '▔', 'Top'], ['bottom', '▁', 'Bottom'], ['left', '▏', 'Left'], ['right', '▕', 'Right'], ['none', '⊘', 'No borders']].map(([v, g, l]) => `<button class="bd-btn" data-border="${v}" title="${l}">${g}</button>`).join('')}</div><div class="side-sub">Border color</div>${swRow('data-bcolor', st.bc)}</div>
+  <div class="side-sec"><div class="side-title">Conditional highlighting</div>${rules.map(({ ru, i }) => `<div class="rule-row"><span>${refName(ru.r1, ru.c1)}:${refName(ru.r2, ru.c2)} ${esc(RULE_OPS.find(x => x[0] === ru.op)?.[1] || '')} ${esc(ru.a ?? '')}${ru.op === 'between' ? ' and ' + esc(ru.b) : ''} → ${esc(RULE_STYLES.find(x => x[0] === ru.style)?.[1] || '')}</span><button class="x-btn" data-rule-del="${i}" title="Delete rule">${icon('x')}</button></div>`).join('') || '<p class="muted side-tip">No rules on these cells.</p>'}
+    <div class="mini-form"><label>When the value<select class="inp" id="rule-op">${RULE_OPS.filter(x => x[0] !== 'in').map(([v, l]) => `<option value="${v}">${l}</option>`).join('')}</select></label><label>Value<input class="inp" id="rule-a" placeholder="e.g. 1000"></label><label>And (for “between”)<input class="inp" id="rule-b"></label><label>Style<select class="inp" id="rule-style">${RULE_STYLES.map(([v, l]) => `<option value="${v}">${l}</option>`).join('')}</select></label></div>
+    <button class="btn wide" data-rule-add>Add rule to selected cells</button></div>
+  <div class="side-sec"><button class="btn wide" data-x="nameSel">Name these cells…</button></div>`;
+}
+function sideOrganize(t) {
+  const cols = Array.from({ length: t.cols }, (_, c) => [c, colTitle(t, c)]), opt = sel => cols.map(([c, n]) => `<option value="${c}" ${c === sel ? 'selected' : ''}>${esc(n)}</option>`).join('');
+  t.sortRules = t.sortRules || [{ c: SH.sel?.ac ?? 0, desc: false }];
+  const qc = SH.quickCol ?? (SH.sel?.ac ?? 0), H = t.headerRows || 0, F = t.footerRows || 0, uniq = new Set();
+  for (let r = H; r < t.rows.length - F; r++) uniq.add(cellShown(t, r, qc).s || '(blank)');
+  const qf = t.filters.find(f => f.op === 'in' && f.c === qc), allowed = qf ? new Set(qf.a) : null;
+  return `<div class="side-sec"><div class="side-title">Sort</div>${t.sortRules.map((ru, i) => `<div class="rule-row"><span class="muted">${i ? 'then' : 'by'}</span><select class="inp" data-srt="${i}" data-k="c">${opt(ru.c)}</select><select class="inp" data-srt="${i}" data-k="desc"><option value="0" ${!ru.desc ? 'selected' : ''}>A→Z ↑</option><option value="1" ${ru.desc ? 'selected' : ''}>Z→A ↓</option></select>${t.sortRules.length > 1 ? `<button class="x-btn" data-srtdel="${i}">${icon('x')}</button>` : ''}</div>`).join('')}
+    <div class="btn-grid"><button class="btn" data-srtadd>Add a column</button><button class="btn primary" data-srtgo>Sort now</button></div></div>
+  <div class="side-sec"><div class="side-title">Quick Filter</div><label class="side-lab">Column<select class="inp" data-qcol>${opt(qc)}</select></label>
+    <div class="qf-list">${[...uniq].sort((a, b) => a.localeCompare(b, undefined, { numeric: true })).map(v => `<label class="side-check"><input type="checkbox" data-qv="${esc(v)}" ${!allowed || allowed.has(v) ? 'checked' : ''}> ${esc(v)}</label>`).join('')}</div>
+    ${qf ? '<button class="btn wide" data-qclear>Show all values</button>' : ''}</div>
+  <div class="side-sec"><div class="side-title">Filter rules</div><label class="side-check"><input type="checkbox" data-tcheck="filterOn" ${t.filterOn ? 'checked' : ''}> Filters on</label>
+    ${t.filters.filter(f => f.op !== 'in').map(f => `<div class="rule-row"><span>${esc(colTitle(t, f.c))} ${esc(RULE_OPS.find(x => x[0] === f.op)?.[1] || '')} ${esc(f.a ?? '')}${f.op === 'between' ? ' and ' + esc(f.b) : ''}</span><button class="x-btn" data-filter-del="${t.filters.indexOf(f)}" title="Remove">${icon('x')}</button></div>`).join('')}
+    ${t.filters.length > 1 ? `<div class="seg seg-sm"><button class="seg-b${t.filterAny ? '' : ' on'}" data-fany="0">Match all</button><button class="seg-b${t.filterAny ? ' on' : ''}" data-fany="1">Match any</button></div>` : ''}
+    <div class="mini-form"><label>Column<select class="inp" id="flt-c">${opt(SH.sel?.ac ?? 0)}</select></label><label>Condition<select class="inp" id="flt-op">${RULE_OPS.filter(x => x[0] !== 'in').map(([v, l]) => `<option value="${v}">${l}</option>`).join('')}</select></label><label>Value<input class="inp" id="flt-a"></label><label>And<input class="inp" id="flt-b"></label></div><button class="btn wide" data-filter-add>Add filter</button></div>
+  <div class="side-sec"><div class="side-title">Categories</div><label class="side-lab">Group rows by<select class="inp" data-groupby><option value="">No categories</option>${opt(t.groupBy ?? -1)}</select></label><p class="muted side-tip">Groups show a count and subtotals for number columns. Click a group row to collapse it.</p></div>
+  <div class="side-sec"><button class="btn wide" data-sh="pivot">${ICON_PIVOT} Create pivot table</button></div>`;
+}
+const _cellMenu0 = cellMenu;
+cellMenu = function (t) {
+  const items = _cellMenu0(t); if (t.pivot) return items;
+  return [...items, '-', { label: 'Hide rows', run: () => hideSel('rows') }, { label: 'Hide columns', run: () => hideSel('cols') }, ...((t.hidR || []).length || (t.hidC || []).length ? [{ label: 'Unhide all', run: () => unhideAll(t) }] : []),
+    { label: 'Name these cells…', run: () => openNames(selRefText()) }, { label: 'Create snapshot', icon: 'copy', run: () => snapshotTable(t) }, { label: 'Find & Replace…', icon: 'search', kbd: 'Ctrl+F', run: openFind }];
+};
+/* extra side-panel events */
+$('#view-sheets').addEventListener('click', e => {
+  const b = e.target.closest('button'); if (!b || !b.closest('#sh-side')) return;
+  const s = SH.sel, o = s ? findObj(s.t || s.obj) : null, d = b.dataset; if (!o) return;
+  if (d.x === 'hideRows' || d.x === 'hideCols') { if (!s.t) { toast('Select cells in the rows or columns to hide'); return; } hideSel(d.x === 'hideRows' ? 'rows' : 'cols'); }
+  else if (d.x === 'unhide') unhideAll(o);
+  else if (d.x === 'rowhReset') { shPush(); o.rowH = {}; shSave(); shRender(); }
+  else if (d.x === 'snapshot') snapshotTable(o);
+  else if (d.x === 'names') openNames(s.t ? selRefText() : '');
+  else if (d.x === 'nameSel') openNames(selRefText());
+  else if (d.border) applyBorders(d.border);
+  else if ('bcolor' in d) selCells(c => { c.s = { ...(c.s || {}), bc: d.bcolor || undefined }; });
+  else if (d.fpreset) selCells(c => { if (c.f) c.f.pattern = d.fpreset; });
+  else if ('srtadd' in d) { o.sortRules.push({ c: 0, desc: false }); renderSide(); }
+  else if (d.srtdel) { o.sortRules.splice(+d.srtdel, 1); renderSide(); }
+  else if ('srtgo' in d) sortTableMulti(o, o.sortRules);
+  else if ('qclear' in d) { shPush(); o.filters = o.filters.filter(f => !(f.op === 'in' && f.c === (SH.quickCol ?? s.ac))); shSave(); shRender(); }
+  else if ('pvadd' in d) { shPush(); pivotVals(o.pivot).push({ c: pivotVals(o.pivot)[0].c, fn: 'count' }); shSave(); shRender(); }
+  else if (d.pvdel) { shPush(); o.pivot.vals.splice(+d.pvdel, 1); shSave(); shRender(); }
+});
+$('#view-sheets').addEventListener('change', e => {
+  const el = e.target; if (!el.closest('#sh-side')) return; const s = SH.sel, o = s ? findObj(s.t || s.obj) : null, d = el.dataset; if (!o) return;
+  if (d.srt) { o.sortRules[+d.srt][d.k] = d.k === 'desc' ? el.value === '1' : +el.value; }
+  else if ('qcol' in d) { SH.quickCol = +el.value; renderSide(); }
+  else if (d.qv !== undefined) {
+    const qc = SH.quickCol ?? s.ac, boxes = [...el.closest('.qf-list').querySelectorAll('[data-qv]')], on = boxes.filter(x => x.checked).map(x => x.dataset.qv);
+    shPush(); o.filters = o.filters.filter(f => !(f.op === 'in' && f.c === qc)); if (on.length < boxes.length) { o.filters.push({ c: qc, op: 'in', a: on }); o.filterOn = true; } shSave(); shRender();
+  }
+  else if (d.pvx) { shPush(); o.pivot[d.pvx] = d.pvx === 'rows' ? +el.value : el.value; shSave(); shRender(); }
+  else if (d.pvv) { shPush(); pivotVals(o.pivot)[+d.pvv][d.k] = d.k === 'c' ? +el.value : el.value; shSave(); shRender(); }
+});
+document.addEventListener('keydown', e => { if (UI.view === 'sheets' && SH.bookId && (e.metaKey || e.ctrlKey) && e.key.toLowerCase() === 'f' && !modalOpen()) { e.preventDefault(); openFind(); } });
+</script>
+
+
+
+<script>
 /* ================= Sheets: template gallery ================= */
 const $C = (dec = 2, sym = '$') => ({ type: 'currency', sym, dec }), $P = (dec = 0) => ({ type: 'percent', dec }), $D = (style = 'medium') => ({ type: 'date', style });
 const MONTHS = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
@@ -5081,6 +5732,7 @@ function openBookTemplates() {
   });
 }
 </script>
+
 <script>
 /* ================= CRM definitions ================= */
 const companyName = id => db.companies.find(c => c.id === id)?.name || '';

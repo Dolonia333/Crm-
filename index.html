@@ -240,8 +240,8 @@ textarea.inp{resize:vertical;min-height:70px}
 .board-title-input:focus{border-color:var(--accent)}
 .notes-actions{margin-left:auto;display:flex;gap:4px;align-items:center}
 .notes-body{flex:1;position:relative;display:flex;min-height:0}
-.toolbar{width:72px;flex:none;background:var(--panel);border-right:1px solid var(--border);display:flex;flex-direction:column;align-items:center;padding:8px 0;gap:2px;overflow-y:auto;z-index:5}
-.tool{width:60px;border:0;background:none;border-radius:10px;padding:7px 2px 6px;display:flex;flex-direction:column;align-items:center;gap:3px;cursor:grab;color:var(--muted);font-size:11px;touch-action:none;user-select:none}
+.toolbar{-webkit-touch-callout:none;width:72px;flex:none;background:var(--panel);border-right:1px solid var(--border);display:flex;flex-direction:column;align-items:center;padding:8px 0;gap:2px;overflow-y:auto;z-index:5}
+.tool{width:60px;border:0;background:none;border-radius:10px;padding:7px 2px 6px;display:flex;flex-direction:column;align-items:center;gap:3px;cursor:grab;color:var(--muted);font-size:11px;touch-action:pan-x;user-select:none;-webkit-user-select:none}
 .tool:hover{background:var(--hover);color:var(--text)}
 .tool.active{background:var(--accent-weak);color:var(--accent)}
 .tool .ic{width:20px;height:20px}
@@ -476,7 +476,7 @@ button,.card,.tool,.nav-item{-webkit-tap-highlight-color:transparent}
   .notes-actions .btn span{display:none}
   .notes-actions .btn{padding:7px 8px;border:0}
   .notes-body{flex-direction:column-reverse}
-  .toolbar{width:100%;flex-direction:row;border-right:0;border-top:1px solid var(--border);overflow-x:auto;padding:4px 6px;justify-content:flex-start;scrollbar-width:none}
+  .toolbar{width:100%;flex-direction:row;border-right:0;border-top:1px solid var(--border);overflow-x:auto;overflow-y:hidden;overscroll-behavior-x:contain;-webkit-overflow-scrolling:touch;touch-action:pan-x;padding:4px 6px;justify-content:flex-start;scrollbar-width:none}
   .toolbar::-webkit-scrollbar{display:none}
   .tool{width:auto;min-width:58px;flex:none;padding:8px 2px 6px}
   .tool-sep{width:1px;height:30px;margin:0 4px;flex:none;align-self:center}
@@ -1418,7 +1418,7 @@ function moveCardsToBoard(ids, bid) {
 canvas.addEventListener('pointerdown', onDown);
 window.addEventListener('pointermove', onMove);
 window.addEventListener('pointerup', onUp);
-window.addEventListener('pointercancel', e => { pointers.delete(e.pointerId); if (ptr && ptr.mode === 'pinch') ptr = null; });
+window.addEventListener('pointercancel', e => { pointers.delete(e.pointerId); if (ptr && ptr.mode === 'tool') { $('#tool-ghost').hidden = true; clearDropUI(); } if (ptr && (ptr.mode === 'pinch' || ptr.mode === 'tool')) ptr = null; });
 
 function onDown(e) {
   pointers.set(e.pointerId, { x: e.clientX, y: e.clientY });
@@ -1516,7 +1516,7 @@ function onMove(e) {
     case 'tool': {
       const g = $('#tool-ghost');
       if (!ptr.moved && Math.hypot(e.clientX - ptr.sx, e.clientY - ptr.sy) > 5) { ptr.moved = true; g.innerHTML = icon(ptr.icon) + ' ' + esc(ptr.label); g.hidden = false; }
-      if (ptr.moved) { g.style.left = e.clientX + 'px'; g.style.top = e.clientY + 'px'; const t = findDropTarget(e.clientX, e.clientY, [], { board: false }); ptr.drop = t; showDropUI(t); }
+      if (ptr.moved) { g.style.left = e.clientX + 'px'; g.style.top = (e.clientY - (ptr.touch ? 44 : 0)) + 'px'; const t = findDropTarget(e.clientX, e.clientY, [], { board: false }); ptr.drop = t; showDropUI(t); }
       break;
     }
   }
@@ -1726,8 +1726,27 @@ const TOOLS = [
 function buildToolbar() {
   const tb = $('#toolbar');
   tb.innerHTML = TOOLS.map(t => t.sep ? '<div class="tool-sep"></div>' : `<button class="tool" data-type="${t.type}" title="${t.label} — click to add, or drag onto the board">${icon(t.icon)}<span>${t.label}</span></button>`).join('');
+  // Touch: swipe scrolls the row, tap adds the card, press-and-hold then drag places it. Mouse: click to add or drag onto the board.
+  const cancelHold = () => { clearTimeout(tb._hold); tb._hold = 0; };
+  tb.addEventListener('click', e => { const b = e.target.closest('.tool'); if (tb._dragged) { tb._dragged = false; return; } if (b && tb._touch) createFromTool(b.dataset.type, null, null); });
+  tb.addEventListener('pointermove', e => { if (tb._hold && Math.hypot(e.clientX - tb._sx, e.clientY - tb._sy) > 8) cancelHold(); });
+  tb.addEventListener('pointerup', cancelHold); tb.addEventListener('pointercancel', cancelHold); tb.addEventListener('scroll', cancelHold, { passive: true });
+  tb.addEventListener('touchmove', e => { if (ptr && ptr.mode === 'tool') e.preventDefault(); }, { passive: false });
+  tb.addEventListener('contextmenu', e => e.preventDefault());
   tb.addEventListener('pointerdown', e => {
+    tb._touch = e.pointerType !== 'mouse'; tb._dragged = false;
     const b = e.target.closest('.tool'); if (!b || e.button !== 0) return;
+    if (tb._touch) {
+      const t = TOOLS.find(x => x.type === b.dataset.type); tb._sx = e.clientX; tb._sy = e.clientY; cancelHold();
+      if (t.type === 'line') return;
+      tb._hold = setTimeout(() => {
+        tb._hold = 0; stopEditing(); tb._dragged = true;
+        ptr = { mode: 'tool', type: t.type, icon: t.icon, label: t.label, sx: tb._sx, sy: tb._sy, moved: true, touch: true };
+        const g = $('#tool-ghost'); g.innerHTML = icon(t.icon) + ' ' + esc(t.label); g.hidden = false; g.style.left = tb._sx + 'px'; g.style.top = (tb._sy - 44) + 'px';
+        try { navigator.vibrate && navigator.vibrate(12); } catch { }
+      }, 320);
+      return;
+    }
     e.preventDefault(); stopEditing();
     const t = TOOLS.find(x => x.type === b.dataset.type);
     ptr = { mode: 'tool', type: t.type, icon: t.icon, label: t.label, sx: e.clientX, sy: e.clientY, moved: t.type === 'line' ? false : false };

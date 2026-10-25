@@ -404,6 +404,120 @@ textarea.inp{resize:vertical;min-height:70px}
 .sketch-canvas{display:block;width:100%;height:auto;max-height:68vh;background:#fff;touch-action:none;cursor:crosshair;aspect-ratio:3/2;object-fit:contain}
 .lightbox img{max-width:100%;max-height:80vh;display:block;margin:auto;border-radius:8px}
 body.is-dragging,body.is-dragging *{cursor:grabbing!important}
+/* ===== Notes extras ===== */
+#menu{max-height:calc(100vh - 16px);overflow-y:auto}
+.menu-item:disabled{opacity:.4;cursor:default}
+.emoji-row{gap:2px}
+.emoji-btn{border:0;background:none;font-size:19px;cursor:pointer;padding:3px 5px;border-radius:6px;line-height:1}
+.emoji-btn:hover{background:var(--hover)}
+.icon-btn.on{background:var(--accent-weak);color:var(--accent)}
+.us-btn{position:relative}
+.us-count{position:absolute;top:1px;right:-2px;min-width:16px;height:16px;border-radius:8px;background:var(--accent);color:#fff;font-size:10px;font-weight:700;display:grid;place-items:center;padding:0 4px;line-height:1}
+.us-count:empty{display:none}
+/* table cards */
+.t-table{padding:8px 10px 10px}
+.tbl-title{font-weight:700;padding:2px 2px 6px}
+.tbl-wrap{overflow:hidden}
+.tbl{width:100%;border-collapse:collapse;table-layout:fixed;font-size:13.5px}
+.tbl td,.tbl th{border:1px solid var(--border);padding:0;vertical-align:top}
+.tbl .tbl-cell{padding:5px 7px;overflow-wrap:anywhere}
+.tbl td.num .tbl-cell{text-align:right;font-variant-numeric:tabular-nums}
+.tbl td.formula{background:color-mix(in srgb,var(--accent) 7%,transparent)}
+.tbl.has-head tr.r0 td{background:var(--hover);font-weight:600}
+.tbl th.ref{font:600 10px ui-monospace,monospace;color:var(--muted);background:var(--panel-2);padding:2px;text-align:center}
+.card:not(.selected) .tbl tr.refs{display:none}
+.tbl .tbl-cell.editing{box-shadow:inset 0 0 0 2px var(--accent);background:var(--card);text-align:left!important}
+.tbl-add{display:flex;gap:6px;margin-top:6px;align-items:center;flex-wrap:wrap}
+.card:not(.selected) .tbl-add{display:none}
+.tbl-add button{border:1px dashed var(--border);background:none;border-radius:6px;padding:3px 8px;font-size:12px;color:var(--muted);cursor:pointer}
+.tbl-add button:hover{color:var(--accent);border-color:var(--accent)}
+.tbl-tip{font-size:11px;color:var(--muted)}
+/* map, shortcut, media cards */
+.t-map{overflow:hidden}
+.map-art svg{display:block;width:100%;height:110px}
+.ma-bg{fill:color-mix(in srgb,var(--cc-green) 10%,var(--card))}
+.ma-park{fill:color-mix(in srgb,var(--cc-green) 28%,var(--card))}
+.ma-water{fill:color-mix(in srgb,var(--cc-blue) 30%,var(--card))}
+.ma-road path{stroke:var(--card);stroke-width:6;fill:none}
+.ma-road .ma-main{stroke:color-mix(in srgb,var(--cc-yellow) 55%,var(--card));stroke-width:8}
+.ma-pin{fill:var(--cc-red)}
+.map-body{padding:10px 12px}
+.map-place{font-weight:700}
+.map-addr{font-size:13px;color:var(--muted)}
+.map-links{display:flex;gap:12px;margin-top:6px;font-size:12px}
+.map-links a{color:var(--accent);text-decoration:none}
+.t-shortcut{padding:10px;text-align:center}
+.t-shortcut .board-icon,.t-board .board-icon{position:relative}
+.sc-badge{position:absolute;right:-6px;bottom:-6px;width:24px;height:24px;border-radius:50%;background:var(--panel);box-shadow:var(--shadow);display:grid;place-items:center;color:var(--accent)}
+.sc-badge .ic{width:14px;height:14px}
+.t-file.t-video,.t-file.t-audio{display:block;padding:0;overflow:hidden}
+.t-video video{display:block;width:100%;background:#000;border-radius:6px 6px 0 0}
+.audio-wrap{display:flex;align-items:center;gap:10px;padding:12px 12px 4px}
+.audio-wrap audio{flex:1;min-width:0;height:36px}
+.audio-ic{font-size:22px}
+.media-name{font-size:12px;color:var(--muted);padding:6px 12px 10px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.sketch-empty{aspect-ratio:3/2;display:grid;place-items:center}
+/* labels, reactions, badges */
+.card-labels,.card-reacts{display:flex;flex-wrap:wrap;gap:4px;padding:0 12px 10px}
+.t-todo>.card-labels,.t-comment>.card-labels,.t-doc>.card-labels,.t-record>.card-labels,.t-board>.card-labels,.t-shortcut>.card-labels,.t-table>.card-labels,.t-column>.card-labels,.t-file>.card-labels,
+.t-todo>.card-reacts,.t-comment>.card-reacts,.t-doc>.card-reacts,.t-record>.card-reacts,.t-board>.card-reacts,.t-shortcut>.card-reacts,.t-table>.card-reacts,.t-column>.card-reacts,.t-file>.card-reacts{padding:6px 0 0}
+.label-chip{display:inline-flex;align-items:center;padding:1px 8px;border-radius:999px;font-size:11px;font-weight:700;color:var(--lc);background:color-mix(in srgb,var(--lc) 16%,transparent)}
+.react{border:1px solid var(--border);background:var(--panel);border-radius:999px;padding:1px 7px;font-size:12px;cursor:pointer;line-height:1.5}
+.react.mine{border-color:var(--accent);background:var(--accent-weak)}
+.lock-badge,.sync-badge{position:absolute;top:-9px;width:20px;height:20px;border-radius:50%;background:var(--panel);box-shadow:var(--shadow);display:grid;place-items:center;z-index:3;pointer-events:none}
+.lock-badge{left:-9px;color:var(--muted)}
+.sync-badge{right:22px;color:var(--accent)}
+.lock-badge .ic,.sync-badge .ic{width:12px;height:12px}
+.card.dim{opacity:.22}
+.card.p-dim{opacity:.12;transition:opacity .3s}
+#world.animate{transition:transform .5s cubic-bezier(.2,.7,.2,1)}
+#filter-chip{position:absolute;left:84px;top:12px;z-index:6;color:var(--lc);background:var(--panel);box-shadow:var(--shadow);padding:5px 10px}
+#filter-chip .ic{width:14px;height:14px}
+/* unsorted panel */
+#unsorted{width:300px;flex:none;border-left:1px solid var(--border);background:var(--panel);display:flex;flex-direction:column;z-index:7;min-height:0}
+.us-head{display:flex;align-items:center;gap:8px;padding:12px 12px 8px}
+.us-head .icon-btn{margin-left:auto}
+.us-form{padding:0 12px}
+.us-form textarea{resize:none;min-height:0}
+.us-hint{font-size:12px;padding:6px 12px 8px;margin:0}
+.us-list{flex:1;overflow-y:auto;padding:0 12px 16px;display:flex;flex-direction:column;gap:8px}
+.us-item{border:1px solid var(--border);border-radius:8px;padding:8px 10px;background:var(--panel-2);cursor:grab}
+.us-meta{font-size:11px;color:var(--muted)}
+.us-text{font-size:13px;margin:4px 0 6px;white-space:pre-wrap;overflow-wrap:anywhere;max-height:84px;overflow:hidden}
+.us-text img{max-height:80px;border-radius:4px;display:block}
+.us-actions{display:flex;justify-content:space-between;align-items:center}
+/* presentation */
+.presenting .notes-top,.presenting .toolbar,.presenting .zoom-ctl,.presenting #unsorted,.presenting #filter-chip{display:none!important}
+.presenting .card>.connector,.presenting .card>.resize,.presenting .card>.card-more{display:none}
+.presenting #canvas{background-image:none}
+body.presenting-body #nav{display:none}
+#present-bar{position:fixed;left:50%;bottom:calc(20px + env(safe-area-inset-bottom,0px));transform:translateX(-50%);z-index:9600;display:flex;gap:4px;align-items:center;background:var(--panel);border:1px solid var(--border);border-radius:12px;padding:6px;box-shadow:var(--shadow-lg)}
+#present-bar button{border:0;background:none;min-width:42px;height:40px;border-radius:8px;cursor:pointer;font-size:20px;color:var(--text)}
+#present-bar button:hover:not(:disabled){background:var(--hover)}
+#present-bar button:disabled{opacity:.3}
+#present-bar .p-exit{font-size:14px;font-weight:600;padding:0 14px}
+#present-bar span{min-width:64px;text-align:center;font-variant-numeric:tabular-nums;font-size:13px;color:var(--muted)}
+/* sketch stage, labels & templates modals */
+.sketch-stage{position:relative;margin:0 auto;max-width:100%;background:#fff}
+.sketch-stage canvas{position:absolute;inset:0;width:100%;height:100%;display:block}
+.sketch-stage .sketch-canvas{max-height:none;aspect-ratio:auto;touch-action:none;cursor:crosshair;background:transparent}
+.sketch-stage.picking .sketch-canvas{cursor:copy}
+.size-btn .ic{width:15px;height:15px;vertical-align:middle}
+.pen-custom{position:relative;overflow:hidden;background:conic-gradient(#e5484d,#e2b203,#30a46c,#12a594,#3e63dd,#8e4ec6,#e5484d);display:inline-block}
+.pen-custom input{position:absolute;inset:-6px;opacity:0;cursor:pointer;width:40px;height:40px}
+.label-row{display:flex;align-items:center;justify-content:space-between;padding:6px 0;border-bottom:1px solid var(--border)}
+.label-row label{display:flex;gap:10px;align-items:center;cursor:pointer}
+.label-new{display:flex;gap:8px;margin-top:14px}
+.label-new .inp:first-child{flex:1}
+.label-new select{width:auto}
+.tpl-sec{font-size:12px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.05em;margin:14px 0 8px}
+.tpl-mine{position:relative}
+.tpl-del{position:absolute;top:6px;right:6px}
+@media (max-width:760px){
+  #unsorted{position:absolute;top:0;right:0;bottom:0;width:min(340px,100%);box-shadow:var(--shadow-lg)}
+  #filter-chip{left:12px}
+  #btn-present,#btn-redo{display:none}
+}
 /* responsive */
 .mobile-only{display:none}
 .kstage{display:none}
@@ -521,6 +635,8 @@ button,.card,.tool,.nav-item{-webkit-tap-highlight-color:transparent}
           <button class="icon-btn" data-act="undo" title="Undo (Ctrl+Z)" id="btn-undo"></button>
           <button class="icon-btn" data-act="redo" title="Redo (Ctrl+Shift+Z)" id="btn-redo"></button>
           <button class="btn" data-act="templates" id="btn-tpl"></button>
+          <button class="icon-btn" data-act="present" title="Present" id="btn-present"></button>
+          <button class="icon-btn us-btn" data-act="unsorted" title="Unsorted" id="btn-unsorted"></button>
           <button class="icon-btn" data-act="board-menu" title="Board options" id="btn-bmenu"></button>
         </div>
       </div>
@@ -540,6 +656,7 @@ button,.card,.tool,.nav-item{-webkit-tap-highlight-color:transparent}
           <button class="icon-btn" data-act="zoom-in" title="Zoom in" id="btn-zi"></button>
           <button class="icon-btn" data-act="zoom-fit" title="Fit to content" id="btn-zf"></button>
         </div>
+        <aside id="unsorted" hidden aria-label="Unsorted"></aside>
       </div>
     </section>
   </main>
@@ -549,6 +666,7 @@ button,.card,.tool,.nav-item{-webkit-tap-highlight-color:transparent}
 <div id="linebar" hidden></div>
 <div id="menu" hidden></div>
 <div id="tool-ghost" hidden></div>
+<div id="present-bar" hidden></div>
 <div id="toast" role="status"></div>
 <div id="modal-root"></div>
 <script>
@@ -842,10 +960,10 @@ const boardCards = bid => Object.values(db.cards).filter(c => c.boardId === bid)
 const topCards = bid => boardCards(bid).filter(c => !c.columnId);
 function nextZ() { return Math.max(0, ...topCards(N.boardId).map(c => c.z || 0)) + 1; }
 
-function snap() { return JSON.stringify({ boards: db.boards, cards: db.cards, lines: db.lines }); }
+function snap() { return JSON.stringify({ boards: db.boards, cards: db.cards, lines: db.lines, trash: db.trash }); }
 function checkpoint() { hist.undo.push(snap()); if (hist.undo.length > 80) hist.undo.shift(); hist.redo = []; updateUndoBtns(); }
 function restore(s) {
-  const o = JSON.parse(s); db.boards = o.boards; db.cards = o.cards; db.lines = o.lines;
+  const o = JSON.parse(s); db.boards = o.boards; db.cards = o.cards; db.lines = o.lines; if (o.trash) db.trash = o.trash;
   if (!db.boards[N.boardId]) N.boardId = db.rootBoardId;
   sel.clear(); selLine = null; save(); renderBoard(); updateUndoBtns();
 }
@@ -867,6 +985,9 @@ function defaultData(type) {
     case 'sketch': return { assetId: null };
     case 'doc': return { title: '', html: '' };
     case 'record': return { kind: 'contact', refId: null };
+    case 'table': return { title: '', header: true, rows: [['', '', ''], ['', '', ''], ['', '', '']] };
+    case 'map': return { place: '', address: '' };
+    case 'shortcut': return { boardId: null };
   }
   return {};
 }
@@ -889,13 +1010,14 @@ function intoColumn(c, colId, index) {
   col.data.items = items; c.columnId = colId; c.boardId = col.boardId;
 }
 function deleteBoardDeep(bid) {
-  for (const c of Object.values(db.cards)) if (c.boardId === bid) { if (c.type === 'board') deleteBoardDeep(c.data.boardId); delete db.cards[c.id]; }
+  for (const c of Object.values(db.cards)) if (c.boardId === bid) { if (c.type === 'board') deleteBoardDeep(c.data.boardId); if (c.type === 'note' && !c.data.syncOf) promoteSyncCopies(c); delete db.cards[c.id]; }
   for (const l of Object.values(db.lines)) if (l.boardId === bid) delete db.lines[l.id];
   if (db.crmBoardId === bid) db.crmBoardId = null;
   delete db.boards[bid];
 }
 function removeCard(id) {
   const c = db.cards[id]; if (!c) return;
+  if (c.type === 'note' && !c.data.syncOf) promoteSyncCopies(c);
   if (c.columnId) { const col = db.cards[c.columnId]; if (col) col.data.items = col.data.items.filter(x => x !== id); }
   if (c.type === 'column') [...c.data.items].forEach(removeCard);
   if (c.type === 'board' && c.data.boardId) deleteBoardDeep(c.data.boardId);
@@ -927,7 +1049,7 @@ function getRec(kind, id) { const K = KINDS[kind]; return K ? db[K.store].find(x
 function cardText(c) {
   const d = c.data;
   switch (c.type) {
-    case 'note': return htmlToText(d.html);
+    case 'note': return htmlToText(noteData(c).html);
     case 'todo': return [d.title, ...d.items.map(i => i.text)].join(' ');
     case 'link': return [d.title, d.desc, d.url].join(' ');
     case 'column': return d.title;
@@ -937,17 +1059,21 @@ function cardText(c) {
     case 'swatch': return d.name + ' ' + d.hex;
     case 'image': return d.caption;
     case 'file': return d.name;
+    case 'table': return [d.title, ...d.rows.flat()].join(' ');
+    case 'map': return (d.place || '') + ' ' + (d.address || '');
+    case 'shortcut': return db.boards[d.boardId]?.title || '';
     case 'record': { const r = getRec(d.kind, d.refId); return r ? KINDS[d.kind].title(r) : ''; }
   }
   return '';
 }
-const cardLabel = c => ({ note: 'Note', todo: 'To-do', link: 'Link', image: 'Image', file: 'File', column: 'Column', board: 'Board', comment: 'Comment', swatch: 'Color', sketch: 'Drawing', doc: 'Document', record: 'CRM record' }[c.type] || 'Card');
+const cardLabel = c => ({ note: 'Note', todo: 'To-do', link: 'Link', image: 'Image', file: 'File', column: 'Column', board: 'Board', comment: 'Comment', swatch: 'Color', sketch: 'Drawing', doc: 'Document', record: 'CRM record', table: 'Table', map: 'Place', shortcut: 'Board shortcut' }[c.type] || 'Card');
 
 /* ================= Inline editing ================= */
 function ed(cfg) {
   const el = h('div', { class: 'ed ' + (cfg.cls || '') + (cfg.rich ? ' rt' : '') + (cfg.optional ? ' optional' : ''), 'data-ph': cfg.ph || '', contenteditable: 'false', spellcheck: 'true' });
   if (cfg.rich) el.innerHTML = sanitize(cfg.value || ''); else el.textContent = cfg.value || '';
   edCfg.set(el, cfg);
+  if (cfg.key) el.dataset.k = cfg.key;
   el.addEventListener('input', () => {
     cfg.onInput(cfg.rich ? el.innerHTML : el.innerText.replace(/\n+$/, ''));
     markEmpty(el); save(); scheduleLines(); if (cfg.rich) positionFmt();
@@ -962,9 +1088,13 @@ function markEmpty(el) { el.classList.toggle('is-empty', !el.textContent.trim() 
 function activateEditable(el, cx, cy) {
   if (!el || !el.isConnected) return;
   if (N.editing === el) return;
+  const cardId = el.closest('.card')?.dataset.id, key = el.dataset.k;
   stopEditing();
-  const cfg = edCfg.get(el); if (!cfg) return;
+  if (!el.isConnected && key && cardId) el = els.get(cardId)?.querySelector(`[data-k="${key}"]`);
+  const cfg = el && edCfg.get(el); if (!cfg) return;
   checkpoint();
+  if (cfg.raw) { el.textContent = cfg.raw(); markEmpty(el); }
+  cfg.onActivate?.();
   el.contentEditable = 'true'; el.classList.add('editing'); N.editing = el;
   el.closest('.card')?.classList.add('is-editing');
   el.focus({ preventScroll: true });
@@ -995,6 +1125,7 @@ function edKey(e, el, cfg) {
   if (e.key === 'Enter' && e.shiftKey && !cfg.rich && !cfg.multiline) { e.preventDefault(); return; }
   if (e.key === 'Backspace' && cfg.onBackspaceEmpty && !el.textContent) { e.preventDefault(); cfg.onBackspaceEmpty(); return; }
   if (cfg.rich && (e.metaKey || e.ctrlKey) && !e.shiftKey && e.key.toLowerCase() === 'k') { e.preventDefault(); execFmt('link'); return; }
+  if (e.key === 'Tab' && cfg.onTab) { e.preventDefault(); cfg.onTab(e.shiftKey); return; }
   if (cfg.rich && e.key === 'Tab') { e.preventDefault(); document.execCommand(e.shiftKey ? 'outdent' : 'indent'); return; }
   if (cfg.rich && e.key === ' ') mdShortcut(e, el);
   if (cfg.rich && e.key === 'Enter') richEnter(e, el);
@@ -1020,6 +1151,7 @@ function edPaste(e, el, cfg) {
   const cd = e.clipboardData; if (!cd) return;
   e.preventDefault(); e.stopPropagation();
   const html = cd.getData('text/html'), text = cd.getData('text/plain');
+  if (cfg.onPaste && cfg.onPaste(text)) return;
   if (cfg.rich && html) document.execCommand('insertHTML', false, sanitize(html));
   else if (cfg.rich && text) document.execCommand('insertHTML', false, textToHtml(text));
   else document.execCommand('insertText', false, cfg.multiline ? text : text.replace(/\s*\n\s*/g, ' '));
@@ -1069,8 +1201,9 @@ function positionFmt() {
 /* ================= Card renderers ================= */
 const R = {};
 R.note = (c, el) => {
-  el.append(ed({ rich: true, immediate: true, cls: 'note-body', value: c.data.html, ph: 'Type something…', onInput: v => c.data.html = v,
-    onBlur: () => { if (isBlankHtml(c.data.html) && db.cards[c.id]) { removeCard(c.id); save(); renderBoard(); } } }));
+  const d = noteData(c);
+  el.append(ed({ rich: true, immediate: true, cls: 'note-body', value: d.html, ph: 'Type something…', onInput: v => { d.html = v; refreshSynced(c); },
+    onBlur: () => { if (isBlankHtml(d.html) && db.cards[c.id] && !isSynced(c)) { removeCard(c.id); save(); renderBoard(); } } }));
 };
 R.todo = (c, el) => {
   const d = c.data, done = d.items.filter(i => i.done).length;
@@ -1104,6 +1237,7 @@ R.image = (c, el) => {
   el.append(ed({ cls: 'caption', optional: true, value: c.data.caption, ph: 'Add a caption', onInput: v => c.data.caption = v }));
 };
 R.file = (c, el) => {
+  if (/^(video|audio)\//.test(c.data.mime || '') && assets[c.data.assetId]) return R.media(c, el);
   const d = c.data, ext = (d.name.split('.').pop() || 'file').slice(0, 4);
   el.append(h('div', { class: 'file-ext' }, ext), h('div', { class: 'file-meta' }, h('div', { class: 'file-name', title: d.name }, d.name), h('div', { class: 'file-size' }, fmtSize(d.size || 0))),
     h('button', { class: 'icon-btn', title: 'Download', html: icon('download'), onclick: () => assets[d.assetId] && download(d.name, assets[d.assetId]) }));
@@ -1181,6 +1315,7 @@ function buildCard(c) {
   el.append(h('button', { class: 'card-more', title: 'More options', html: icon('more'), onclick: e => { e.stopPropagation(); if (!sel.has(c.id)) selectOnly(c.id); const r = e.currentTarget.getBoundingClientRect(); showCardMenu(r.left, r.bottom + 4); } }));
   el.append(h('div', { class: 'connector', title: 'Drag to connect' }));
   if (!c.columnId) el.append(h('div', { class: 'resize', title: 'Resize' }));
+  decorateCard(c, el);
   els.set(c.id, el);
   return el;
 }
@@ -1224,7 +1359,7 @@ function renderBoard() {
   for (const id of [...sel]) if (!db.cards[id] || db.cards[id].boardId !== N.boardId) sel.delete(id);
   if (selLine && !db.lines[selLine]) selLine = null;
   $('#empty-hint').hidden = cards.length > 0;
-  renderCrumbs(); applyView(); scheduleLines(); renderNavBoards(); updateUndoBtns();
+  renderCrumbs(); applyView(); scheduleLines(); renderNavBoards(); updateUndoBtns(); renderNotesExtras();
 }
 function renderCrumbs() {
   const path = []; let b = curBoard(), guard = 0;
@@ -1377,7 +1512,7 @@ function findDropTarget(cx, cy, exclude = [], opts = {}) {
     if (el === canvas) break;
     const cardEl = el.closest?.('.card'); if (!cardEl) continue;
     const c = db.cards[cardEl.dataset.id]; if (!c) continue;
-    if (c.type === 'board' && opts.board !== false) return { type: 'board', id: c.id };
+    if ((c.type === 'board' || (c.type === 'shortcut' && db.boards[c.data.boardId])) && opts.board !== false) return { type: 'board', id: c.id };
     const col = c.type === 'column' ? c : (c.columnId ? db.cards[c.columnId] : null);
     if (col && opts.column !== false) {
       if (col.data.collapsed) return { type: 'column', id: col.id, index: col.data.items.length };
@@ -1423,6 +1558,7 @@ window.addEventListener('pointercancel', e => { pointers.delete(e.pointerId); if
 function onDown(e) {
   pointers.set(e.pointerId, { x: e.clientX, y: e.clientY });
   if (pointers.size === 2 && (!ptr || ptr.mode !== 'drag')) { startPinch(); return; }
+  if (N.present) { e.preventDefault(); return; }
   if (e.button === 2) return;
   hideMenu(); clearTimeout(pendingEdit);
   const t = e.target, v = view();
@@ -1527,7 +1663,7 @@ function beginDrag() {
   checkpoint();
   const items = [];
   for (const id of topSel()) {
-    const c = db.cards[id], el = els.get(id); if (!el) continue;
+    const c = db.cards[id], el = els.get(id); if (!el || c.locked) continue;
     if (c.columnId) {
       const r = rectOf(id), col = db.cards[c.columnId];
       if (col) col.data.items = col.data.items.filter(x => x !== id);
@@ -1537,6 +1673,7 @@ function beginDrag() {
     c.z = nextZ(); el.style.zIndex = c.z; el.classList.add('dragging');
     items.push({ id, ox: c.x, oy: c.y });
   }
+  if (!items.length) { hist.undo.pop(); updateUndoBtns(); ptr.mode = 'none'; toast('Locked cards can’t be moved. Unlock them from the card menu.'); return; }
   ptr.mode = 'drag'; ptr.items = items; document.body.classList.add('is-dragging');
 }
 function onUp(e) {
@@ -1560,6 +1697,7 @@ function onUp(e) {
       clearDropUI();
       const ids = p.items.map(i => i.id);
       if (p.drop && p.drop.type === 'column') { let idx = p.drop.index; ids.forEach(id => { if (db.cards[id].type !== 'column') intoColumn(db.cards[id], p.drop.id, idx++); }); }
+      else if (p.drop && p.drop.type === 'board' && (db.cards[p.drop.id].data.boardId === N.boardId || ids.some(id => db.cards[id].type === 'board' && isInside(db.cards[p.drop.id].data.boardId, db.cards[id].data.boardId)))) { toast(db.cards[p.drop.id].data.boardId === N.boardId ? 'Those cards are already on this board' : 'A board can’t go inside itself'); }
       else if (p.drop && p.drop.type === 'board') { const bid = db.cards[p.drop.id].data.boardId; moveCardsToBoard(ids, bid); sel.clear(); toast(`Moved ${ids.length} card${ids.length > 1 ? 's' : ''} to “${db.boards[bid].title || 'Untitled board'}”`, { label: 'Open', run: () => openBoard(bid) }); }
       else ids.forEach(id => { const c = db.cards[id]; c.x = Math.round(c.x); c.y = Math.round(c.y); });
       save(); renderBoard(); break;
@@ -1606,6 +1744,7 @@ canvas.addEventListener('wheel', e => {
 }, { passive: false });
 canvas.addEventListener('dblclick', e => {
   clearTimeout(pendingEdit);
+  if (N.present) return;
   if (e.target.closest('[contenteditable="true"],input,textarea,button,.nodrag')) return;
   const hit = e.target.closest('.line-hit');
   if (hit) { selLine = hit.dataset.id; $('#linebar [data-la="label"]')?.click(); return; }
@@ -1631,6 +1770,7 @@ function showCanvasMenu(x, y) {
     '-',
     { label: 'Select all', kbd: 'Ctrl+A', run: selectAll },
     { label: 'Fit to content', icon: 'fit', run: fitView },
+    { label: 'Add board shortcut…', icon: 'shortcut', run: () => addShortcutViaPicker({ x: w.x - 65, y: w.y - 40 }) },
     { label: 'Templates…', icon: 'template', run: openTemplates },
   ]);
 }
@@ -1654,7 +1794,7 @@ async function filesToCards(files, pos, target) {
   for (const f of files) {
     let c;
     if (f.type.startsWith('image/')) c = createCard('image', pos.x + off, pos.y + off, { assetId: addAsset(await compressImage(f)) });
-    else { if (f.size > 15 * 1048576) { toast(`${f.name} is over 15 MB and was skipped`); continue; } c = createCard('file', pos.x + off, pos.y + off, { assetId: addAsset(await readFile(f)), name: f.name, size: f.size, mime: f.type }); }
+    else { const media = /^(video|audio)\//.test(f.type), max = media ? 50 : 15; if (f.size > max * 1048576) { toast(`${f.name} is over ${max} MB and was skipped`); continue; } c = createCard('file', pos.x + off, pos.y + off, { assetId: addAsset(await readFile(f)), name: f.name, size: f.size, mime: f.type }, media && f.type.startsWith('video/') ? { w: 340 } : {}); }
     if (target && target.type === 'column') intoColumn(c, target.id, target.index + made.length);
     made.push(c.id); off += 24;
   }
@@ -1665,6 +1805,7 @@ canvas.addEventListener('dragleave', e => { if (!canvas.contains(e.relatedTarget
 canvas.addEventListener('drop', async e => {
   e.preventDefault(); canvas.classList.remove('drop-hover');
   const p = screenToWorld(e.clientX, e.clientY), target = findDropTarget(e.clientX, e.clientY, [], { board: false });
+  const us = e.dataTransfer.getData('text/x-unsorted'); if (us) return placeUnsorted(us, { x: p.x - 120, y: p.y - 20 }, target);
   const files = [...e.dataTransfer.files];
   if (files.length) return filesToCards(files, { x: p.x - 140, y: p.y - 40 }, target);
   const txt = (e.dataTransfer.getData('text/uri-list') || e.dataTransfer.getData('text/plain') || '').split('\n').find(l => l && !l.startsWith('#'));
@@ -1708,7 +1849,8 @@ document.addEventListener('paste', e => {
   const files = [...cd.files]; if (files.length) return filesToCards(files, cascadePos('image'));
   const t = (text || '').trim(); if (!t && !cd.getData('text/html')) return;
   checkpoint(); const p = cascadePos('note'); let c;
-  if (isUrl(t)) c = createCard('link', p.x, p.y, linkData(t));
+  if (isTsv(t)) { c = createCard('table', p.x, p.y, { rows: tsvRows(t), header: true }); fitTableWidth(c); }
+  else if (isUrl(t)) c = createCard('link', p.x, p.y, linkData(t));
   else if (/^#[0-9a-f]{6}$/i.test(t)) c = createCard('swatch', p.x, p.y, { hex: t.toLowerCase() });
   else c = createCard('note', p.x, p.y, { html: cd.getData('text/html') ? sanitize(cd.getData('text/html')) : textToHtml(t) });
   save(); renderBoard(); selectOnly(c.id);
@@ -1719,9 +1861,9 @@ document.addEventListener('paste', e => {
 const TOOLS = [
   { type: 'note', label: 'Note', icon: 'sticky' }, { type: 'link', label: 'Link', icon: 'link' }, { type: 'todo', label: 'To-do', icon: 'todo' },
   { type: 'line', label: 'Line', icon: 'line' }, { type: 'board', label: 'Board', icon: 'board' }, { type: 'column', label: 'Column', icon: 'columns' },
-  { type: 'comment', label: 'Comment', icon: 'comment' }, { sep: true },
+  { type: 'comment', label: 'Comment', icon: 'comment' }, { type: 'table', label: 'Table', icon: 'table' }, { sep: true },
   { type: 'image', label: 'Image', icon: 'image' }, { type: 'file', label: 'Upload', icon: 'upload' }, { type: 'sketch', label: 'Draw', icon: 'pen' },
-  { type: 'swatch', label: 'Color', icon: 'droplet' }, { type: 'doc', label: 'Doc', icon: 'doc' }, { type: 'record', label: 'Record', icon: 'idcard' },
+  { type: 'swatch', label: 'Color', icon: 'droplet' }, { type: 'doc', label: 'Doc', icon: 'doc' }, { type: 'map', label: 'Map', icon: 'pin' }, { type: 'record', label: 'Record', icon: 'idcard' },
 ];
 function buildToolbar() {
   const tb = $('#toolbar');
@@ -1766,6 +1908,10 @@ async function createFromTool(type, pos, target) {
     const ref = await pickRecord(); if (!ref) return;
     checkpoint(); const c = createCard('record', at.x, at.y, ref); place(c); save(); renderBoard(); selectOnly(c.id); return;
   }
+  if (type === 'map') {
+    const q = await promptModal({ title: 'Add a place', placeholder: 'e.g. Ferry Building, San Francisco', okLabel: 'Add place' }); if (!q) return;
+    checkpoint(); const c = createCard('map', at.x, at.y, { place: q.split(',')[0].trim(), address: q.includes(',') ? q : '' }); place(c); save(); renderBoard(); selectOnly(c.id); return;
+  }
   checkpoint();
   const c = createCard(type, at.x, at.y);
   place(c); save(); renderBoard(); selectOnly(c.id);
@@ -1778,6 +1924,7 @@ async function createFromTool(type, pos, target) {
   else if (type === 'sketch') openSketch(c);
   else if (type === 'doc') openDoc(c);
   else if (type === 'swatch') openSwatchPicker(c);
+  else if (type === 'table') activateEditable(el.querySelector('.tbl-cell'));
 }
 function openSwatchPicker(c) { const inp = els.get(c.id)?.querySelector('.sw-input'); if (!inp) return; checkpoint(); try { inp.showPicker(); } catch { inp.click(); } }
 function openCard(c) {
@@ -1791,16 +1938,18 @@ function openCard(c) {
     case 'doc': openDoc(c); break;
     case 'record': openRecord(c.data.kind, c.data.refId); break;
     case 'swatch': openSwatchPicker(c); break;
+    case 'map': openUrl(mapsUrl(c)); break;
+    case 'shortcut': if (db.boards[c.data.boardId]) openBoard(c.data.boardId); break;
   }
 }
 
 /* ================= Card actions & menus ================= */
 function deleteSel() {
-  const ids = topSel();
   if (selLine && db.lines[selLine]) { checkpoint(); delete db.lines[selLine]; selLine = null; save(); scheduleLines(); return; }
-  if (!ids.length) return;
-  checkpoint(); ids.forEach(removeCard); sel.clear(); save(); renderBoard();
-  toast(`Deleted ${ids.length} card${ids.length > 1 ? 's' : ''}`, { label: 'Undo', run: undo });
+  const all = topSel(), ids = all.filter(id => !db.cards[id].locked);
+  if (!ids.length) { if (all.length) toast('Unlock cards before deleting them'); return; }
+  checkpoint(); trashCards(ids); sel.clear(); save(); renderBoard();
+  toast(`Moved ${ids.length} card${ids.length > 1 ? 's' : ''} to Trash`, { label: 'Undo', run: undo });
 }
 function duplicateSel() {
   const ids = topSel(); if (!ids.length) return;
@@ -1829,6 +1978,7 @@ function showMenu(x, y, items) {
       COLORS.forEach(c => row.append(h('button', { class: 'color-dot', title: c, style: `background:var(--cc-${c})`, onclick: () => { hideMenu(); it.run(c); } })));
       m.append(row); continue;
     }
+    if (it.emojis) { const row = h('div', { class: 'color-row emoji-row' }); REACTIONS.forEach(em => row.append(h('button', { class: 'emoji-btn', title: 'React ' + em, onclick: () => { hideMenu(); it.run(em); } }, em))); m.append(row); continue; }
     m.append(h('button', { class: 'menu-item' + (it.danger ? ' danger' : ''), disabled: it.disabled, onclick: () => { hideMenu(); it.run(); } }, h('span', { html: it.icon ? icon(it.icon) : '<span style="width:16px;display:inline-block"></span>' }), it.label, it.kbd ? h('kbd', {}, it.kbd) : null));
   }
   m.hidden = false;
@@ -1841,6 +1991,7 @@ function showCardMenu(x, y) {
   const ids = topSel(); if (!ids.length) return;
   const one = ids.length === 1 ? db.cards[ids[0]] : null;
   const items = [{ colors: true, run: col => { checkpoint(); ids.forEach(id => db.cards[id].color = col); save(); renderBoard(); ids.forEach(i => sel.add(i)); applySel(); } }];
+  items.push({ emojis: true, run: em => toggleReaction(ids, em) });
   if (one) {
     const t = one.type;
     if (t === 'board') items.push({ label: 'Open board', icon: 'open', run: () => openCard(one) }, { label: 'Change icon…', icon: 'smile', run: () => pickIcon(one.data.boardId) });
@@ -1853,8 +2004,10 @@ function showCardMenu(x, y) {
     if (t === 'swatch') items.push({ label: 'Change color', icon: 'droplet', run: () => openSwatchPicker(one) });
     if (t === 'column') items.push({ label: one.data.collapsed ? 'Expand column' : 'Collapse column', run: () => { checkpoint(); one.data.collapsed = !one.data.collapsed; save(); rerenderCard(one.id); } });
     if (t === 'todo') items.push({ label: 'Clear completed', icon: 'check', run: () => { checkpoint(); one.data.items = one.data.items.filter(i => !i.done); save(); rerenderCard(one.id); } });
+    extraTypeMenu(one, items);
     if (one.columnId) items.push({ label: 'Move out of column', run: () => { checkpoint(); const col = db.cards[one.columnId]; col.data.items = col.data.items.filter(x => x !== one.id); one.columnId = null; one.x = col.x + col.w + 30; one.y = col.y; one.w = DEFAULT_W[one.type]; one.z = nextZ(); save(); renderBoard(); } });
   }
+  extraGeneralMenu(ids, items);
   items.push('-', { label: 'Duplicate', icon: 'copy', kbd: 'Ctrl+D', run: duplicateSel }, { label: 'Bring to front', icon: 'front', run: () => reorder(1) }, { label: 'Send to back', icon: 'back', run: () => reorder(-1) }, '-', { label: ids.length > 1 ? `Delete ${ids.length} cards` : 'Delete', icon: 'trash', kbd: 'Del', danger: true, run: deleteSel });
   showMenu(x, y, items);
 }
@@ -1865,8 +2018,13 @@ function pickIcon(bid) {
 function showBoardMenu(x, y) {
   const b = curBoard(), isRoot = b.id === db.rootBoardId;
   showMenu(x, y, [
+    { label: 'Present', icon: 'play', run: startPresent },
     { label: 'Fit to content', icon: 'fit', run: fitView },
     { label: 'Select all', kbd: 'Ctrl+A', run: selectAll },
+    { label: 'Filter by label…', icon: 'tag', run: openLabelFilter },
+    { label: 'Unsorted', icon: 'inbox', run: () => toggleUnsorted(true) },
+    { label: 'Trash', icon: 'trash', run: openTrash },
+    { label: 'Save board as template…', icon: 'template', run: () => saveTemplate(false) },
     !isRoot && { label: 'Change icon…', icon: 'smile', run: () => pickIcon(b.id) },
     '-',
     { label: 'Export as Markdown', icon: 'download', run: exportMarkdown },
@@ -1878,8 +2036,8 @@ function showBoardMenu(x, y) {
     !isRoot && { label: 'Delete this board', icon: 'trash', danger: true, run: async () => {
       if (!await confirmModal(`Delete “${b.title || 'Untitled board'}” and everything inside it?`, 'Delete board')) return;
       checkpoint(); const parent = b.parentId; const cardRef = Object.values(db.cards).find(c => c.type === 'board' && c.data.boardId === b.id);
-      if (cardRef) removeCard(cardRef.id); else deleteBoardDeep(b.id);
-      save(); openBoard(parent || db.rootBoardId); toast('Board deleted', { label: 'Undo', run: undo });
+      if (cardRef) trashCards([cardRef.id]); else deleteBoardDeep(b.id);
+      save(); openBoard(parent || db.rootBoardId); toast('Board moved to Trash', { label: 'Undo', run: undo });
     } },
   ].filter(Boolean));
 }
@@ -1916,6 +2074,7 @@ function applyTemplate(id) {
     case 'brain': { const c = add('note', 300, 160, { html: '<h2>Central idea</h2>' }, { color: 'yellow' }); [[0, 0], [620, 0], [0, 330], [620, 330], [310, 400]].forEach(([x, y], i) => { const n = add('note', x, y, { html: `<div>Idea ${i + 1}</div>` }); line(c, n); }); break; }
     case 'account': { const g = add('note', 0, 0, { html: '<h1>Account plan</h1><h3>Goals</h3><ul><li>Expand to new teams</li><li>Multi-year renewal</li></ul>' }, { w: 300 }); const s = col(340, 0, 'Stakeholders', [note('<div><b>Champion</b></div>'), note('<div><b>Economic buyer</b></div>'), note('<div><b>Blocker?</b></div>')]); const r = add('note', 0, 260, { html: '<h3>Risks</h3><ul><li>Budget timing</li></ul>' }, { color: 'red' }); const t = add('todo', 680, 0, todo('Next steps', ['Book exec sponsor meeting', 'Send ROI summary'])); line(g, s); line(s, t, 'owners'); line(g, r, '', { dashed: true }); break; }
     case 'week': ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday'].forEach((d, i) => col(i * 310, 0, d, [])); break;
+    default: if (TPL_EXTRA[id]) TPL_EXTRA[id]({ add, col, note, line, todo });
   }
   save(); renderBoard(); sel.clear(); ids.forEach(i => sel.add(i)); applySel();
   const v = view(); v.x = 120 - base.x * v.z; v.y = 100 - base.y * v.z; applyView(); scheduleLines(); save();
@@ -1986,7 +2145,7 @@ function boardToMd(bid, depth = 1) {
   const one = (c, ind = '') => {
     const d = c.data;
     switch (c.type) {
-      case 'note': return htmlToMd(d.html).split('\n').map(l => ind + l).join('\n') + '\n\n';
+      case 'note': return htmlToMd(noteData(c).html).split('\n').map(l => ind + l).join('\n') + '\n\n';
       case 'todo': return (d.title ? `${ind}**${d.title}**\n` : '') + d.items.map(i => `${ind}- [${i.done ? 'x' : ' '}] ${i.text}`).join('\n') + '\n\n';
       case 'link': return `${ind}[${d.title || d.url}](${d.url})${d.desc ? ' — ' + d.desc : ''}\n\n`;
       case 'column': return `${ind}**${d.title || 'Column'}**\n\n` + d.items.map(i => db.cards[i] ? one(db.cards[i], ind + '  ') : '').join('');
@@ -1996,6 +2155,9 @@ function boardToMd(bid, depth = 1) {
       case 'doc': return `${ind}**${d.title || 'Document'}**\n\n${htmlToMd(d.html)}\n\n`;
       case 'image': return `${ind}[Image${d.caption ? ': ' + d.caption : ''}]\n\n`;
       case 'file': return `${ind}[File: ${d.name}]\n\n`;
+      case 'table': { const rows = d.rows.map((r, ri) => r.map((_, ci) => displayCell(d.rows, ri, ci).replace(/\|/g, '\\|'))); return (d.title ? `${ind}**${d.title}**\n\n` : '') + rows.map((r, i) => `${ind}| ${r.join(' | ')} |` + (i === 0 ? `\n${ind}|${r.map(() => ' --- ').join('|')}|` : '')).join('\n') + '\n\n'; }
+      case 'map': return `${ind}📍 [${d.place || d.address}](${mapsUrl(c)})${d.address && d.place ? ' — ' + d.address : ''}\n\n`;
+      case 'shortcut': return db.boards[d.boardId] ? `${ind}→ Shortcut to ${db.boards[d.boardId].title || 'Untitled board'}\n\n` : '';
       case 'record': { const r = getRec(d.kind, d.refId); return r ? `${ind}${KINDS[d.kind].label}: ${KINDS[d.kind].title(r)}\n\n` : ''; }
     }
     return '';
@@ -2022,8 +2184,10 @@ async function importBoard() {
 /* ================= Keyboard ================= */
 document.addEventListener('keydown', e => {
   const mod = e.metaKey || e.ctrlKey, k = e.key.toLowerCase();
+  if (N.present && e.key !== 'Escape' && presentKey(e)) return;
   if (mod && k === 'k' && !N.editing) { e.preventDefault(); openSearch(); return; }
   if (e.key === 'Escape') {
+    if (N.present) { stopPresent(); return; }
     if (!$('#menu').hidden) { hideMenu(); return; }
     if (closeTopModal()) return;
     if (UI.drawer) { closeDrawer(); return; }
@@ -2036,6 +2200,8 @@ document.addEventListener('keydown', e => {
   if (mod && k === 'z') { e.preventDefault(); e.shiftKey ? redo() : undo(); return; }
   if (mod && k === 'y') { e.preventDefault(); redo(); return; }
   if (mod && k === 'd') { e.preventDefault(); duplicateSel(); return; }
+  if (mod && e.altKey && e.code === 'KeyC') { e.preventDefault(); copyStyle(); return; }
+  if (mod && e.shiftKey && k === 'v') { e.preventDefault(); pasteStyle(); return; }
   if (mod && k === 'a') { e.preventDefault(); selectAll(); return; }
   if (mod && (k === '=' || k === '+')) { e.preventDefault(); zoomAt(view().z * 1.2); return; }
   if (mod && k === '-') { e.preventDefault(); zoomAt(view().z / 1.2); return; }
@@ -2044,7 +2210,7 @@ document.addEventListener('keydown', e => {
   if (e.key.startsWith('Arrow') && sel.size) {
     e.preventDefault(); const s = e.shiftKey ? 20 : 4; const dx = e.key === 'ArrowLeft' ? -s : e.key === 'ArrowRight' ? s : 0, dy = e.key === 'ArrowUp' ? -s : e.key === 'ArrowDown' ? s : 0;
     if (!e.repeat) checkpoint();
-    topSel().forEach(id => { const c = db.cards[id]; if (c.columnId) return; c.x += dx; c.y += dy; const el = els.get(id); el.style.left = c.x + 'px'; el.style.top = c.y + 'px'; });
+    topSel().forEach(id => { const c = db.cards[id]; if (c.columnId || c.locked) return; c.x += dx; c.y += dy; const el = els.get(id); el.style.left = c.x + 'px'; el.style.top = c.y + 'px'; });
     save(); scheduleLines(); return;
   }
   if (e.key === 'Enter' && sel.size === 1) { const el = els.get([...sel][0]); const t = el?.querySelector('.ed'); if (t) { e.preventDefault(); activateEditable(t); } return; }
@@ -2056,8 +2222,666 @@ document.addEventListener('keydown', e => {
 document.addEventListener('keyup', e => { if (e.code === 'Space') { spaceDown = false; if (!ptr || ptr.mode !== 'pan') canvas.classList.remove('panning'); } });
 window.addEventListener('blur', () => { spaceDown = false; canvas.classList.remove('panning'); });
 function showShortcuts() {
-  const rows = [['Add note / to-do / column / board', 'N · T · C · B'], ['Line mode', 'L'], ['Quick note', 'Double-click canvas'], ['Edit selected card', 'Enter'], ['Pan', 'Scroll · Space+drag · middle-drag'], ['Zoom', 'Ctrl+scroll · Ctrl + / −'], ['Reset zoom', 'Ctrl+0'], ['Undo / redo', 'Ctrl+Z · Ctrl+Shift+Z'], ['Duplicate', 'Ctrl+D'], ['Copy / cut / paste', 'Ctrl+C · X · V'], ['Select all', 'Ctrl+A'], ['Multi-select', 'Shift+click · drag on canvas'], ['Nudge', 'Arrow keys (Shift = 20px)'], ['Delete', 'Delete / Backspace'], ['Markdown in notes', '# ## - 1. > + space'], ['Search everything', 'Ctrl+K']];
+  const rows = [['Add note / to-do / column / board', 'N · T · C · B'], ['Line mode', 'L'], ['Quick note', 'Double-click canvas'], ['Edit selected card', 'Enter'], ['Pan', 'Scroll · Space+drag · middle-drag'], ['Zoom', 'Ctrl+scroll · Ctrl + / −'], ['Reset zoom', 'Ctrl+0'], ['Undo / redo', 'Ctrl+Z · Ctrl+Shift+Z'], ['Duplicate', 'Ctrl+D'], ['Copy / cut / paste', 'Ctrl+C · X · V'], ['Select all', 'Ctrl+A'], ['Multi-select', 'Shift+click · drag on canvas'], ['Nudge', 'Arrow keys (Shift = 20px)'], ['Delete', 'Delete / Backspace'], ['Markdown in notes', '# ## - 1. > + space'], ['Search everything', 'Ctrl+K'], ['Copy / paste style', 'Ctrl+Alt+C · Ctrl+Shift+V'], ['Table: next cell / cell below', 'Tab · Enter'], ['Presentation', 'Board menu → Present · ← → · Esc']];
   modal(`<h2>Keyboard shortcuts</h2><div class="shortcuts">${rows.map(([a, b]) => `<span>${a}</span><kbd>${b}</kbd>`).join('')}</div>`).style.width = 'min(560px,100%)';
+}
+</script>
+<script>
+/* ================= Notes extras: tables, maps, media, shortcuts, labels, reactions, lock,
+   synced notes, unsorted, trash, custom templates, presentation, styles, drawing on images ================= */
+const UNSORTED = '__unsorted__';
+const REACTIONS = ['👍', '❤️', '😂', '🎉', '🔥', '👀', '✅', '❓'];
+Object.assign(DEFAULT_W, { table: 380, map: 260, shortcut: 130 });
+Object.assign(ICONS, {
+  table: '<rect x="3" y="3" width="18" height="18" rx="2"/><line x1="3" y1="9" x2="21" y2="9"/><line x1="3" y1="15" x2="21" y2="15"/><line x1="9" y1="3" x2="9" y2="21"/><line x1="15" y1="3" x2="15" y2="21"/>',
+  pin: '<path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/>',
+  inbox: '<polyline points="22 12 16 12 14 15 10 15 8 12 2 12"/><path d="M5.45 5.11L2 12v6a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2v-6l-3.45-6.89A2 2 0 0 0 16.76 4H7.24a2 2 0 0 0-1.79 1.11z"/>',
+  tag: '<path d="M20.59 13.41l-7.17 7.17a2 2 0 0 1-2.83 0L2 12V2h10l8.59 8.59a2 2 0 0 1 0 2.82z"/><line x1="7" y1="7" x2="7.01" y2="7"/>',
+  play: '<polygon points="6 4 20 12 6 20 6 4"/>',
+  lock: '<rect x="4" y="11" width="16" height="10" rx="2"/><path d="M8 11V7a4 4 0 0 1 8 0v4"/>',
+  unlock: '<rect x="4" y="11" width="16" height="10" rx="2"/><path d="M8 11V7a4 4 0 0 1 7.9-1"/>',
+  shortcut: '<polyline points="15 10 20 15 15 20"/><path d="M4 4v7a4 4 0 0 0 4 4h12"/>',
+  sync: '<polyline points="23 4 23 10 17 10"/><polyline points="1 20 1 14 7 14"/><path d="M3.51 9a9 9 0 0 1 14.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0 0 20.49 15"/>',
+  restore: '<polyline points="1 4 1 10 7 10"/><path d="M3.51 15a9 9 0 1 0 2.13-9.36L1 10"/>',
+  brush: '<path d="M9.06 11.9l8.07-8.06a2.85 2.85 0 1 1 4.03 4.03l-8.06 8.08"/><path d="M7.07 14.94c-1.66 0-3 1.35-3 3.02 0 1.33-2.5 1.52-2 2.02 1.08 1.1 2.49 2.02 4 2.02 2.2 0 4-1.8 4-4.04a3.01 3.01 0 0 0-3-3.02z"/>',
+});
+const me = () => db.settings.user || 'You';
+
+function ensureExtras() {
+  db.labels = db.labels || [{ id: 'lb_urgent', name: 'Urgent', color: 'red' }, { id: 'lb_idea', name: 'Idea', color: 'yellow' }, { id: 'lb_client', name: 'Client', color: 'blue' }, { id: 'lb_done', name: 'Done', color: 'green' }];
+  db.trash = (db.trash || []).filter(t => t.at > Date.now() - 30 * 864e5);
+  db.templates = db.templates || [];
+}
+function usedAssetIds() {
+  const used = new Set(), scan = c => { if (c && c.data) ['assetId', 'origAssetId'].forEach(k => c.data[k] && used.add(c.data[k])); };
+  Object.values(db.cards).forEach(scan);
+  db.trash.forEach(t => Object.values(t.cards).forEach(scan));
+  db.templates.forEach(t => Object.values(t.cards).forEach(scan));
+  return used;
+}
+
+/* ----- card decoration: lock, sync badge, labels, reactions, label filter ----- */
+function decorateCard(c, el) {
+  if (c.locked) { el.classList.add('locked'); el.querySelector(':scope > .resize')?.remove(); el.append(h('span', { class: 'lock-badge', title: 'Locked', html: icon('lock') })); }
+  if (c.type === 'note' && isSynced(c)) el.append(h('span', { class: 'sync-badge', title: 'Synced note: edits show everywhere it appears', html: icon('sync') }));
+  const labels = (c.labels || []).map(id => db.labels.find(l => l.id === id)).filter(Boolean);
+  if (labels.length) el.append(h('div', { class: 'card-labels' }, labels.map(l => h('span', { class: 'label-chip', style: `--lc:var(--cc-${l.color})` }, l.name))));
+  const rx = Object.entries(c.reactions || {}).filter(([, who]) => who.length);
+  if (rx.length) el.append(h('div', { class: 'card-reacts' }, rx.map(([em, who]) => h('button', { class: 'react' + (who.includes(me()) ? ' mine' : ''), title: who.join(', '), onclick: e => { e.stopPropagation(); toggleReaction([c.id], em); } }, em + ' ' + who.length))));
+  if (N.labelFilter && !(c.labels || []).includes(N.labelFilter)) el.classList.add('dim');
+}
+function toggleReaction(ids, em) {
+  checkpoint(); const u = me(), allHave = ids.every(id => (db.cards[id].reactions?.[em] || []).includes(u));
+  ids.forEach(id => {
+    const c = db.cards[id]; c.reactions = c.reactions || {};
+    const list = c.reactions[em] || [];
+    c.reactions[em] = allHave ? list.filter(x => x !== u) : (list.includes(u) ? list : [...list, u]);
+    if (!c.reactions[em].length) delete c.reactions[em];
+  });
+  save(); ids.forEach(id => els.get(id) && rerenderCard(id));
+}
+function toggleLock(ids) {
+  checkpoint(); const lock = !ids.every(id => db.cards[id].locked);
+  ids.forEach(id => { if (lock) db.cards[id].locked = true; else delete db.cards[id].locked; });
+  save(); renderBoard(); applySel();
+  toast(lock ? 'Locked. These cards can’t be moved, resized or deleted.' : 'Unlocked');
+}
+function copyStyle() { const id = topSel()[0]; if (!id) return; const c = db.cards[id]; N.style = { color: c.color || null, labels: [...(c.labels || [])] }; toast('Style copied'); }
+function pasteStyle() {
+  if (!N.style) { toast('Copy a card’s style first'); return; }
+  const ids = topSel(); if (!ids.length) return;
+  checkpoint(); ids.forEach(id => { db.cards[id].color = N.style.color; db.cards[id].labels = [...N.style.labels]; });
+  save(); renderBoard(); applySel();
+}
+
+/* ----- labels ----- */
+function openLabels(ids) {
+  const m = modal(`<h2>Labels</h2><div class="label-list"></div><form class="label-new"><input class="inp" id="label-name" placeholder="New label name" maxlength="24"><select class="inp" id="label-color" aria-label="Label color">${COLORS.map(c => `<option value="${c}">${c[0].toUpperCase() + c.slice(1)}</option>`).join('')}</select><button class="btn">Add</button></form>`);
+  const list = m.querySelector('.label-list');
+  const draw = () => {
+    list.innerHTML = '';
+    db.labels.forEach(l => {
+      const on = ids.length && ids.every(id => (db.cards[id].labels || []).includes(l.id));
+      const cb = ids.length ? h('input', { type: 'checkbox', checked: on, onchange: e => {
+        checkpoint(); ids.forEach(id => { const s = new Set(db.cards[id].labels || []); e.target.checked ? s.add(l.id) : s.delete(l.id); db.cards[id].labels = [...s]; });
+        save(); renderBoard(); applySel();
+      } }) : null;
+      list.append(h('div', { class: 'label-row' }, h('label', {}, cb, h('span', { class: 'label-chip', style: `--lc:var(--cc-${l.color})` }, l.name)),
+        h('button', { class: 'x-btn', title: 'Delete label', onclick: () => {
+          db.labels = db.labels.filter(x => x !== l);
+          Object.values(db.cards).forEach(c => { if (c.labels) c.labels = c.labels.filter(x => x !== l.id); });
+          if (N.labelFilter === l.id) N.labelFilter = null; save(); renderBoard(); draw();
+        } }, '×')));
+    });
+    if (!db.labels.length) list.append(h('div', { class: 'muted' }, 'No labels yet.'));
+  };
+  m.querySelector('form').onsubmit = e => {
+    e.preventDefault(); const inp = m.querySelector('#label-name'), name = inp.value.trim(); if (!name) return;
+    db.labels.push({ id: uid('lb_'), name, color: m.querySelector('#label-color').value }); inp.value = ''; save(); draw();
+  };
+  draw();
+}
+function openLabelFilter() {
+  const r = $('#btn-bmenu').getBoundingClientRect();
+  showMenu(r.right - 220, r.bottom + 6, [
+    { label: N.labelFilter ? 'Show all cards' : 'Showing all cards', icon: 'tag', run: () => { N.labelFilter = null; renderBoard(); } }, '-',
+    ...db.labels.map(l => ({ label: (N.labelFilter === l.id ? '✓ ' : '') + l.name, run: () => { N.labelFilter = N.labelFilter === l.id ? null : l.id; renderBoard(); } })),
+    '-', { label: 'Manage labels…', run: () => openLabels([]) }]);
+}
+
+/* ----- synced notes ----- */
+const noteData = c => (c.data.syncOf && db.cards[c.data.syncOf]) ? db.cards[c.data.syncOf].data : c.data;
+const syncRoot = c => (c.data.syncOf && db.cards[c.data.syncOf]) ? c.data.syncOf : c.id;
+function isSynced(c) {
+  if (c.type !== 'note') return false;
+  if (c.data.syncOf && db.cards[c.data.syncOf]) return true;
+  return Object.values(db.cards).some(k => k.type === 'note' && k.data.syncOf === c.id);
+}
+function refreshSynced(c) {
+  const root = syncRoot(c);
+  els.forEach((el, id) => {
+    const k = db.cards[id]; if (!k || k.id === c.id || k.type !== 'note' || syncRoot(k) !== root) return;
+    const b = el.querySelector('.note-body'); if (b && b !== N.editing) { b.innerHTML = sanitize(noteData(k).html); markEmpty(b); }
+  });
+}
+function promoteSyncCopies(c) {
+  const copies = Object.values(db.cards).filter(k => k.type === 'note' && k.data.syncOf === c.id); if (!copies.length) return;
+  const [first, ...rest] = copies; first.data.html = c.data.html; delete first.data.syncOf; rest.forEach(k => k.data.syncOf = first.id);
+}
+function syncedCopy(c) {
+  checkpoint();
+  const src = c.columnId ? db.cards[c.columnId] : c;
+  const n = createCard('note', src.x + (src.w || 240) + 30, src.y, { syncOf: syncRoot(c), html: '' }, { color: c.color });
+  save(); renderBoard(); selectOnly(n.id); toast('Synced copy created. Drag it anywhere, even onto another board.');
+}
+
+/* ----- tables with formulas ----- */
+const colName = i => { let s = ''; i++; while (i) { const m = (i - 1) % 26; s = String.fromCharCode(65 + m) + s; i = Math.floor((i - 1) / 26); } return s; };
+const NUM_RE = /^\s*[-+]?\$?(\d{1,3}(,\d{3})+|\d+)?(\.\d+)?\s*%?\s*$/;
+const isNumText = s => NUM_RE.test(String(s)) && /\d/.test(String(s));
+function cellValue(rows, r, c, seen) {
+  const raw = String(rows[r]?.[c] ?? '');
+  if (!raw.startsWith('=')) {
+    if (!raw.trim()) return '';
+    if (isNumText(raw)) { const n = parseFloat(raw.replace(/[$,%\s]/g, '')); return raw.trim().endsWith('%') ? n / 100 : n; }
+    return raw;
+  }
+  const key = r + ':' + c; if (seen.has(key)) throw new Error('#CYCLE'); seen.add(key);
+  const src = raw.slice(1).replace(/"[^"]*"|[^"]+/g, m => m.startsWith('"') ? m : m.toUpperCase()); let i = 0;
+  const ref = s => { const m = s.match(/^([A-Z]+)(\d+)$/); let col = 0; for (const ch of m[1]) col = col * 26 + ch.charCodeAt(0) - 64; return [+m[2] - 1, col - 1]; };
+  const val = (rr, cc) => cellValue(rows, rr, cc, new Set(seen));
+  const num = v => { if (typeof v === 'number') return v; if (v === '') return 0; const n = parseFloat(v); if (isNaN(n)) throw new Error('#VALUE'); return n; };
+  const ws = () => { while (src[i] === ' ') i++; };
+  const cmp = () => {
+    let v = expr(); ws();
+    const m = src.slice(i).match(/^(<=|>=|<>|=|<|>)/);
+    if (m) { i += m[0].length; const b = expr(); const a = typeof v === 'number' && typeof b === 'number' ? [v, b] : [String(v), String(b)];
+      v = { '<=': a[0] <= a[1], '>=': a[0] >= a[1], '<>': a[0] !== a[1], '=': a[0] === a[1], '<': a[0] < a[1], '>': a[0] > a[1] }[m[0]] ? 1 : 0; }
+    return v;
+  };
+  const expr = () => { let v = term(); ws(); while (src[i] === '+' || src[i] === '-') { const op = src[i++]; const b = term(); v = op === '+' ? num(v) + num(b) : num(v) - num(b); ws(); } return v; };
+  const term = () => { let v = pow(); ws(); while (src[i] === '*' || src[i] === '/') { const op = src[i++]; const b = pow(); if (op === '/' && num(b) === 0) throw new Error('#DIV/0'); v = op === '*' ? num(v) * num(b) : num(v) / num(b); ws(); } return v; };
+  const pow = () => { let v = unary(); ws(); if (src[i] === '^') { i++; v = Math.pow(num(v), num(pow())); } return v; };
+  const unary = () => { ws(); if (src[i] === '-') { i++; return -num(unary()); } if (src[i] === '+') { i++; return num(unary()); } return atom(); };
+  const args = () => {
+    const out = []; ws(); if (src[i] === ')') { i++; return out; }
+    for (;;) {
+      ws(); const m = src.slice(i).match(/^([A-Z]+\d+):([A-Z]+\d+)/);
+      if (m) { i += m[0].length; const [r1, c1] = ref(m[1]), [r2, c2] = ref(m[2]); for (let a = Math.min(r1, r2); a <= Math.max(r1, r2); a++) for (let b = Math.min(c1, c2); b <= Math.max(c1, c2); b++) out.push(val(a, b)); }
+      else out.push(cmp());
+      ws(); if (src[i] === ',') { i++; continue; } if (src[i] === ')') { i++; return out; } throw new Error('#ERROR');
+    }
+  };
+  const atom = () => {
+    ws();
+    if (src[i] === '(') { i++; const v = cmp(); ws(); if (src[i++] !== ')') throw new Error('#ERROR'); return v; }
+    let m = src.slice(i).match(/^\d+(\.\d+)?/); if (m) { i += m[0].length; return parseFloat(m[0]); }
+    m = src.slice(i).match(/^"([^"]*)"/); if (m) { i += m[0].length; return m[1]; }
+    m = src.slice(i).match(/^([A-Z]+)\s*\(/);
+    if (m) {
+      i += m[0].length; const a = args(), nums = a.filter(x => typeof x === 'number'), sum = nums.reduce((s, x) => s + x, 0);
+      const F = { SUM: () => sum, AVERAGE: () => nums.length ? sum / nums.length : 0, AVG: () => nums.length ? sum / nums.length : 0, MIN: () => nums.length ? Math.min(...nums) : 0, MAX: () => nums.length ? Math.max(...nums) : 0, COUNT: () => nums.length, COUNTA: () => a.filter(x => x !== '').length, ROUND: () => { const p = Math.pow(10, num(a[1] ?? 0)); return Math.round(num(a[0]) * p) / p; }, ABS: () => Math.abs(num(a[0])), IF: () => (typeof a[0] === 'number' ? a[0] : a[0] !== '') ? (a[1] ?? '') : (a[2] ?? '') };
+      if (!F[m[1]]) throw new Error('#NAME'); return F[m[1]]();
+    }
+    m = src.slice(i).match(/^[A-Z]+\d+/); if (m) { i += m[0].length; const [rr, cc] = ref(m[0]); return val(rr, cc); }
+    throw new Error('#ERROR');
+  };
+  const v = cmp(); ws(); if (i < src.length) throw new Error('#ERROR'); return v;
+}
+function displayCell(rows, r, c) {
+  const raw = String(rows[r]?.[c] ?? ''); if (!raw.startsWith('=')) return raw;
+  try { const v = cellValue(rows, r, c, new Set()); return typeof v === 'number' ? (Number.isFinite(v) ? v.toLocaleString(undefined, { maximumFractionDigits: 6 }) : '#NUM') : String(v); }
+  catch (e) { return String(e.message).startsWith('#') ? e.message : '#ERROR'; }
+}
+const isTsv = t => /\t/.test(t) && /\n/.test(t.trim());
+function tsvRows(t) { const rows = t.replace(/\r/g, '').replace(/\n+$/, '').split('\n').map(l => l.split('\t')); const w = Math.max(...rows.map(r => r.length)); rows.forEach(r => { while (r.length < w) r.push(''); }); return rows; }
+function fitTableWidth(c) { const cols = Math.max(...c.data.rows.map(r => r.length)); c.w = Math.max(c.w || 0, Math.min(1400, cols * 110 + 24)); }
+function tblOp(c, fn) { checkpoint(); fn(c.data.rows); fitTableWidth(c); save(); rerenderCard(c.id); }
+function pasteGrid(c, r0, c0, grid) {
+  const rows = c.data.rows;
+  grid.forEach((gr, i) => {
+    const r = r0 + i; while (rows.length <= r) rows.push(Array(rows[0].length).fill(''));
+    gr.forEach((v, j) => { const k = c0 + j; if (k >= rows[0].length) rows.forEach(row => { while (row.length <= k) row.push(''); }); rows[r][k] = v; });
+  });
+  fitTableWidth(c); stopEditing(true); save(); rerenderCard(c.id);
+}
+R.table = (c, el) => {
+  const d = c.data;
+  if (!Array.isArray(d.rows) || !d.rows.length) d.rows = [['']];
+  const cols = Math.max(1, ...d.rows.map(r => r.length)); d.rows.forEach(r => { while (r.length < cols) r.push(''); });
+  el.append(ed({ cls: 'tbl-title', optional: true, key: 'title', value: d.title || '', ph: 'Table title', onInput: v => d.title = v }));
+  const tbl = h('table', { class: 'tbl' + (d.header ? ' has-head' : '') });
+  tbl.append(h('tr', { class: 'refs' }, Array.from({ length: cols }, (_, i) => h('th', { class: 'ref' }, colName(i)))));
+  const go = (r, ci) => { stopEditing(); activateEditable(els.get(c.id)?.querySelector(`[data-k="c${r}_${ci}"]`)); };
+  d.rows.forEach((row, r) => {
+    const tr = h('tr', { class: 'r' + r });
+    row.forEach((raw, ci) => {
+      const shown = displayCell(d.rows, r, ci), isF = String(raw).startsWith('=');
+      const isNum = isF ? (!String(shown).startsWith('#') && isNumText(shown)) : isNumText(raw);
+      tr.append(h('td', { class: (isF ? 'formula' : '') + (isNum ? ' num' : '') }, ed({
+        cls: 'tbl-cell', immediate: true, key: `c${r}_${ci}`, value: String(shown), raw: () => String(d.rows[r][ci] ?? ''), ph: '',
+        onInput: v => { d.rows[r][ci] = v; },
+        onActivate: () => { N.lastCell = { id: c.id, r, c: ci }; },
+        onBlur: () => { if (db.cards[c.id] && els.get(c.id)?.isConnected) rerenderCard(c.id); },
+        onEnter: () => { if (r + 1 < d.rows.length) go(r + 1, ci); else stopEditing(); },
+        onTab: back => {
+          let nr = r, nc = ci + (back ? -1 : 1);
+          if (nc >= cols) { nc = 0; nr++; } if (nc < 0) { nc = cols - 1; nr--; } if (nr < 0) return;
+          if (nr >= d.rows.length) { d.rows.push(Array(cols).fill('')); save(); }
+          go(nr, nc);
+        },
+        onPaste: t => { if (!/[\t\n]/.test(t.trim())) return false; pasteGrid(c, r, ci, tsvRows(t)); return true; },
+      })));
+    });
+    tbl.append(tr);
+  });
+  el.append(h('div', { class: 'tbl-wrap' }, tbl), h('div', { class: 'tbl-add' },
+    h('button', { onclick: () => tblOp(c, rows => rows.push(Array(rows[0].length).fill(''))) }, '+ Row'),
+    h('button', { onclick: () => tblOp(c, rows => rows.forEach(r => r.push(''))) }, '+ Column'),
+    h('span', { class: 'tbl-tip' }, 'Start a cell with = for a formula, e.g. =SUM(B2:B5)')));
+};
+
+/* ----- map, shortcut and media cards ----- */
+const MAP_ART = `<svg viewBox="0 0 260 110" preserveAspectRatio="xMidYMid slice" aria-hidden="true"><rect width="260" height="110" class="ma-bg"/><path class="ma-park" d="M150 0h70v45h-70z"/><path class="ma-water" d="M0 82 Q60 70 110 95 T260 88 V110 H0z"/><g class="ma-road"><path d="M0 30 H260"/><path d="M0 62 H260"/><path d="M40 0 V110"/><path d="M120 0 V110"/><path d="M200 0 V110"/><path class="ma-main" d="M0 105 L260 5"/></g><g transform="translate(130 52)"><path class="ma-pin" d="M0 -28c-9 0-15 6.5-15 14.5C-15 -2 0 12 0 12s15-14 15-25.5C15-21.5 9-28 0-28z"/><circle r="5" cy="-14" fill="#fff"/></g></svg>`;
+const mapsUrl = c => `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(c.data.address || c.data.place || '')}`;
+R.map = (c, el) => {
+  const d = c.data, q = encodeURIComponent(d.address || d.place || '');
+  el.append(h('div', { class: 'map-art', html: MAP_ART }), h('div', { class: 'map-body' },
+    ed({ cls: 'map-place', value: d.place, ph: 'Place name', onInput: v => d.place = v }),
+    ed({ cls: 'map-addr', optional: true, value: d.address, ph: 'Address', onInput: v => d.address = v }),
+    q ? h('div', { class: 'map-links' },
+      h('a', { class: 'nodrag', href: `https://www.google.com/maps/search/?api=1&query=${q}`, target: '_blank', rel: 'noopener noreferrer' }, 'Google Maps ↗'),
+      h('a', { class: 'nodrag', href: `https://maps.apple.com/?q=${q}`, target: '_blank', rel: 'noopener noreferrer' }, 'Apple Maps ↗')) : null));
+};
+R.shortcut = (c, el) => {
+  const b = db.boards[c.data.boardId];
+  if (!b) { el.append(h('div', { class: 'board-meta' }, 'This board was deleted')); return; }
+  el.append(h('div', { class: 'board-icon' }, b.icon || '📁', h('span', { class: 'sc-badge', html: icon('shortcut') })),
+    h('div', { class: 'board-title' }, b.id === db.rootBoardId ? 'Home' : (b.title || 'Untitled board')), h('div', { class: 'board-meta' }, 'Shortcut'));
+};
+R.media = (c, el) => {
+  const d = c.data, src = assets[d.assetId], isV = d.mime.startsWith('video/');
+  el.classList.add(isV ? 't-video' : 't-audio');
+  el.append(isV ? h('video', { class: 'nodrag media', src, controls: true, preload: 'metadata', playsinline: true, onloadedmetadata: scheduleLines })
+    : h('div', { class: 'audio-wrap' }, h('div', { class: 'audio-ic' }, '🎵'), h('audio', { class: 'nodrag media', src, controls: true, preload: 'metadata' })),
+  h('div', { class: 'media-name', title: d.name }, d.name));
+};
+function makeShortcut(boardId, at) {
+  checkpoint(); const p = at || cascadePos('shortcut');
+  const c = createCard('shortcut', p.x, p.y, { boardId }); save(); renderBoard(); selectOnly(c.id);
+  toast('Shortcut created. Drag it onto any board.');
+}
+function pickBoard(title) {
+  return new Promise(res => {
+    let done = false;
+    const m = modal(`<h2>${esc(title)}</h2><div class="search-field">${icon('search')}<input placeholder="Search boards…" aria-label="Search boards"></div><div class="pick-list"></div>`, { onClose: () => { if (!done) res(null); } });
+    const inp = m.querySelector('input'), list = m.querySelector('.pick-list');
+    const draw = () => {
+      const q = inp.value.toLowerCase();
+      list.innerHTML = Object.values(db.boards).filter(b => b.id !== N.boardId && (!q || (b.title || 'Untitled board').toLowerCase().includes(q))).sort((a, b) => (b.updatedAt || 0) - (a.updatedAt || 0))
+        .map(b => `<div class="sr-item" data-b="${b.id}"><span style="font-size:18px">${esc(b.icon || '📁')}</span><div><div class="sr-t">${esc(b.id === db.rootBoardId ? 'Home' : (b.title || 'Untitled board'))}</div><div class="sr-s">${boardCards(b.id).length} cards</div></div></div>`).join('') || '<div class="empty">No other boards yet</div>';
+    };
+    inp.oninput = draw; draw(); inp.focus();
+    list.onclick = e => { const it = e.target.closest('[data-b]'); if (!it) return; done = true; res(it.dataset.b); m.close(); };
+  });
+}
+async function addShortcutViaPicker(at) { const b = await pickBoard('Add a shortcut to…'); if (b) makeShortcut(b, at); }
+function isInside(bid, anc) { let b = db.boards[bid], g = 0; while (b && g++ < 80) { if (b.id === anc) return true; b = b.parentId ? db.boards[b.parentId] : null; } return false; }
+
+/* ----- drawing on images, with eyedropper (replaces the plain sketch editor) ----- */
+function openSketch(c, opts = {}) {
+  const PENS = ['#1d1d1f', '#ffffff', '#e5484d', '#f76b15', '#e2b203', '#30a46c', '#3e63dd', '#8e4ec6'];
+  const begin = (W, H, baseImg) => {
+    const m = modal(`<div class="sketch-wrap"><div class="sketch-bar">${PENS.map((p, i) => `<button class="pen${i ? '' : ' on'}" data-pen="${p}" style="background:${p}" title="Pen color"></button>`).join('')}<label class="pen pen-custom" title="Custom color"><input type="color" value="#1d1d1f" aria-label="Custom color"></label><button class="size-btn" data-pick title="Pick a color from the picture">${icon('droplet')}</button><span class="fsep"></span>${[2, 5, 10, 20].map((s, i) => `<button class="size-btn${i === 1 ? ' on' : ''}" data-size="${s}" title="Brush size">${['S', 'M', 'L', 'XL'][i]}</button>`).join('')}<button class="size-btn" data-erase title="Eraser">Eraser</button><span class="fsep"></span><button class="btn" data-undo>${icon('undo')}<span>Undo</span></button><button class="btn" data-clear>Clear</button><span class="grow"></span><button class="btn" data-cancel>Cancel</button><button class="btn primary" data-done>Done</button></div><div class="sketch-stage" style="aspect-ratio:${W}/${H};width:min(100%, calc(66vh * ${W / H}))"><canvas class="sketch-bg"></canvas><canvas class="sketch-canvas"></canvas></div></div>`, { wide: true, top: true });
+    const stage = m.querySelector('.sketch-stage'), bg = m.querySelector('.sketch-bg'), cv = m.querySelector('.sketch-canvas'), custom = m.querySelector('.pen-custom input');
+    [bg, cv].forEach(k => { k.width = W; k.height = H; });
+    const bctx = bg.getContext('2d', { willReadFrequently: true }), ctx = cv.getContext('2d', { willReadFrequently: true });
+    ctx.lineCap = 'round'; ctx.lineJoin = 'round';
+    if (baseImg) bctx.drawImage(baseImg, 0, 0, W, H); else { bctx.fillStyle = '#fff'; bctx.fillRect(0, 0, W, H); }
+    if (!baseImg && c.data.assetId && assets[c.data.assetId]) loadImg(assets[c.data.assetId]).then(img => ctx.drawImage(img, 0, 0, W, H));
+    let color = PENS[0], size = 5, erase = false, picking = false, drawing = false, last = null, dirty = false; const stack = [];
+    const pos = e => { const r = cv.getBoundingClientRect(); return { x: (e.clientX - r.left) * W / r.width, y: (e.clientY - r.top) * H / r.height }; };
+    const stroke = (a, b) => { ctx.globalCompositeOperation = erase ? 'destination-out' : 'source-over'; ctx.strokeStyle = color; ctx.lineWidth = erase ? size * 4 : size * (W / 1200); ctx.beginPath(); ctx.moveTo(a.x, a.y); ctx.lineTo(b.x, b.y); ctx.stroke(); };
+    const setColor = hex => { color = hex; erase = false; custom.value = hex; m.querySelectorAll('.pen').forEach(x => x.classList.toggle('on', x.dataset.pen === hex)); m.querySelector('[data-erase]').classList.remove('on'); };
+    const hex = d => '#' + [d[0], d[1], d[2]].map(v => v.toString(16).padStart(2, '0')).join('');
+    cv.addEventListener('pointerdown', e => {
+      const p = pos(e);
+      if (picking) {
+        try { const top = ctx.getImageData(p.x | 0, p.y | 0, 1, 1).data; setColor(hex(top[3] > 10 ? top : bctx.getImageData(p.x | 0, p.y | 0, 1, 1).data)); }
+        catch { toast('Can’t pick colors from an image hosted on another website'); }
+        picking = false; stage.classList.remove('picking'); m.querySelector('[data-pick]').classList.remove('on'); return;
+      }
+      cv.setPointerCapture(e.pointerId); drawing = true; dirty = true;
+      stack.push(ctx.getImageData(0, 0, W, H)); if (stack.length > 30) stack.shift();
+      last = p; stroke(last, { x: last.x + .1, y: last.y + .1 });
+    });
+    cv.addEventListener('pointermove', e => { if (!drawing) return; const p = pos(e); stroke(last, p); last = p; });
+    cv.addEventListener('pointerup', () => drawing = false);
+    custom.addEventListener('input', () => setColor(custom.value));
+    m.addEventListener('click', e => {
+      const t = e.target.closest('button'); if (!t) return;
+      if (t.dataset.pen) setColor(t.dataset.pen);
+      else if (t.dataset.size) { size = +t.dataset.size; m.querySelectorAll('[data-size]').forEach(x => x.classList.toggle('on', x === t)); }
+      else if ('erase' in t.dataset) { erase = !erase; t.classList.toggle('on', erase); }
+      else if ('pick' in t.dataset) { picking = !picking; t.classList.toggle('on', picking); stage.classList.toggle('picking', picking); }
+      else if ('undo' in t.dataset) { const s = stack.pop(); if (s) ctx.putImageData(s, 0, 0); }
+      else if ('clear' in t.dataset) { stack.push(ctx.getImageData(0, 0, W, H)); ctx.clearRect(0, 0, W, H); dirty = true; }
+      else if ('cancel' in t.dataset) m.close();
+      else if ('done' in t.dataset) {
+        if (dirty) {
+          let url;
+          try {
+            if (baseImg) { const out = h('canvas'); out.width = W; out.height = H; const o = out.getContext('2d'); o.drawImage(bg, 0, 0); o.drawImage(cv, 0, 0); url = out.toDataURL(/^data:image\/png/.test(opts.base) ? 'image/png' : 'image/jpeg', 0.9); }
+            else url = cv.toDataURL('image/png');
+          } catch { toast('This image comes from another website, so it can’t be drawn on. Upload it instead.'); return; }
+          checkpoint();
+          if (opts.onSave) opts.onSave(url); else c.data.assetId = addAsset(url);
+          save();
+        }
+        m.close(); if (db.cards[c.id] && els.get(c.id)) rerenderCard(c.id);
+      }
+    });
+  };
+  if (!opts.base) return begin(1200, 800, null);
+  loadImg(opts.base).then(img => { const s = Math.min(1, 1600 / Math.max(img.naturalWidth, img.naturalHeight)); begin(Math.round(img.naturalWidth * s), Math.round(img.naturalHeight * s), img); })
+    .catch(() => toast('That image couldn’t be loaded'));
+}
+function drawOnImage(c) {
+  const src = c.data.assetId ? assets[c.data.assetId] : c.data.src; if (!src) return;
+  openSketch(c, { base: src, onSave: url => {
+    if (!c.data.origAssetId && !c.data.origSrc) { if (c.data.assetId) c.data.origAssetId = c.data.assetId; else c.data.origSrc = c.data.src; }
+    c.data.assetId = addAsset(url); c.data.src = '';
+  } });
+}
+function restoreImage(c) {
+  checkpoint();
+  if (c.data.origAssetId) c.data.assetId = c.data.origAssetId; else if (c.data.origSrc) { c.data.src = c.data.origSrc; c.data.assetId = null; }
+  delete c.data.origAssetId; delete c.data.origSrc; save(); rerenderCard(c.id);
+}
+
+/* ----- unsorted ----- */
+const unsortedCards = () => Object.values(db.cards).filter(c => c.boardId === UNSORTED && !c.columnId).sort((a, b) => (b.createdAt || 0) - (a.createdAt || 0));
+function toggleUnsorted(open) { db.settings.unsortedOpen = open ?? !db.settings.unsortedOpen; save(); renderUnsorted(); if (db.settings.unsortedOpen && !isPhone()) $('#us-input')?.focus(); }
+function openUnsorted() { if (UI.view !== 'notes') openBoard(N.boardId || db.rootBoardId); toggleUnsorted(true); }
+function usPreview(c) {
+  const src = c.type === 'image' ? (c.data.assetId ? assets[c.data.assetId] : c.data.src) : null;
+  if (src) return `<img alt="" src="${esc(src)}">`;
+  return esc((cardText(c) || cardLabel(c)).slice(0, 160));
+}
+function renderUnsorted() {
+  const panel = $('#unsorted'); if (!panel) return;
+  const list = unsortedCards(), cnt = $('#us-count');
+  if (cnt) cnt.textContent = list.length ? String(list.length) : '';
+  $('#btn-unsorted')?.classList.toggle('on', !!db.settings.unsortedOpen);
+  panel.hidden = !db.settings.unsortedOpen; if (panel.hidden) return;
+  const keep = $('#us-input')?.value || '';
+  panel.innerHTML = `<div class="us-head"><b>Unsorted</b><span class="muted">${list.length}</span><button class="icon-btn" data-us="close" title="Close">${icon('x')}</button></div>
+  <form class="us-form"><textarea class="inp" id="us-input" rows="2" placeholder="Jot something down… Enter saves it"></textarea></form>
+  <p class="us-hint muted">Quick captures land here. Drag one onto the board or tap “Add to board”.</p>
+  <div class="us-list">${list.map(c => `<div class="us-item" draggable="true" data-id="${c.id}"><div class="us-meta">${esc(cardLabel(c))} · ${timeAgo(c.createdAt || Date.now())}</div><div class="us-text">${usPreview(c)}</div><div class="us-actions"><button class="chip" data-us="place" data-id="${c.id}">Add to board ↗</button><button class="x-btn" data-us="trash" data-id="${c.id}" title="Move to Trash">${icon('trash')}</button></div></div>`).join('') || '<div class="empty" style="padding:24px 8px">Nothing unsorted.</div>'}</div>`;
+  $('#us-input').value = keep;
+}
+function placeUnsorted(id, pos, target) {
+  const c = db.cards[id]; if (!c || c.boardId !== UNSORTED) return;
+  checkpoint();
+  const all = [c]; if (c.type === 'column') c.data.items.forEach(i => db.cards[i] && all.push(db.cards[i]));
+  all.forEach(k => k.boardId = N.boardId);
+  c.x = Math.round(pos.x); c.y = Math.round(pos.y); c.z = nextZ(); c.w = c.w || DEFAULT_W[c.type];
+  if (c.type === 'board' && db.boards[c.data.boardId]) db.boards[c.data.boardId].parentId = N.boardId;
+  if (target && target.type === 'column') intoColumn(c, target.id, target.index);
+  save(); renderBoard(); selectOnly(c.id);
+}
+function moveToUnsorted(ids) {
+  checkpoint(); const all = new Set();
+  const collect = c => { all.add(c.id); if (c.type === 'column') c.data.items.forEach(i => db.cards[i] && collect(db.cards[i])); };
+  ids.forEach(id => {
+    const c = db.cards[id];
+    if (c.columnId) { const col = db.cards[c.columnId]; if (col) col.data.items = col.data.items.filter(x => x !== id); c.columnId = null; c.w = c.w || DEFAULT_W[c.type]; }
+    collect(c); c.createdAt = Date.now();
+  });
+  for (const l of Object.values(db.lines)) if (all.has(l.from.card) || all.has(l.to.card)) delete db.lines[l.id];
+  all.forEach(id => db.cards[id].boardId = UNSORTED);
+  sel.clear(); save(); renderBoard(); toggleUnsorted(true);
+}
+{
+  const p = $('#unsorted');
+  p.addEventListener('click', e => {
+    const b = e.target.closest('[data-us]'); if (!b) return; const id = b.dataset.id;
+    if (b.dataset.us === 'close') toggleUnsorted(false);
+    else if (b.dataset.us === 'place') placeUnsorted(id, cascadePos(db.cards[id]?.type), null);
+    else if (b.dataset.us === 'trash') { checkpoint(); trashCards([id]); save(); renderUnsorted(); toast('Moved to Trash', { label: 'Undo', run: undo }); }
+  });
+  p.addEventListener('keydown', e => {
+    if (e.target.id !== 'us-input' || e.key !== 'Enter' || e.shiftKey) return;
+    e.preventDefault(); const t = e.target.value.trim(); if (!t) return;
+    checkpoint(); createCard(isUrl(t) ? 'link' : 'note', 0, 0, isUrl(t) ? linkData(t) : { html: textToHtml(t) }, { boardId: UNSORTED });
+    e.target.value = ''; save(); renderUnsorted(); $('#us-input')?.focus();
+  });
+  p.addEventListener('submit', e => e.preventDefault());
+  p.addEventListener('dragstart', e => { const it = e.target.closest('.us-item'); if (it) { e.dataTransfer.setData('text/x-unsorted', it.dataset.id); e.dataTransfer.effectAllowed = 'move'; } });
+}
+
+/* ----- trash ----- */
+function collectDeep(ids) {
+  const out = { cards: {}, boards: {}, lines: {} }, copy = o => JSON.parse(JSON.stringify(o));
+  const addCard = c => {
+    out.cards[c.id] = copy(c);
+    if (c.type === 'column') c.data.items.forEach(i => db.cards[i] && addCard(db.cards[i]));
+    if (c.type === 'board' && db.boards[c.data.boardId]) addBoard(c.data.boardId);
+  };
+  const addBoard = bid => {
+    out.boards[bid] = copy(db.boards[bid]);
+    boardCards(bid).forEach(k => { if (!out.cards[k.id]) addCard(k); });
+    Object.values(db.lines).filter(l => l.boardId === bid).forEach(l => out.lines[l.id] = copy(l));
+  };
+  ids.forEach(id => db.cards[id] && addCard(db.cards[id]));
+  Object.values(db.lines).forEach(l => { if (out.cards[l.from.card] || out.cards[l.to.card]) out.lines[l.id] = copy(l); });
+  return out;
+}
+function trashCards(ids, title) {
+  ids = ids.filter(id => db.cards[id]); if (!ids.length) return;
+  const first = db.cards[ids[0]], b = collectDeep(ids);
+  title = title || (ids.length > 1 ? `${ids.length} cards` : first.type === 'board' ? (db.boards[first.data.boardId]?.title || 'Untitled board') : (cardText(first).trim().slice(0, 60) || cardLabel(first)));
+  db.trash.unshift({ id: uid('t_'), at: Date.now(), title, kind: ids.length > 1 ? 'Cards' : cardLabel(first), from: first.boardId, roots: ids, ...b });
+  ids.forEach(removeCard);
+}
+function restoreTrash(tid) {
+  const t = db.trash.find(x => x.id === tid); if (!t) return;
+  if (t.roots.some(id => db.cards[id])) { db.trash = db.trash.filter(x => x !== t); save(); toast('Already restored'); return; }
+  checkpoint();
+  Object.assign(db.boards, t.boards);
+  for (const c of Object.values(t.cards)) db.cards[c.id] = c;
+  for (const id of t.roots) {
+    const c = db.cards[id];
+    if (!(db.boards[c.boardId] || c.boardId === UNSORTED)) { c.boardId = db.rootBoardId; c.columnId = null; }
+    if (c.columnId) {
+      const col = db.cards[c.columnId];
+      if (col && col.boardId === c.boardId) { if (!col.data.items.includes(id)) col.data.items.push(id); }
+      else { c.x = col ? col.x + (col.w || 290) + 30 : 0; c.y = col ? col.y : 0; c.columnId = null; c.w = DEFAULT_W[c.type] || 240; }
+    }
+    if (c.type === 'column') c.data.items.forEach(i => { if (db.cards[i]) db.cards[i].boardId = c.boardId; });
+    if (c.type === 'board' && db.boards[c.data.boardId] && c.boardId !== UNSORTED) db.boards[c.data.boardId].parentId = c.boardId;
+  }
+  for (const l of Object.values(t.lines)) {
+    const ok = e => !e.card || db.cards[e.card]; if (!ok(l.from) || !ok(l.to)) continue;
+    const anchor = db.cards[l.from.card] || db.cards[l.to.card]; if (anchor && !t.boards[l.boardId]) l.boardId = anchor.boardId;
+    db.lines[l.id] = l;
+  }
+  db.trash = db.trash.filter(x => x !== t);
+  save(); renderBoard();
+  const dest = db.cards[t.roots[0]].boardId;
+  toast(`Restored “${t.title}”`, dest === UNSORTED ? { label: 'Show', run: openUnsorted } : { label: 'Show', run: () => openBoard(dest, t.roots[0]) });
+}
+function openTrash() {
+  const m = modal(''); m.style.width = 'min(580px,100%)';
+  const from = t => t.from === UNSORTED ? 'Unsorted' : t.from === db.rootBoardId ? 'Home' : (db.boards[t.from]?.title || 'a deleted board');
+  const draw = () => {
+    m.innerHTML = `<h2>Trash</h2><p class="muted" style="font-size:13px;margin-top:-8px">Deleted cards and boards stay here for 30 days.</p><div class="trash-list">${db.trash.map(t => `<div class="mini-row"><span class="act-ic">${t.kind === 'Board' ? '📁' : '🗒️'}</span><span class="grow" style="white-space:normal"><b>${esc(t.title)}</b><br><span class="muted" style="font-size:12px">${esc(t.kind)} · from ${esc(from(t))} · ${timeAgo(t.at)}</span></span><button class="btn" data-t="restore" data-id="${t.id}">${icon('restore')} Restore</button><button class="x-btn" data-t="del" data-id="${t.id}" title="Delete forever">${icon('x')}</button></div>`).join('') || '<div class="empty">Trash is empty.</div>'}</div><div class="modal-actions">${db.trash.length ? '<button class="btn danger" data-t="empty">Empty trash</button>' : ''}<button class="btn primary" data-t="close">Done</button></div>`;
+  };
+  m.addEventListener('click', async e => {
+    const b = e.target.closest('[data-t]'); if (!b) return;
+    if (b.dataset.t === 'close') { m.close(); return; }
+    if (b.dataset.t === 'restore') restoreTrash(b.dataset.id);
+    else if (b.dataset.t === 'del') { db.trash = db.trash.filter(x => x.id !== b.dataset.id); save(); }
+    else if (b.dataset.t === 'empty') { if (!await confirmModal('Permanently delete everything in Trash?', 'Empty trash')) return; db.trash = []; save(); }
+    draw();
+  });
+  draw();
+}
+
+/* ----- custom templates ----- */
+function saveTemplate(selection) {
+  const ids = selection ? topSel().filter(id => !db.cards[id].columnId) : topCards(N.boardId).map(c => c.id);
+  if (!ids.length) { toast(selection ? 'Select some cards first' : 'This board is empty'); return; }
+  promptModal({ title: selection ? 'Save selection as template' : 'Save board as template', value: selection ? '' : (N.boardId === db.rootBoardId ? 'Home layout' : (curBoard().title || 'My template')), placeholder: 'Template name', okLabel: 'Save template' }).then(name => {
+    if (!name) return;
+    const b = collectDeep(ids), inSet = e => !e.card || b.cards[e.card];
+    for (const [k, l] of Object.entries(b.lines)) if (!inSet(l.from) || !inSet(l.to)) delete b.lines[k];
+    db.templates.unshift({ id: uid('tp_'), name, at: Date.now(), roots: ids, rootBoard: N.boardId, ...b });
+    save(); toast(`Saved template “${name}”`);
+  });
+}
+function placementBase() {
+  const ex = topCards(N.boardId).map(c => ({ c, el: els.get(c.id) })), o = viewportCenter();
+  return ex.length ? { x: Math.round(Math.max(...ex.map(({ c, el }) => c.x + (el ? el.offsetWidth : c.w))) + 120), y: Math.round(Math.min(...ex.map(({ c }) => c.y))) } : { x: Math.round(o.x - 360), y: Math.round(o.y - 200) };
+}
+function applyCustomTemplate(tid) {
+  const t = db.templates.find(x => x.id === tid); if (!t) return;
+  let s = JSON.stringify({ roots: t.roots, cards: t.cards, boards: t.boards, lines: t.lines });
+  for (const id of new Set([...Object.keys(t.cards), ...Object.keys(t.boards), ...Object.keys(t.lines)])) s = s.split('"' + id + '"').join('"' + uid(id.split('_')[0] + '_') + '"');
+  const o = JSON.parse(s); checkpoint();
+  const base = placementBase(), rootCards = o.roots.map(id => o.cards[id]).filter(Boolean);
+  const minX = Math.min(...rootCards.map(c => c.x || 0)), minY = Math.min(...rootCards.map(c => c.y || 0)), dx = base.x - minX, dy = base.y - minY;
+  Object.values(o.boards).forEach(b => { if (!o.boards[b.parentId]) b.parentId = N.boardId; b.link = null; b.updatedAt = Date.now(); db.boards[b.id] = b; });
+  Object.values(o.cards).forEach(c => { if (c.boardId === t.rootBoard) c.boardId = N.boardId; db.cards[c.id] = c; });
+  let z = nextZ();
+  rootCards.forEach(c => { c.columnId = null; c.x = Math.round((c.x || 0) + dx); c.y = Math.round((c.y || 0) + dy); c.z = z++; });
+  Object.values(o.lines).forEach(l => {
+    if (l.boardId === t.rootBoard) { l.boardId = N.boardId; ['from', 'to'].forEach(k => { if (!l[k].card) { l[k].x += dx; l[k].y += dy; } }); }
+    db.lines[l.id] = l;
+  });
+  save(); renderBoard(); sel.clear(); rootCards.forEach(c => sel.add(c.id)); applySel();
+  const v = view(); v.x = 120 - base.x * v.z; v.y = 100 - base.y * v.z; applyView(); scheduleLines(); save();
+}
+function openTemplates() {
+  const m = modal(`<h2>Templates</h2>${db.templates.length ? `<div class="tpl-sec">Your templates</div><div class="tpl-grid">${db.templates.map(t => `<div class="tpl tpl-mine" role="button" tabindex="0" data-mine="${t.id}"><span class="tpl-ic">⭐</span><b>${esc(t.name)}</b><span>${Object.keys(t.cards).length} cards · saved ${timeAgo(t.at)}</span><button class="x-btn tpl-del" data-del="${t.id}" title="Delete template">${icon('x')}</button></div>`).join('')}</div><div class="tpl-sec">Built in</div>` : ''}<div class="tpl-grid">${TEMPLATES.map(t => `<button class="tpl" data-t="${t.id}"><span class="tpl-ic">${t.icon}</span><b>${t.name}</b><span>${t.desc}</span></button>`).join('')}</div><div class="modal-actions" style="flex-wrap:wrap"><button class="btn" data-save="sel" ${topSel().length ? '' : 'disabled'}>Save selection as template</button><button class="btn" data-save="board">Save this board as template</button></div>`);
+  m.style.width = 'min(760px,100%)';
+  const act = e => {
+    const del = e.target.closest('[data-del]');
+    if (del) { e.stopPropagation(); db.templates = db.templates.filter(t => t.id !== del.dataset.del); save(); m.close(); openTemplates(); return; }
+    const mine = e.target.closest('[data-mine]'); if (mine) { m.close(); applyCustomTemplate(mine.dataset.mine); return; }
+    const b = e.target.closest('[data-t]'); if (b) { m.close(); applyTemplate(b.dataset.t); return; }
+    const s = e.target.closest('[data-save]'); if (s && !s.disabled) { m.close(); saveTemplate(s.dataset.save === 'sel'); }
+  };
+  m.addEventListener('click', act);
+  m.addEventListener('keydown', e => { if (e.key === 'Enter' && e.target.matches('[data-mine]')) act(e); });
+}
+TEMPLATES.push(
+  { id: 'story', icon: '🎬', name: 'Storyboard', desc: 'Six frames with shot notes' },
+  { id: 'brief', icon: '📋', name: 'Creative brief', desc: 'Objective, audience, message, deliverables' },
+  { id: 'mind', icon: '🕸️', name: 'Mind map', desc: 'A central topic with branches' },
+  { id: 'journey', icon: '🧭', name: 'Customer journey', desc: 'Doing, thinking and feeling at each stage' },
+  { id: 'persona', icon: '🙋', name: 'User persona', desc: 'Goals, pain points and quotes from research' },
+  { id: 'novel', icon: '📚', name: 'Novel outline', desc: 'Three acts, characters and world' },
+  { id: 'retro', icon: '🔁', name: 'Retrospective', desc: 'What went well, what to improve, actions' },
+  { id: 'plan', icon: '🗺️', name: 'Project plan', desc: 'Phases plus a timeline table' },
+);
+const TPL_EXTRA = {
+  story: ({ add }) => { for (let i = 0; i < 6; i++) { const x = (i % 3) * 330, y = Math.floor(i / 3) * 330; add('sketch', x, y, {}, { w: 300 }); add('note', x, y + 215, { html: `<div><b>Scene ${i + 1}</b>: action, dialogue, camera</div>` }, { w: 300 }); } },
+  brief: ({ add, todo }) => {
+    add('note', 0, 0, { html: '<h1>Creative brief</h1><div>Project name · Client · Date</div>' }, { w: 320 });
+    add('note', 0, 130, { html: '<h3>Background</h3><div>Why this project, and why now.</div>' }, { w: 320 });
+    add('note', 350, 0, { html: '<h3>Objective</h3><div>What success looks like.</div>' }, { w: 300, color: 'yellow' });
+    add('note', 350, 130, { html: '<h3>Audience</h3><div>Who we’re talking to.</div>' }, { w: 300 });
+    add('note', 350, 260, { html: '<h3>Key message</h3><div>The one thing they should remember.</div>' }, { w: 300, color: 'purple' });
+    add('todo', 680, 0, todo('Deliverables', ['Hero image', 'Social cut-downs', 'Landing page']), { w: 300 });
+    add('table', 680, 200, { title: 'Timeline', header: true, rows: [['Milestone', 'Date'], ['Kickoff', ''], ['First draft', ''], ['Final', '']] }, { w: 300 });
+    add('note', 0, 290, { html: '<h3>Budget &amp; constraints</h3><div>Budget, mandatories, tone of voice.</div>' }, { w: 320 });
+  },
+  mind: ({ add, line }) => {
+    const c = add('note', 360, 230, { html: '<h2>Central topic</h2>' }, { color: 'yellow' });
+    [[0, 0], [360, 0], [720, 0], [0, 460], [360, 470], [720, 460]].forEach(([x, y], i) => {
+      const b = add('note', x, y, { html: `<div><b>Branch ${i + 1}</b></div>` }, { color: ['blue', 'green', 'pink', 'teal', 'orange', 'purple'][i] }); line(c, b);
+      if (i === 0 || i === 5) { const s = add('note', x + (i ? 300 : -280), y + (i ? 80 : 80), { html: '<div>Sub-idea</div>' }, { w: 200 }); line(b, s); }
+    });
+  },
+  journey: ({ col, note }) => ['Awareness', 'Consideration', 'Purchase', 'Retention', 'Advocacy'].forEach((s, i) => col(i * 310, 0, s, [note('<div><b>Doing</b>: </div>'), note('<div><b>Thinking</b>: </div>'), ['note', { html: '<div><b>Feeling</b>: </div>' }, { color: 'yellow' }], ['note', { html: '<div><b>Opportunity</b>: </div>' }, { color: 'green' }]])),
+  persona: ({ add, col, note, todo }) => {
+    add('note', 0, 0, { html: '<h2>Persona name</h2><div>Age · Role · Location</div><div><br></div><div>Short bio: background, context and how they found us.</div>' }, { w: 320 });
+    add('note', 0, 220, { html: '<blockquote>“A real quote from research that sums them up.”</blockquote>' }, { w: 320, color: 'purple' });
+    add('todo', 350, 0, todo('Goals', ['Goal one', 'Goal two', 'Goal three']), { w: 280 });
+    add('note', 350, 190, { html: '<h3>Pain points</h3><ul><li>Frustration one</li><li>Frustration two</li></ul>' }, { w: 280, color: 'red' });
+    add('note', 350, 360, { html: '<h3>Behaviours</h3><ul><li>Tools they use</li><li>How often</li></ul>' }, { w: 280 });
+    col(660, 0, 'Research notes', [note('<div>Interview 1</div>'), note('<div>Interview 2</div>')]);
+  },
+  novel: ({ add, col, note }) => {
+    col(0, 0, 'Act I: Setup', [note('<div><b>Ch. 1</b>: Opening image</div>'), note('<div><b>Ch. 2</b>: Inciting incident</div>')]);
+    col(310, 0, 'Act II: Confrontation', [note('<div><b>Ch. 3</b>: Rising stakes</div>'), note('<div><b>Ch. 4</b>: Midpoint twist</div>'), note('<div><b>Ch. 5</b>: All is lost</div>')]);
+    col(620, 0, 'Act III: Resolution', [note('<div><b>Ch. 6</b>: Climax</div>'), note('<div><b>Ch. 7</b>: New normal</div>')]);
+    add('board', 930, 0, { title: 'Characters' }, { color: 'pink' }); add('board', 930, 180, { title: 'World building' }, { color: 'teal' });
+  },
+  retro: ({ add, col, note, todo }) => {
+    col(0, 0, 'Went well', [note('<div>…</div>')], { color: 'green' }); col(310, 0, 'To improve', [note('<div>…</div>')], { color: 'orange' });
+    add('todo', 620, 0, todo('Action items', ['Owner: action', 'Owner: action']), { w: 280 });
+  },
+  plan: ({ add, col, note }) => {
+    ['Discover', 'Design', 'Build', 'Launch'].forEach((p, i) => col(i * 310, 0, p, [note(`<div>${p} task</div>`)]));
+    add('table', 1240, 0, { title: 'Timeline', header: true, rows: [['Task', 'Owner', 'Due', 'Status'], ['Kickoff', '', '', 'Done'], ['Research', '', '', ''], ['Design review', '', '', ''], ['Launch', '', '', '']] }, { w: 460 });
+  },
+};
+
+/* ----- presentation mode ----- */
+function startPresent() {
+  const pool = sel.size > 1 ? topSel().map(id => db.cards[id]).filter(c => !c.columnId) : topCards(N.boardId);
+  const list = pool.slice().sort((a, b) => (Math.round(a.y / 160) - Math.round(b.y / 160)) || a.x - b.x).map(c => c.id);
+  if (!list.length) { toast('Add some cards to present'); return; }
+  stopEditing(); hideMenu(); const v = view();
+  N.present = { list, i: 0, saved: { x: v.x, y: v.y, z: v.z } };
+  sel.clear(); selLine = null; applySel();
+  $('#view-notes').classList.add('presenting'); document.body.classList.add('presenting-body'); world.classList.add('animate');
+  try { const r = document.documentElement.requestFullscreen?.(); r && r.catch(() => { }); } catch { }
+  presentGo(0);
+}
+function presentGo(i) {
+  const P = N.present; if (!P) return;
+  P.i = clamp(i, 0, P.list.length - 1);
+  const id = P.list[P.i], c = db.cards[id], el = els.get(id); if (!c || !el) return;
+  const r = { x: c.x, y: c.y, w: el.offsetWidth, h: el.offsetHeight }, cr = canvas.getBoundingClientRect(), v = view(), pad = isPhone() ? 20 : 80, bar = 80;
+  v.z = clamp(Math.min((cr.width - pad * 2) / r.w, (cr.height - pad * 2 - bar) / r.h), 0.2, 2.5);
+  v.x = cr.width / 2 - (r.x + r.w / 2) * v.z; v.y = (cr.height - bar) / 2 - (r.y + r.h / 2) * v.z;
+  applyView();
+  [...cardsEl.children].forEach(k => k.classList.toggle('p-dim', k.dataset.id !== id));
+  const b = $('#present-bar'); b.hidden = false;
+  b.innerHTML = `<button data-p="prev" title="Previous" ${P.i ? '' : 'disabled'}>‹</button><span>${P.i + 1} / ${P.list.length}</span><button data-p="next" title="Next" ${P.i < P.list.length - 1 ? '' : 'disabled'}>›</button><button data-p="exit" class="p-exit">Exit</button>`;
+}
+function stopPresent() {
+  const P = N.present; if (!P) return; N.present = null;
+  Object.assign(view(), P.saved);
+  $('#view-notes').classList.remove('presenting'); document.body.classList.remove('presenting-body');
+  [...cardsEl.children].forEach(k => k.classList.remove('p-dim'));
+  $('#present-bar').hidden = true; applyView(); scheduleLines();
+  setTimeout(() => world.classList.remove('animate'), 500);
+  try { if (document.fullscreenElement) document.exitFullscreen(); } catch { }
+}
+function presentKey(e) {
+  if (['ArrowRight', 'ArrowDown', 'PageDown', ' ', 'Enter'].includes(e.key)) { e.preventDefault(); presentGo(N.present.i + 1); return true; }
+  if (['ArrowLeft', 'ArrowUp', 'PageUp', 'Backspace'].includes(e.key)) { e.preventDefault(); presentGo(N.present.i - 1); return true; }
+  return false;
+}
+$('#present-bar').addEventListener('click', e => { const b = e.target.closest('[data-p]'); if (!b || !N.present) return; if (b.dataset.p === 'exit') stopPresent(); else presentGo(N.present.i + (b.dataset.p === 'next' ? 1 : -1)); });
+world.addEventListener('transitionend', () => scheduleLines());
+
+/* ----- menus and board chrome ----- */
+function extraTypeMenu(one, items) {
+  const t = one.type;
+  if (t === 'note') items.push({ label: 'Create synced copy', icon: 'sync', run: () => syncedCopy(one) });
+  if (t === 'board') items.push({ label: 'Create shortcut', icon: 'shortcut', run: () => makeShortcut(one.data.boardId, { x: one.x + (one.w || 130) + 24, y: one.y }) });
+  if (t === 'shortcut' && db.boards[one.data.boardId]) items.push({ label: 'Open board', icon: 'open', run: () => openBoard(one.data.boardId) });
+  if (t === 'image') { items.push({ label: 'Draw on image', icon: 'brush', run: () => drawOnImage(one) }); if (one.data.origAssetId || one.data.origSrc) items.push({ label: 'Restore original image', icon: 'restore', run: () => restoreImage(one) }); }
+  if (t === 'map') items.push({ label: 'Open in Google Maps', icon: 'pin', run: () => openUrl(mapsUrl(one)) });
+  if (t === 'table') {
+    const lc = N.lastCell && N.lastCell.id === one.id ? N.lastCell : null;
+    items.push({ label: lc ? `Add row below ${lc.r + 1}` : 'Add row', icon: 'plus', run: () => tblOp(one, rows => rows.splice(lc ? lc.r + 1 : rows.length, 0, Array(rows[0].length).fill(''))) },
+      { label: lc ? `Add column after ${colName(lc.c)}` : 'Add column', icon: 'plus', run: () => tblOp(one, rows => rows.forEach(r => r.splice(lc ? lc.c + 1 : r.length, 0, ''))) });
+    if (lc) items.push({ label: `Delete row ${lc.r + 1}`, icon: 'minus', run: () => tblOp(one, rows => { if (rows.length > 1) rows.splice(lc.r, 1); }) },
+      { label: `Delete column ${colName(lc.c)}`, icon: 'minus', run: () => tblOp(one, rows => { if (rows[0].length > 1) rows.forEach(r => r.splice(lc.c, 1)); }) });
+    items.push({ label: one.data.header ? 'Remove header row' : 'Use first row as header', run: () => tblOp(one, () => { one.data.header = !one.data.header; }) });
+  }
+}
+function extraGeneralMenu(ids, items) {
+  const locked = ids.every(id => db.cards[id].locked);
+  items.push('-', { label: 'Labels…', icon: 'tag', run: () => openLabels(ids) },
+    { label: locked ? 'Unlock' : 'Lock', icon: locked ? 'unlock' : 'lock', run: () => toggleLock(ids) },
+    { label: 'Copy style', kbd: 'Ctrl+Alt+C', run: copyStyle },
+    { label: 'Paste style', kbd: 'Ctrl+Shift+V', disabled: !N.style, run: pasteStyle },
+    { label: 'Move to Unsorted', icon: 'inbox', run: () => moveToUnsorted(ids) });
+}
+function renderNotesExtras() {
+  renderUnsorted();
+  let chip = $('#filter-chip');
+  if (!chip) { chip = h('button', { id: 'filter-chip', class: 'chip', onclick: () => { N.labelFilter = null; renderBoard(); } }); $('.notes-body').append(chip); }
+  const l = N.labelFilter && db.labels.find(x => x.id === N.labelFilter);
+  chip.hidden = !l; if (l) { chip.style.cssText = `--lc:var(--cc-${l.color})`; chip.innerHTML = `${icon('tag')} Showing “${esc(l.name)}” · Clear`; }
 }
 </script>
 <script>
@@ -2116,7 +2940,7 @@ function renderNavBoards() {
 }
 function nav(hash) { try { if (location.hash !== hash) history.pushState(null, '', hash); } catch { } }
 function setView(v, push = true) {
-  if (UI.view === 'notes' && v !== 'notes') { stopEditing(); setLineMode(false); hideFmt(); $('#linebar').hidden = true; }
+  if (UI.view === 'notes' && v !== 'notes') { if (N.present) stopPresent(); stopEditing(); setLineMode(false); hideFmt(); $('#linebar').hidden = true; }
   UI.view = v;
   $$('.view').forEach(s => s.classList.toggle('active', s.id === 'view-' + v));
   $$('.nav-item[data-nav]').forEach(b => b.classList.toggle('active', b.dataset.nav === v));
@@ -2331,6 +3155,8 @@ document.addEventListener('click', async e => {
       case 'zoom-out': zoomAt(view().z / 1.2); break;
       case 'zoom-reset': zoomAt(1); break;
       case 'zoom-fit': fitView(); break;
+      case 'present': startPresent(); break;
+      case 'unsorted': toggleUnsorted(); break;
     }
   }
 });
@@ -2412,7 +3238,7 @@ function openSearch() {
     for (const k of ['contact', 'company', 'deal']) { const K = KINDS[k]; db[K.store].filter(r => q ? K.search(r).toLowerCase().includes(q) : false).slice(0, 5).forEach(r => push(K.plural, K.title(r), K.sub(r), () => openRecord(k, r.id), k === 'deal' ? '💼' : k === 'company' ? '🏢' : '👤')); }
     if (q) db.tasks.filter(t => t.title.toLowerCase().includes(q)).slice(0, 4).forEach(t => push('Tasks', t.title, fmtDate(t.due), () => setView('tasks'), t.done ? '✅' : '⬜'));
     Object.values(db.boards).filter(b => !q || (b.title || '').toLowerCase().includes(q)).sort((a, b) => (b.updatedAt || 0) - (a.updatedAt || 0)).slice(0, q ? 5 : 6).forEach(b => push(q ? 'Boards' : 'Recent boards', b.title || 'Untitled board', boardCards(b.id).length + ' cards', () => openBoard(b.id), b.icon || '📁'));
-    if (q) Object.values(db.cards).filter(c => c.type !== 'board' && cardText(c).toLowerCase().includes(q)).slice(0, 8).forEach(c => { const t = cardText(c), i = t.toLowerCase().indexOf(q); push('Cards', t.slice(Math.max(0, i - 20), i + 60) || cardLabel(c), cardLabel(c) + ' in ' + (db.boards[c.boardId]?.title || 'Untitled board'), () => openBoard(c.boardId, c.columnId || c.id), '🗒️'); });
+    if (q) Object.values(db.cards).filter(c => c.type !== 'board' && cardText(c).toLowerCase().includes(q)).slice(0, 8).forEach(c => { const t = cardText(c), i = t.toLowerCase().indexOf(q); push('Cards', t.slice(Math.max(0, i - 20), i + 60) || cardLabel(c), cardLabel(c) + ' in ' + (db.boards[c.boardId]?.title || 'Untitled board'), () => c.boardId === UNSORTED ? openUnsorted() : openBoard(c.boardId, c.columnId || c.id), '🗒️'); });
     idx = 0; draw();
   };
   const draw = () => {
@@ -2456,12 +3282,13 @@ function toast(msg, action) {
 (async function init() {
   buildNav(); buildToolbar();
   [['#btn-undo', 'undo'], ['#btn-redo', 'redo'], ['#btn-bmenu', 'more'], ['#btn-zo', 'minus'], ['#btn-zi', 'plus'], ['#btn-zf', 'fit']].forEach(([s, i]) => $(s).innerHTML = icon(i));
-  $('#btn-tpl').innerHTML = icon('template') + '<span>Templates</span>'; $('#btn-nsearch').innerHTML = icon('search');
+  $('#btn-tpl').innerHTML = icon('template') + '<span>Templates</span>'; $('#btn-nsearch').innerHTML = icon('search'); $('#btn-unsorted').innerHTML = icon('inbox') + '<span class="us-count" id="us-count"></span>'; $('#btn-present').innerHTML = icon('play');
   db = await Store.get('db'); assets = (await Store.get('assets')) || {};
   if (!db || !db.version || !db.boards || !db.boards[db.rootBoardId]) { db = seed(); assets = {}; save(); }
   db.settings = db.settings || { user: 'You', theme: 'auto' };
+  ensureExtras();
   // prune assets no card references
-  const used = new Set(Object.values(db.cards).map(c => c.data && c.data.assetId).filter(Boolean));
+  const used = usedAssetIds();
   let pruned = false; for (const k of Object.keys(assets)) if (!used.has(k)) { delete assets[k]; pruned = true; } if (pruned) saveAssets();
   N.boardId = db.rootBoardId;
   applyTheme(); route();

@@ -630,6 +630,17 @@ body.presenting-body #nav{display:none}
 .ch-legend{font:12px ui-sans-serif,system-ui;fill:var(--muted)}
 .ch-tick{font:11px ui-sans-serif,system-ui;fill:var(--muted);font-variant-numeric:tabular-nums}
 .ch-val{font:600 11px ui-sans-serif,system-ui;fill:var(--text)}
+.ch-axis-t{font:600 11px ui-sans-serif,system-ui;fill:var(--muted)}
+.ch-trend{fill:none;stroke-width:2;stroke-dasharray:6 4;stroke-linecap:round;opacity:.9}
+.ch-err{fill:none;stroke:var(--text);stroke-width:1.2;opacity:.55}
+.pal-row{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:6px}
+.pal-btn{display:flex;flex-direction:column;align-items:center;gap:4px;padding:6px 4px;border:1px solid var(--border);border-radius:8px;background:var(--panel);color:var(--text);font-size:11px;cursor:pointer}
+.pal-btn span{display:flex;gap:2px}.pal-btn i{width:9px;height:14px;border-radius:2px}
+.pal-btn.on{border-color:var(--accent);box-shadow:0 0 0 1px var(--accent)}
+.ser-row{display:flex;align-items:center;gap:8px;margin:6px 0;min-width:0}
+.ser-dot{width:12px;height:12px;border-radius:3px;flex:none}
+.ser-row .grow{flex:1;min-width:0;font-size:13px}.ellip{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.inp.inp-sm{width:auto;max-width:120px;padding:4px 6px;font-size:12px}
 .ch-in{font:700 11px ui-sans-serif,system-ui;pointer-events:none}
 .ch-center{font:700 18px ui-sans-serif,system-ui;fill:var(--text)}
 .ch-empty{font:13px ui-sans-serif,system-ui;fill:var(--muted)}
@@ -3526,7 +3537,8 @@ const CHART_TYPES = [
   ['icolumn', 'Interactive Column', 'Interactive'], ['ibar', 'Interactive Bar', 'Interactive'], ['idonut', 'Interactive Donut', 'Interactive'],
 ];
 const chartLabel = id => (CHART_TYPES.find(x => x[0] === id) || [0, 'Chart'])[1];
-const pal = i => `var(--s${(i % 8) + 1})`;
+let PALFN = i => `var(--s${(i % 8) + 1})`;
+const pal = i => PALFN(i);
 const shade = (col, k) => `color-mix(in srgb, ${col} ${100 - Math.abs(k)}%, ${k > 0 ? '#fff' : '#000'})`;
 
 function chartData(o) {
@@ -3706,8 +3718,8 @@ const CHART_DRAW = {
   area(d, b, o, k) { return CHART_DRAW.line(d, b, o, k, true); },
   stackedArea(d, b, o, k) { return CHART_DRAW.line(d, b, o, k, true, true); },
   pie(d, box, o, k, donut = false, depth = 0) {
-    const sl = pieSlices(d), total = sl.reduce((s, x) => s + x.v, 0) || 1, cx = box.x + box.w / 2, rx = Math.max(10, Math.min(box.w, (box.h - depth) / (depth ? .6 : 1)) / 2 - 6), ry = depth ? rx * .58 : rx, cy = box.y + (box.h - depth) / 2;
-    const out = []; let a = -Math.PI / 2;
+    const sl = pieSlices(d), total = sl.reduce((s, x) => s + x.v, 0) || 1, cx = box.x + box.w / 2, rx = Math.max(10, Math.min(box.w, (box.h - depth) / (depth ? .6 : 1)) / 2 - 6), ry = depth ? rx * (o.tilt ?? .58) : rx, cy = box.y + (box.h - depth) / 2;
+    const out = []; let a = -Math.PI / 2 + ((o.rot || 0) % 360) * Math.PI / 180;
     const P = (ang, r = 1, dy = 0) => [cx + Math.cos(ang) * rx * r, cy + Math.sin(ang) * ry * r + dy];
     const arcs = sl.map((s, i) => { const a0 = a, a1 = a + s.v / total * Math.PI * 2; a = a1; return { s, i, a0, a1 }; });
     if (depth) arcs.forEach(({ s, i, a0, a1 }) => {
@@ -3728,7 +3740,7 @@ const CHART_DRAW = {
     return out.join('');
   },
   donut(d, b, o, k) { return CHART_DRAW.pie(d, b, o, k, true); },
-  pie3d(d, b, o, k) { return CHART_DRAW.pie(d, b, o, k, false, 22); },
+  pie3d(d, b, o, k) { return CHART_DRAW.pie(d, b, o, k, false, o.depth ?? 22); },
   scatter(d, box0, o, k, bubble = false) {
     const ser = bubble ? bubbleSeries(d) : scatterSeries(d), pts = ser.flatMap(s => s.pts); if (!pts.length) return '';
     const xs = pts.map(p => p.x), ys = pts.map(p => p.y), smax = Math.max(...pts.map(p => Math.abs(p.s))) || 1;
@@ -3770,12 +3782,12 @@ const CHART_DRAW = {
     d.series.forEach((s, j) => { const pts = s.values.map((v, i) => P(i, Math.max(0, v) / t.hi * R)); out.push(`<polygon points="${pts.join(' ')}" style="fill:${pal(j)};fill-opacity:.12;stroke:${pal(j)};stroke-width:2;stroke-linejoin:round"/>`); pts.forEach((p, i) => out.push(`<circle class="ch-dot" cx="${p[0]}" cy="${p[1]}" r="3.5" style="fill:${pal(j)}"${k.tip(`${s.name} · ${d.cats[i]}: ${k.fv(s.values[i])}`)}/>`)); });
     return out.join('');
   },
-  column3d(d, b, o, k) { return CHART_DRAW.column(d, b, o, k, false, 12); },
-  stackedColumn3d(d, b, o, k) { return CHART_DRAW.column(d, b, o, k, true, 12); },
-  bar3d(d, b, o, k) { return CHART_DRAW.bar(d, b, o, k, false, 12); },
-  stackedBar3d(d, b, o, k) { return CHART_DRAW.bar(d, b, o, k, true, 12); },
+  column3d(d, b, o, k) { return CHART_DRAW.column(d, b, o, k, false, o.depth ?? 12); },
+  stackedColumn3d(d, b, o, k) { return CHART_DRAW.column(d, b, o, k, true, o.depth ?? 12); },
+  bar3d(d, b, o, k) { return CHART_DRAW.bar(d, b, o, k, false, o.depth ?? 12); },
+  stackedBar3d(d, b, o, k) { return CHART_DRAW.bar(d, b, o, k, true, o.depth ?? 12); },
   line3d(d, box0, o, k, area = false) {
-    const D = 14, ns = d.series.length, vals = d.series.flatMap(s => s.values), min = Math.min(0, ...vals), max = Math.max(...vals);
+    const D = o.depth ?? 14, ns = d.series.length, vals = d.series.flatMap(s => s.values), min = Math.min(0, ...vals), max = Math.max(...vals);
     const box = fitLeft(box0, min, max, d.fmt); box.w -= D * ns; box.y += D * ns * .7; box.h -= D * ns * .7;
     const ax = valueAxis(min, max, box, false, o, d.fmt), n = d.cats.length, band = box.w / n, out = [ax.svg, catLabels(d.cats, box, false, band)];
     for (let j = ns - 1; j >= 0; j--) {
@@ -5375,7 +5387,134 @@ $('#view-sheets').addEventListener('change', e => {
 });
 document.addEventListener('keydown', e => { if (UI.view === 'sheets' && SH.bookId && (e.metaKey || e.ctrlKey) && e.key.toLowerCase() === 'f' && !modalOpen()) { e.preventDefault(); openFind(); } });
 </script>
+<script>
+/* ================= Sheets: chart styling, axis titles, trendlines, error bars, 3D controls ================= */
+const CHART_PALETTES = {
+  default: { name: 'Default', c: [1, 2, 3, 4, 5, 6, 7, 8].map(i => `var(--s${i})`) },
+  ocean: { name: 'Ocean', c: ['#1f5fae', '#2a8bd6', '#14a3b8', '#3ec1c9', '#5b7fd8', '#0f7a8a', '#7aa7e8', '#26518c'] },
+  sunset: { name: 'Sunset', c: ['#e8590c', '#f08c00', '#d6336c', '#f2b705', '#c2255c', '#fa5252', '#e67700', '#ae3ec9'] },
+  forest: { name: 'Forest', c: ['#2b8a3e', '#5c940d', '#0b7285', '#a9a12a', '#37b24d', '#087f5b', '#8f7a3a', '#74b816'] },
+  mono: { name: 'Mono', c: ['#3d5a80', '#5c7aa3', '#7d9ac4', '#9db6dc', '#2a3f5f', '#4a6890', '#6c8cb8', '#8fa9d0'] },
+  vivid: { name: 'Vivid', c: ['#7048e8', '#f03e3e', '#12b886', '#fab005', '#1c7ed6', '#e64980', '#fd7e14', '#15aabf'] },
+};
+const is3D = type => /3d$/.test(type);
+const TRENDS = [['none', 'None'], ['linear', 'Linear'], ['exp', 'Exponential'], ['log', 'Logarithmic'], ['avg', 'Moving average']];
+const ERRBARS = [['none', 'None'], ['p5', '5%'], ['p10', '10%'], ['sd', 'Standard deviation']];
 
+/* fit y = f(x) over points; returns a function or null */
+function trendFn(kind, pts) {
+  pts = pts.filter(p => isFinite(p.x) && isFinite(p.y)); if (pts.length < 2) return null;
+  const lin = (P) => { const n = P.length, sx = sumOf(P.map(p => p.x)), sy = sumOf(P.map(p => p.y)), sxx = sumOf(P.map(p => p.x * p.x)), sxy = sumOf(P.map(p => p.x * p.y)), den = n * sxx - sx * sx; if (!den) return null; const m = (n * sxy - sx * sy) / den; return { m, b: (sy - m * sx) / n }; };
+  if (kind === 'linear') { const f = lin(pts); return f && (x => f.m * x + f.b); }
+  if (kind === 'exp') { const P = pts.filter(p => p.y > 0).map(p => ({ x: p.x, y: Math.log(p.y) })), f = P.length >= 2 && lin(P); return f && (x => Math.exp(f.b) * Math.exp(f.m * x)); }
+  if (kind === 'log') { const P = pts.filter(p => p.x > 0).map(p => ({ x: Math.log(p.x), y: p.y })), f = P.length >= 2 && lin(P); return f && (x => x > 0 ? f.m * Math.log(x) + f.b : NaN); }
+  return null;
+}
+function errSize(kind, v, values) {
+  if (kind === 'p5') return Math.abs(v) * .05; if (kind === 'p10') return Math.abs(v) * .1;
+  if (kind === 'sd') { const m = sumOf(values) / values.length; return Math.sqrt(sumOf(values.map(x => (x - m) ** 2)) / Math.max(1, values.length - 1)); }
+  return 0;
+}
+/* overlay of trendlines and error bars. pos(series j, index i) gives [x, y] of a mark; ypos maps a value to y */
+function chartOverlay(d, o, X, ypos, box, xsOf) {
+  const out = [], trend = o.trend || 'none', eb = o.errBars || 'none';
+  d.series.forEach((s, j) => {
+    if (eb !== 'none') s.values.forEach((v, i) => {
+      const e = errSize(eb, v, s.values); if (!e) return; const x = X(j, i), y1 = clamp(ypos(v - e), box.y, box.y + box.h), y2 = clamp(ypos(v + e), box.y, box.y + box.h);
+      out.push(`<path class="ch-err" d="M${x},${y1}V${y2}M${x - 4},${y1}h8M${x - 4},${y2}h8"/>`);
+    });
+    if (trend === 'none') return;
+    const xs = xsOf ? xsOf(j) : s.values.map((_, i) => i + 1), pts = s.values.map((v, i) => ({ x: xs[i], y: v }));
+    let line = [];
+    if (trend === 'avg') { const per = Math.min(3, pts.length); for (let i = per - 1; i < pts.length; i++) line.push([X(j, i), ypos(sumOf(s.values.slice(i - per + 1, i + 1)) / per)]); }
+    else {
+      const f = trendFn(trend, pts); if (!f) return;
+      const order = pts.map((p, i) => i).sort((a, b) => pts[a].x - pts[b].x), lo = order[0], hi = order[order.length - 1], steps = trend === 'linear' ? 1 : 24;
+      for (let k = 0; k <= steps; k++) { const xv = pts[lo].x + (pts[hi].x - pts[lo].x) * k / steps, y = f(xv); if (!isFinite(y)) continue; const sx = X(j, lo) + (X(j, hi) - X(j, lo)) * k / steps; line.push([sx, clamp(ypos(y), box.y - 4, box.y + box.h + 4)]); }
+    }
+    if (line.length > 1) out.push(`<path class="ch-trend" d="${line.map((p, i) => (i ? 'L' : 'M') + p[0].toFixed(1) + ',' + p[1].toFixed(1)).join('')}" style="stroke:${pal(j)}"><title>${esc(s.name)} trendline (${TRENDS.find(t => t[0] === trend)[1].toLowerCase()})</title></path>`);
+  });
+  return out.join('');
+}
+/* wrap the 2D drawers that support trendlines and error bars */
+['column', 'line'].forEach(type => {
+  const base = CHART_DRAW[type];
+  CHART_DRAW[type] = function (d, box0, o, k, a5, a6) {
+    const svg = base.call(this, d, box0, o, k, a5, a6);
+    const stacked = type === 'column' ? a5 : a6, depth = type === 'column' ? (a6 || 0) : 0;
+    if (stacked || depth || ((o.trend || 'none') === 'none' && (o.errBars || 'none') === 'none')) return svg;
+    const vals = d.series.flatMap(s => s.values), min = Math.min(...vals), max = Math.max(...vals), box = fitLeft(box0, min, max, d.fmt), ax = valueAxis(min, max, box, false, o, d.fmt), n = d.cats.length, band = box.w / n;
+    let X;
+    if (type === 'column') { const ns = d.series.length, bw = Math.max(2, Math.min(24, (band * .72 - (ns - 1) * 2) / ns)), gw = ns * bw + (ns - 1) * 2; X = (j, i) => box.x + i * band + (band - gw) / 2 + j * (bw + 2) + bw / 2; }
+    else X = (j, i) => box.x + (n === 1 ? box.w / 2 : band / 2 + i * band);
+    return svg + chartOverlay(d, o, X, ax.pos, box);
+  };
+});
+{
+  const base = CHART_DRAW.scatter;
+  CHART_DRAW.scatter = function (d, box0, o, k, bubble) {
+    const svg = base.call(this, d, box0, o, k, bubble);
+    if (bubble || ((o.trend || 'none') === 'none' && (o.errBars || 'none') === 'none')) return svg;
+    const ser = scatterSeries(d), pts = ser.flatMap(s => s.pts); if (!pts.length) return svg;
+    const xs = pts.map(p => p.x), ys = pts.map(p => p.y), box = fitLeft(box0, Math.min(...ys), Math.max(...ys), d.fmt); box.x += 6; box.w -= 12;
+    const ay = valueAxis(Math.min(...ys), Math.max(...ys), box, false, o, d.fmt), tx = niceTicks(Math.min(...xs), Math.max(...xs)), XV = v => box.x + (v - tx.lo) / (tx.hi - tx.lo) * box.w;
+    const dd = { series: ser.map(s => ({ name: s.name, values: s.pts.map(p => p.y) })) };
+    return svg + chartOverlay(dd, o, (j, i) => XV(ser[j].pts[i].x), ay.pos, box, j => ser[j].pts.map(p => p.x));
+  };
+}
+CHART_DRAW.bubble = (d, b, o, k) => CHART_DRAW.scatter(d, b, o, k, true);
+
+/* palette, per-series colors, axis titles */
+const _renderChart0 = renderChart;
+renderChart = function (o) {
+  const P = (CHART_PALETTES[o.palette] || CHART_PALETTES.default).c, cols = o.colors || [], prev = PALFN;
+  PALFN = i => cols[i] ? `var(--cc-${cols[i]})` : P[i % P.length];
+  try {
+    const yT = o.yTitle && !/pie|donut|radar/.test(o.type) ? 18 : 0, xT = o.xTitle && !/pie|donut|radar/.test(o.type) ? 18 : 0;
+    if (!yT && !xT) return _renderChart0(o);
+    const inner = _renderChart0({ ...o, w: Math.max(160, o.w) - yT, h: o.h - xT }), m = inner.match(/^<svg viewBox="0 0 ([\d.]+) ([\d.]+)"[^>]*>([\s\S]*)<\/svg>$/);
+    if (!m) return inner;
+    const w = +m[1] + yT, hh = +m[2] + xT, body = m[3];
+    return `<svg viewBox="0 0 ${w} ${hh}" width="${w}" height="${hh}" role="img" aria-label="${esc(chartLabel(o.type) + (o.title ? ': ' + o.title : ''))}"><g transform="translate(${yT} 0)">${body}</g>${yT ? `<text class="ch-axis-t" transform="translate(13 ${(+m[2]) / 2}) rotate(-90)" text-anchor="middle">${esc(o.yTitle)}</text>` : ''}${xT ? `<text class="ch-axis-t" x="${yT + (+m[1]) / 2}" y="${hh - 4}" text-anchor="middle">${esc(o.xTitle)}</text>` : ''}</svg>`;
+  } finally { PALFN = prev; }
+};
+
+/* chart side panel additions */
+const _sideChart0 = sideChart;
+sideChart = function (o) {
+  const d = chartData(o), names = d ? ((['pie', 'donut', 'pie3d'].includes(o.type) || ['icolumn', 'ibar', 'idonut'].includes(o.type)) ? (['icolumn', 'ibar', 'idonut'].includes(o.type) ? d.series.map(s => s.name) : pieSlices(d).map(s => s.name)) : ['scatter', 'bubble'].includes(o.type) ? scatterSeries(d).map(s => s.name) : d.series.map(s => s.name)) : [];
+  const axes = !/pie|donut|radar/.test(o.type), canTrend = ['column', 'line', 'area', 'scatter'].includes(o.type), cur = o.palette || 'default';
+  const P = (CHART_PALETTES[cur] || CHART_PALETTES.default).c;
+  const sel = (key, list, v) => `<select class="inp" data-cprop="${key}">${list.map(([k, l]) => `<option value="${k}" ${(v || 'none') === k ? 'selected' : ''}>${l}</option>`).join('')}</select>`;
+  let html = _sideChart0(o);
+  html += `<div class="side-sec"><div class="side-title">Chart colors</div><div class="pal-row">${Object.entries(CHART_PALETTES).map(([k, p]) => `<button class="pal-btn${cur === k ? ' on' : ''}" data-cpal="${k}" title="${p.name}"><span>${p.c.slice(0, 5).map(c => `<i style="background:${c}"></i>`).join('')}</span>${p.name}</button>`).join('')}</div>
+    ${names.length ? `<div class="side-sub">Series colors</div>${names.slice(0, 12).map((n, i) => `<div class="ser-row"><i class="ser-dot" style="background:${(o.colors || [])[i] ? `var(--cc-${o.colors[i]})` : P[i % P.length]}"></i><span class="grow ellip">${esc(n || 'Series ' + (i + 1))}</span><select class="inp inp-sm" data-ccolor="${i}"><option value="">Style color</option>${SH_COLORS.map(c => `<option value="${c}" ${(o.colors || [])[i] === c ? 'selected' : ''}>${c[0].toUpperCase() + c.slice(1)}</option>`).join('')}</select></div>`).join('')}` : ''}</div>`;
+  if (axes) html += `<div class="side-sec"><div class="side-title">Axes</div><label class="side-lab">Value axis title<input class="inp" data-cprop="yTitle" value="${esc(o.yTitle || '')}" placeholder="e.g. Revenue"></label><label class="side-lab">Category axis title<input class="inp" data-cprop="xTitle" value="${esc(o.xTitle || '')}" placeholder="e.g. Month"></label></div>`;
+  if (canTrend) html += `<div class="side-sec"><div class="side-title">Series</div><label class="side-lab">Trendline${sel('trend', TRENDS, o.trend)}</label><label class="side-lab">Error bars${sel('errBars', ERRBARS, o.errBars)}</label></div>`;
+  if (is3D(o.type)) {
+    const pie = o.type === 'pie3d', dep = o.depth ?? (pie ? 22 : o.type.startsWith('line') || o.type.startsWith('area') ? 14 : 12);
+    html += `<div class="side-sec"><div class="side-title">3D scene</div><label class="side-lab">Depth <span class="muted" data-cnumv="depth">${dep}</span><input type="range" min="2" max="40" value="${dep}" data-cnum="depth"></label>${pie ? `<label class="side-lab">Tilt <span class="muted" data-cnumv="tilt">${Math.round((o.tilt ?? .58) * 100)}%</span><input type="range" min="25" max="90" value="${Math.round((o.tilt ?? .58) * 100)}" data-cnum="tilt"></label><label class="side-lab">Rotation <span class="muted" data-cnumv="rot">${o.rot || 0}°</span><input type="range" min="0" max="359" value="${o.rot || 0}" data-cnum="rot"></label>` : ''}<button class="btn wide" data-c3reset>Reset 3D view</button></div>`;
+  }
+  return html;
+};
+$('#view-sheets').addEventListener('click', e => {
+  const b = e.target.closest('[data-cpal],[data-c3reset]'); if (!b || !b.closest('#sh-side')) return;
+  const o = SH.sel?.obj && findObj(SH.sel.obj); if (!o || o.kind !== 'chart') return;
+  shPush(); if (b.dataset.cpal) { o.palette = b.dataset.cpal; o.colors = []; } else { delete o.depth; delete o.tilt; delete o.rot; } shSave(); shRender();
+});
+$('#view-sheets').addEventListener('input', e => {
+  const el = e.target; if (!el.dataset.cnum || !el.closest('#sh-side')) return;
+  const o = SH.sel?.obj && findObj(SH.sel.obj); if (!o) return; const k = el.dataset.cnum, v = +el.value;
+  if (!SH.c3pushed) { shPush(); SH.c3pushed = true; }
+  o[k] = k === 'tilt' ? v / 100 : v; const lab = $(`#sh-side [data-cnumv="${k}"]`); if (lab) lab.textContent = k === 'tilt' ? v + '%' : k === 'rot' ? v + '°' : v;
+  const ch = $(`#sh-page [data-id="${o.id}"]`); if (ch) ch.outerHTML = objHTML(o);
+});
+$('#view-sheets').addEventListener('change', e => {
+  const el = e.target; if (!el.closest('#sh-side')) return; const o = SH.sel?.obj && findObj(SH.sel.obj); if (!o || o.kind !== 'chart') return;
+  if (el.dataset.cnum) { SH.c3pushed = false; shSave(); renderSheetCanvas(); }
+  else if (el.dataset.ccolor != null) { shPush(); o.colors = o.colors || []; o.colors[+el.dataset.ccolor] = el.value || null; shSave(); shRender(); }
+});
+</script>
 
 
 <script>

@@ -1,0 +1,2338 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Northstar CRM</title>
+<style>
+:root{
+  --bg:#f5f5f3;--panel:#fff;--panel-2:#fafaf8;--hover:#f0f0ed;--text:#1d1d1f;--muted:#6e6e73;--border:#e4e4e0;
+  --accent:#2f6fed;--accent-weak:#e8efff;--danger:#d93f3f;--success:#1e9e5a;--warn:#c27c00;
+  --canvas:#ecebe6;--dot:#cfcec8;--card:#fff;--col-bg:#e2e1dc;--line:#86868c;
+  --shadow:0 1px 2px rgba(0,0,0,.07),0 2px 8px rgba(0,0,0,.06);--shadow-lg:0 12px 32px rgba(0,0,0,.18);
+  --t-red:#fdeaea;--t-orange:#feeedd;--t-yellow:#fff5c9;--t-green:#e3f5ea;--t-teal:#ddf4f0;--t-blue:#e6edfe;--t-purple:#f1e8fb;--t-pink:#fce7f2;--t-gray:#ececee;
+  --cc-red:#e5484d;--cc-orange:#f76b15;--cc-yellow:#e2b203;--cc-green:#30a46c;--cc-teal:#12a594;--cc-blue:#3e63dd;--cc-purple:#8e4ec6;--cc-pink:#d6409f;--cc-gray:#8b8d98;
+  color-scheme:light;
+}
+:root[data-theme="dark"]{
+  --bg:#141416;--panel:#1c1c1f;--panel-2:#202024;--hover:#26262b;--text:#ececef;--muted:#9b9ba3;--border:#2e2e33;
+  --accent:#6b9bff;--accent-weak:#1d2a47;--danger:#ff6b6b;--success:#3ccf85;--warn:#f0b13c;
+  --canvas:#18181b;--dot:#2c2c31;--card:#232327;--col-bg:#2a2a2f;--line:#8e8e96;
+  --shadow:0 1px 2px rgba(0,0,0,.4),0 2px 8px rgba(0,0,0,.3);--shadow-lg:0 12px 32px rgba(0,0,0,.55);
+  --t-red:#3b1d1f;--t-orange:#3a2414;--t-yellow:#352d0e;--t-green:#15301f;--t-teal:#102f2b;--t-blue:#1b2545;--t-purple:#2b1e3d;--t-pink:#3a1b2e;--t-gray:#2c2c31;
+  color-scheme:dark;
+}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){
+    --bg:#141416;--panel:#1c1c1f;--panel-2:#202024;--hover:#26262b;--text:#ececef;--muted:#9b9ba3;--border:#2e2e33;
+    --accent:#6b9bff;--accent-weak:#1d2a47;--danger:#ff6b6b;--success:#3ccf85;--warn:#f0b13c;
+    --canvas:#18181b;--dot:#2c2c31;--card:#232327;--col-bg:#2a2a2f;--line:#8e8e96;
+    --shadow:0 1px 2px rgba(0,0,0,.4),0 2px 8px rgba(0,0,0,.3);--shadow-lg:0 12px 32px rgba(0,0,0,.55);
+    --t-red:#3b1d1f;--t-orange:#3a2414;--t-yellow:#352d0e;--t-green:#15301f;--t-teal:#102f2b;--t-blue:#1b2545;--t-purple:#2b1e3d;--t-pink:#3a1b2e;--t-gray:#2c2c31;
+    color-scheme:dark;
+  }
+}
+*{box-sizing:border-box}
+html,body{margin:0;height:100%}
+body{font-family:Inter,ui-sans-serif,system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;background:var(--bg);color:var(--text);font-size:14px;-webkit-font-smoothing:antialiased;overflow:hidden}
+button,input,select,textarea{font:inherit;color:inherit}
+.ic{width:18px;height:18px;flex:none}
+.muted{color:var(--muted)}
+kbd{font:11px ui-monospace,monospace;background:var(--hover);border:1px solid var(--border);border-radius:4px;padding:1px 5px;color:var(--muted)}
+#app{display:flex;height:100vh;height:100dvh}
+/* nav */
+#nav{width:224px;flex:none;background:var(--panel);border-right:1px solid var(--border);display:flex;flex-direction:column;padding:14px 10px;gap:2px;overflow-y:auto}
+.brand{display:flex;align-items:center;gap:10px;font-weight:700;font-size:16px;padding:4px 10px 16px}
+.brand-mark{width:28px;height:28px;border-radius:8px;background:linear-gradient(135deg,var(--accent),#8e4ec6);display:grid;place-items:center;color:#fff;font-size:14px}
+.nav-item{display:flex;align-items:center;gap:10px;padding:8px 10px;border-radius:8px;color:var(--muted);cursor:pointer;border:0;background:none;text-align:left;width:100%}
+.nav-item:hover{background:var(--hover);color:var(--text)}
+.nav-item.active{background:var(--accent-weak);color:var(--accent);font-weight:600}
+.nav-item kbd{margin-left:auto}
+.nav-label{font-size:11px;text-transform:uppercase;letter-spacing:.06em;color:var(--muted);padding:18px 10px 6px}
+.nav-board{display:flex;gap:8px;align-items:center;font-size:13px;padding:6px 10px;border:0;background:none;border-radius:6px;cursor:pointer;color:var(--text);text-align:left;width:100%;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.nav-board:hover{background:var(--hover)}
+.nav-spacer{flex:1}
+.save-state{font-size:11px;color:var(--muted);padding:8px 10px 0}
+#main{flex:1;min-width:0;position:relative;overflow:hidden}
+.view{position:absolute;inset:0;overflow:auto;padding:28px 32px 48px;display:none}
+.view.active{display:block}
+.view.notes{padding:0;overflow:hidden}
+.view.notes.active{display:flex;flex-direction:column}
+/* common ui */
+.page-head{display:flex;align-items:flex-end;justify-content:space-between;gap:16px;margin-bottom:20px;flex-wrap:wrap}
+.page-head h1{margin:0 0 4px;font-size:24px;letter-spacing:-.01em}
+.page-head p{margin:0}
+.head-actions{display:flex;gap:8px;flex-wrap:wrap}
+.btn{display:inline-flex;align-items:center;gap:6px;padding:7px 12px;border-radius:8px;border:1px solid var(--border);background:var(--panel);cursor:pointer;white-space:nowrap}
+.btn:hover{background:var(--hover)}
+.btn.primary{background:var(--accent);border-color:var(--accent);color:#fff}
+.btn.primary:hover{filter:brightness(1.07)}
+.btn.danger{color:var(--danger)}
+.btn .ic{width:16px;height:16px}
+.icon-btn{display:inline-grid;place-items:center;width:32px;height:32px;border-radius:8px;border:0;background:none;cursor:pointer;color:var(--muted)}
+.icon-btn:hover{background:var(--hover);color:var(--text)}
+.icon-btn:disabled{opacity:.35;cursor:default}
+.panel{background:var(--panel);border:1px solid var(--border);border-radius:12px;padding:18px}
+.panel h3{margin:0 0 14px;font-size:14px;display:flex;justify-content:space-between;align-items:center}
+.panel h3 a,.linkish{color:var(--accent);font-weight:500;font-size:13px;cursor:pointer;background:none;border:0;padding:0}
+input.inp,select.inp,textarea.inp{width:100%;padding:8px 10px;border:1px solid var(--border);border-radius:8px;background:var(--panel);outline:none}
+input.inp:focus,select.inp:focus,textarea.inp:focus{border-color:var(--accent);box-shadow:0 0 0 3px var(--accent-weak)}
+textarea.inp{resize:vertical;min-height:70px}
+.search-field{display:flex;align-items:center;gap:8px;padding:0 10px;border:1px solid var(--border);border-radius:8px;background:var(--panel);min-width:240px}
+.search-field input{border:0;outline:0;background:none;padding:8px 0;flex:1;min-width:0}
+.search-field .ic{color:var(--muted);width:16px}
+.list-tools{display:flex;gap:10px;margin-bottom:14px;flex-wrap:wrap}
+.list-tools select{width:auto}
+.badge{display:inline-block;padding:2px 8px;border-radius:999px;font-size:12px;font-weight:600;background:var(--hover);color:var(--muted)}
+.b-lead{background:var(--t-gray);color:var(--cc-gray)}.b-prospect,.b-qualified{background:var(--t-blue);color:var(--cc-blue)}.b-customer,.b-won{background:var(--t-green);color:var(--cc-green)}.b-churned,.b-lost{background:var(--t-red);color:var(--cc-red)}.b-proposal{background:var(--t-purple);color:var(--cc-purple)}.b-negotiation{background:var(--t-orange);color:var(--cc-orange)}
+.b-high{background:var(--t-red);color:var(--cc-red)}.b-medium{background:var(--t-yellow);color:var(--warn)}.b-low{background:var(--t-gray);color:var(--cc-gray)}
+.avatar{width:32px;height:32px;border-radius:50%;display:grid;place-items:center;font-size:12px;font-weight:700;background:var(--accent-weak);color:var(--accent);flex:none}
+.avatar.sm{width:28px;height:28px;font-size:11px}
+.avatar.lg{width:48px;height:48px;font-size:16px;border-radius:14px}
+.avatar.kind-company{background:var(--t-teal);color:var(--cc-teal);border-radius:8px}
+.avatar.kind-deal{background:var(--t-green);color:var(--cc-green);border-radius:8px}
+.avatar .ic{width:16px;height:16px}
+.table-wrap{background:var(--panel);border:1px solid var(--border);border-radius:12px;overflow:auto}
+.table{width:100%;border-collapse:collapse;min-width:640px}
+.table th{text-align:left;font-size:12px;font-weight:600;color:var(--muted);padding:10px 14px;border-bottom:1px solid var(--border);cursor:pointer;user-select:none;white-space:nowrap;background:var(--panel-2)}
+.table th.sorted{color:var(--text)}
+.table td{padding:10px 14px;border-bottom:1px solid var(--border);vertical-align:middle}
+.table tr:last-child td{border-bottom:0}
+.table tbody tr{cursor:pointer}
+.table tbody tr:hover{background:var(--hover)}
+.cell-name{display:flex;align-items:center;gap:10px}
+.empty{padding:40px;text-align:center;color:var(--muted)}
+/* dashboard */
+.kpis{display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:14px;margin-bottom:18px}
+.kpi{background:var(--panel);border:1px solid var(--border);border-radius:12px;padding:16px 18px}
+.kpi .k-label{font-size:12px;color:var(--muted);font-weight:500}
+.kpi .k-val{font-size:26px;font-weight:700;margin-top:6px;letter-spacing:-.02em}
+.kpi .k-sub{font-size:12px;color:var(--muted);margin-top:2px}
+.dash-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(340px,1fr));gap:14px}
+.bar-row{display:grid;grid-template-columns:96px 1fr 84px;align-items:center;gap:10px;margin:8px 0;font-size:13px}
+.bar{height:10px;background:var(--hover);border-radius:6px;overflow:hidden}
+.bar>i{display:block;height:100%;border-radius:6px;background:var(--accent)}
+.bar-row b{text-align:right}
+.mini-row{display:flex;align-items:center;gap:10px;padding:8px 0;border-bottom:1px solid var(--border);font-size:13px}
+.mini-row:last-child{border-bottom:0}
+.mini-row .grow{flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.mini-row.overdue .due{color:var(--danger);font-weight:600}
+.act-ic{width:26px;height:26px;border-radius:50%;display:grid;place-items:center;background:var(--hover);flex:none;font-size:12px}
+.board-tiles{display:grid;grid-template-columns:repeat(auto-fill,minmax(120px,1fr));gap:10px}
+.board-tile{border:1px solid var(--border);border-radius:10px;padding:12px;cursor:pointer;background:var(--panel-2);text-align:left}
+.board-tile:hover{border-color:var(--accent)}
+.board-tile .bt-ic{font-size:22px}
+.board-tile .bt-t{font-weight:600;margin-top:6px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+/* kanban */
+.kanban{display:grid;grid-auto-flow:column;grid-auto-columns:minmax(240px,1fr);gap:12px;overflow-x:auto;padding-bottom:12px;align-items:start}
+.kcol{background:var(--panel-2);border:1px solid var(--border);border-radius:12px;padding:10px;min-height:200px}
+.kcol.over{border-color:var(--accent);background:var(--accent-weak)}
+.kcol-head{display:flex;align-items:center;gap:8px;font-weight:600;padding:4px 4px 10px}
+.kcol-sum{margin-left:auto;font-weight:600;font-size:12px;color:var(--muted)}
+.kcol-body{display:flex;flex-direction:column;gap:8px;min-height:40px}
+.kcard{background:var(--panel);border:1px solid var(--border);border-radius:10px;padding:10px 12px;cursor:grab;box-shadow:var(--shadow)}
+.kcard:hover{border-color:var(--accent)}
+.kcard-title{font-weight:600;margin-bottom:2px}
+.kcard-foot{display:flex;justify-content:space-between;margin-top:8px;font-size:12px}
+.dot{width:8px;height:8px;border-radius:50%;background:var(--cc-gray)}
+.st-qualified{background:var(--cc-blue)}.st-proposal{background:var(--cc-purple)}.st-negotiation{background:var(--cc-orange)}.st-won{background:var(--cc-green)}.st-lost{background:var(--cc-red)}
+/* tasks */
+.task-add{display:flex;gap:8px;margin-bottom:14px;flex-wrap:wrap}
+.task-add .inp:first-child{flex:1;min-width:200px}
+.task-add .inp{width:auto}
+.tabs{display:flex;gap:4px;margin-bottom:14px;flex-wrap:wrap}
+.tab{padding:6px 12px;border-radius:999px;border:1px solid var(--border);background:var(--panel);cursor:pointer;font-size:13px}
+.tab.on{background:var(--text);color:var(--bg);border-color:var(--text)}
+.task-row{display:flex;align-items:center;gap:10px;padding:8px 14px;border-bottom:1px solid var(--border);background:var(--panel)}
+.task-row:last-child{border-bottom:0}
+.task-row input[type=checkbox]{width:18px;height:18px;accent-color:var(--accent);flex:none}
+.task-row .t-title{flex:1;min-width:120px;border:0;background:none;outline:0;padding:4px 0}
+.task-row.done .t-title{text-decoration:line-through;color:var(--muted)}
+.task-row .t-due{border:0;background:none;color:var(--muted);width:130px}
+.task-row .t-due.overdue{color:var(--danger)}
+.task-row select{border:0;background:none;color:var(--muted)}
+.chip{display:inline-flex;align-items:center;gap:4px;padding:2px 8px;border-radius:999px;background:var(--hover);font-size:12px;cursor:pointer;border:0;white-space:nowrap}
+.chip:hover{background:var(--accent-weak);color:var(--accent)}
+.task-group{font-size:12px;font-weight:600;color:var(--muted);text-transform:uppercase;letter-spacing:.05em;margin:18px 0 8px}
+.task-list{border:1px solid var(--border);border-radius:12px;overflow:hidden}
+/* drawer */
+#drawer{position:fixed;top:0;right:0;bottom:0;width:min(480px,100vw);background:var(--panel);border-left:1px solid var(--border);box-shadow:var(--shadow-lg);transform:translateX(105%);transition:transform .2s ease;z-index:9000;display:flex;flex-direction:column}
+#drawer.open{transform:none}
+.drawer-head{display:flex;gap:14px;align-items:flex-start;padding:20px 20px 12px}
+.drawer-head h2{margin:2px 0;font-size:20px}
+.dh-text{flex:1;min-width:0}
+.eyebrow{font-size:11px;text-transform:uppercase;letter-spacing:.06em;color:var(--muted);font-weight:600}
+.drawer-actions{display:flex;gap:8px;padding:0 20px 14px;border-bottom:1px solid var(--border);flex-wrap:wrap}
+.drawer-body{overflow:auto;padding:4px 20px 30px;flex:1}
+.drawer-body section{padding:16px 0;border-bottom:1px solid var(--border)}
+.drawer-body section:last-child{border-bottom:0}
+.drawer-body h3{font-size:13px;margin:0 0 12px}
+.form-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.form-grid label{display:flex;flex-direction:column;gap:4px;font-size:12px;color:var(--muted);font-weight:500}
+.form-grid label.full{grid-column:1/-1}
+.form-grid .inp{color:var(--text);font-size:14px}
+.composer{display:flex;flex-direction:column;gap:8px;margin-bottom:12px}
+.composer-row{display:flex;gap:8px}
+.composer-row select{width:auto}
+.timeline-item{display:flex;gap:10px;padding:8px 0}
+.timeline-item .ti-text{flex:1;font-size:13px;white-space:pre-wrap}
+.timeline-item .ti-meta{font-size:11px;color:var(--muted);margin-top:2px}
+.x-btn{border:0;background:none;color:var(--muted);cursor:pointer;opacity:.5;padding:2px 4px}
+.x-btn:hover{opacity:1;color:var(--danger)}
+/* modal */
+#modal-root{position:fixed;inset:0;pointer-events:none;z-index:9500}
+.modal-wrap{position:fixed;inset:0;background:rgba(10,10,14,.45);display:flex;align-items:flex-start;justify-content:center;padding:10vh 16px 16px;pointer-events:auto}
+.modal{background:var(--panel);border:1px solid var(--border);border-radius:14px;box-shadow:var(--shadow-lg);width:min(440px,100%);padding:20px;max-height:80vh;overflow:auto}
+.modal.wide{width:min(960px,100%);padding:0;max-height:86vh;display:flex;flex-direction:column}
+.modal-wrap.top{padding-top:4vh}
+.modal h2{margin:0 0 14px;font-size:17px}
+.modal-actions{display:flex;justify-content:flex-end;gap:8px;margin-top:16px}
+.search-modal{width:min(620px,100%);padding:0}
+.search-modal .search-field{border:0;border-bottom:1px solid var(--border);border-radius:0;padding:4px 16px}
+.search-modal .search-field input{font-size:16px;padding:12px 0}
+.search-results{max-height:52vh;overflow:auto;padding:6px}
+.sr-group{font-size:11px;font-weight:600;color:var(--muted);text-transform:uppercase;letter-spacing:.05em;padding:10px 10px 4px}
+.sr-item{display:flex;gap:10px;align-items:center;padding:8px 10px;border-radius:8px;cursor:pointer}
+.sr-item.on{background:var(--accent-weak)}
+.sr-item .sr-t{font-weight:500}
+.sr-item .sr-s{font-size:12px;color:var(--muted);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.search-foot{font-size:12px;padding:10px 16px;border-top:1px solid var(--border)}
+.pick-list{max-height:50vh;overflow:auto;margin-top:10px}
+.tpl-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(180px,1fr));gap:10px}
+.tpl{border:1px solid var(--border);border-radius:12px;padding:14px;cursor:pointer;background:var(--panel-2);text-align:left}
+.tpl:hover{border-color:var(--accent)}
+.tpl b{display:block;margin:6px 0 2px}
+.tpl span{font-size:12px;color:var(--muted)}
+.tpl .tpl-ic{font-size:22px}
+.emoji-grid{display:grid;grid-template-columns:repeat(8,1fr);gap:6px}
+.emoji-grid button{font-size:22px;border:0;background:var(--hover);border-radius:8px;padding:6px;cursor:pointer}
+.shortcuts{display:grid;grid-template-columns:1fr auto;gap:8px 16px;font-size:13px}
+/* menu, toast */
+#menu{position:fixed;z-index:9800;background:var(--panel);border:1px solid var(--border);border-radius:10px;box-shadow:var(--shadow-lg);padding:6px;min-width:200px}
+.menu-item{display:flex;align-items:center;gap:10px;width:100%;padding:7px 10px;border:0;background:none;border-radius:6px;cursor:pointer;text-align:left}
+.menu-item:hover{background:var(--hover)}
+.menu-item.danger{color:var(--danger)}
+.menu-item kbd{margin-left:auto}
+.menu-item .ic{width:16px;height:16px;color:var(--muted)}
+.menu-sep{height:1px;background:var(--border);margin:5px 4px}
+.color-row{display:flex;gap:5px;padding:6px 8px;flex-wrap:wrap}
+.color-dot{width:20px;height:20px;border-radius:50%;border:2px solid var(--panel);box-shadow:0 0 0 1px var(--border);cursor:pointer;padding:0}
+.color-dot.none{background:var(--card);position:relative}
+.color-dot.none::after{content:'';position:absolute;left:3px;right:3px;top:50%;height:2px;background:var(--danger);transform:rotate(-45deg)}
+#toast{position:fixed;left:50%;bottom:24px;transform:translate(-50%,40px);opacity:0;pointer-events:none;background:var(--text);color:var(--bg);padding:10px 16px;border-radius:10px;display:flex;gap:14px;align-items:center;z-index:9900;transition:.2s;font-size:13px;box-shadow:var(--shadow-lg);max-width:calc(100vw - 32px)}
+#toast.show{opacity:1;transform:translate(-50%,0);pointer-events:auto}
+#toast button{background:none;border:0;color:var(--accent);font-weight:700;cursor:pointer}
+[hidden]{display:none!important}
+</style>
+<style>
+/* ===== Notes (Milanote-style canvas) ===== */
+.notes-top{display:flex;align-items:center;gap:8px;padding:10px 14px;border-bottom:1px solid var(--border);background:var(--panel);min-height:54px;flex-wrap:wrap}
+.crumbs{display:flex;align-items:center;gap:2px;min-width:0;flex-wrap:wrap}
+.crumb{border:0;background:none;padding:4px 6px;border-radius:6px;cursor:pointer;color:var(--muted);display:inline-flex;gap:4px;align-items:center;max-width:180px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.crumb:hover{background:var(--hover);color:var(--text)}
+.crumb .ic{width:15px;height:15px}
+.crumb-sep{color:var(--muted)}
+.board-title-input{font-size:17px;font-weight:700;border:1px solid transparent;background:none;border-radius:6px;padding:4px 6px;min-width:80px;width:260px;max-width:40vw;outline:0}
+.board-title-input:hover:not(:disabled){border-color:var(--border)}
+.board-title-input:focus{border-color:var(--accent)}
+.notes-actions{margin-left:auto;display:flex;gap:4px;align-items:center}
+.notes-body{flex:1;position:relative;display:flex;min-height:0}
+.toolbar{width:72px;flex:none;background:var(--panel);border-right:1px solid var(--border);display:flex;flex-direction:column;align-items:center;padding:8px 0;gap:2px;overflow-y:auto;z-index:5}
+.tool{width:60px;border:0;background:none;border-radius:10px;padding:7px 2px 6px;display:flex;flex-direction:column;align-items:center;gap:3px;cursor:grab;color:var(--muted);font-size:11px;touch-action:none;user-select:none}
+.tool:hover{background:var(--hover);color:var(--text)}
+.tool.active{background:var(--accent-weak);color:var(--accent)}
+.tool .ic{width:20px;height:20px}
+.tool-sep{width:36px;height:1px;background:var(--border);margin:6px 0}
+#canvas{flex:1;position:relative;overflow:hidden;background-color:var(--canvas);background-image:radial-gradient(var(--dot) 1.2px,transparent 1.2px);touch-action:none;isolation:isolate;outline:0}
+#canvas.line-mode{cursor:crosshair}
+#canvas.panning,#canvas.panning *{cursor:grab!important}
+#canvas.drop-hover{box-shadow:inset 0 0 0 3px var(--accent)}
+#world{position:absolute;left:0;top:0;width:0;height:0;transform-origin:0 0}
+#lines{position:absolute;left:0;top:0;width:1px;height:1px;overflow:visible;pointer-events:none}
+.line-vis{fill:none;stroke-width:2;stroke-linecap:round}
+.line-vis.sel{stroke-width:3}
+.line-arrow{stroke:none}
+.line-hit{fill:none;stroke:transparent;stroke-width:16;pointer-events:stroke;cursor:pointer}
+.line-label{font-size:13px;font-weight:500;fill:var(--text);paint-order:stroke;stroke:var(--canvas);stroke-width:6px;stroke-linejoin:round;text-anchor:middle;dominant-baseline:middle;pointer-events:none}
+.line-handle{fill:var(--panel);stroke:var(--accent);stroke-width:2;pointer-events:all;cursor:grab}
+.line-temp{fill:none;stroke:var(--accent);stroke-width:2;stroke-dasharray:6 5}
+#marquee{position:absolute;border:1px solid var(--accent);background:color-mix(in srgb,var(--accent) 12%,transparent);pointer-events:none;z-index:99999}
+#empty-hint{position:absolute;left:50%;top:42%;transform:translate(-50%,-50%);text-align:center;color:var(--muted);pointer-events:none;max-width:340px}
+#empty-hint b{display:block;font-size:16px;color:var(--text);margin-bottom:4px}
+.zoom-ctl{position:absolute;right:14px;bottom:14px;display:flex;align-items:center;gap:2px;background:var(--panel);border:1px solid var(--border);border-radius:10px;padding:3px;box-shadow:var(--shadow);z-index:6}
+.zoom-ctl span{min-width:48px;text-align:center;font-size:12px;color:var(--muted);cursor:pointer}
+/* cards */
+.card{position:absolute;background:var(--tint,var(--card));border-radius:6px;box-shadow:var(--shadow);color:var(--text);font-size:14px;line-height:1.45;user-select:none;-webkit-user-select:none}
+.card.in-col{position:relative;left:auto!important;top:auto!important;width:auto!important}
+.card.selected{outline:2px solid var(--accent);outline-offset:1px}
+.card.dragging{box-shadow:var(--shadow-lg);opacity:.96;cursor:grabbing}
+.card.drop-into{outline:3px solid var(--accent);outline-offset:3px}
+.card img{pointer-events:none;-webkit-user-drag:none}
+.color-red{--tint:var(--t-red);--cc:var(--cc-red)}.color-orange{--tint:var(--t-orange);--cc:var(--cc-orange)}.color-yellow{--tint:var(--t-yellow);--cc:var(--cc-yellow)}.color-green{--tint:var(--t-green);--cc:var(--cc-green)}.color-teal{--tint:var(--t-teal);--cc:var(--cc-teal)}.color-blue{--tint:var(--t-blue);--cc:var(--cc-blue)}.color-purple{--tint:var(--t-purple);--cc:var(--cc-purple)}.color-pink{--tint:var(--t-pink);--cc:var(--cc-pink)}.color-gray{--tint:var(--t-gray);--cc:var(--cc-gray)}
+.card>.resize{position:absolute;right:-5px;bottom:-5px;width:14px;height:14px;cursor:nwse-resize;opacity:0;z-index:2}
+.card>.resize::after{content:'';position:absolute;right:4px;bottom:4px;width:7px;height:7px;border-right:2px solid var(--accent);border-bottom:2px solid var(--accent)}
+.card:hover>.resize,.card.selected>.resize{opacity:1}
+.card>.connector{position:absolute;right:-7px;top:50%;margin-top:-6px;width:12px;height:12px;border-radius:50%;background:var(--panel);border:2px solid var(--accent);opacity:0;cursor:crosshair;z-index:2}
+.card:hover>.connector{opacity:1}
+.card>.card-more{position:absolute;top:4px;right:4px;width:24px;height:22px;border-radius:6px;border:0;background:var(--panel);box-shadow:var(--shadow);display:grid;place-items:center;cursor:pointer;opacity:0;color:var(--muted);z-index:3;padding:0}
+.card>.card-more .ic{width:15px;height:15px}
+.card:hover>.card-more,.card.selected>.card-more{opacity:1}
+.card.is-editing>.card-more{opacity:0}
+.ed{outline:0;min-height:1.45em;word-wrap:break-word;overflow-wrap:anywhere}
+.ed.editing{user-select:text;-webkit-user-select:text;cursor:text}
+.ed.is-empty::before{content:attr(data-ph);color:var(--muted);opacity:.7;pointer-events:none;float:left;height:0;white-space:nowrap}
+.card:not(.selected) .ed.optional.is-empty:not(.editing){display:none}
+.rt h1{font-size:20px;margin:.2em 0 .3em;line-height:1.25}
+.rt h2{font-size:16.5px;margin:.2em 0 .3em}
+.rt h3{font-size:14.5px;margin:.2em 0}
+.rt p{margin:0}
+.rt ul,.rt ol{margin:.2em 0;padding-left:1.4em}
+.rt blockquote{margin:.3em 0;padding-left:10px;border-left:3px solid var(--cc,var(--border));color:var(--muted)}
+.rt code{font-family:ui-monospace,monospace;font-size:.9em;background:var(--hover);padding:1px 4px;border-radius:4px}
+.rt mark{background:#ffe066;color:#1d1d1f;border-radius:2px;padding:0 1px}
+.rt a{color:var(--accent)}
+.rt hr{border:0;border-top:1px solid var(--border)}
+.note-body{padding:12px 14px}
+/* todo */
+.t-todo{padding:10px 12px 8px}
+.todo-head{display:flex;align-items:flex-start;gap:8px;margin-bottom:4px}
+.todo-title{font-weight:700;flex:1}
+.todo-count{font-size:12px;color:var(--muted);padding-top:2px}
+.todo-progress{height:3px;background:var(--hover);border-radius:2px;margin:2px 0 6px;overflow:hidden}
+.todo-progress i{display:block;height:100%;background:var(--success)}
+.todo-item{display:flex;gap:8px;align-items:flex-start;padding:3px 0}
+.todo-check{width:17px;height:17px;border-radius:4px;border:2px solid var(--muted);background:none;flex:none;margin-top:2px;cursor:pointer;padding:0;display:grid;place-items:center;color:#fff}
+.todo-item.done .todo-check{background:var(--success);border-color:var(--success)}
+.todo-item.done .todo-check::after{content:'';width:4px;height:8px;border:solid #fff;border-width:0 2px 2px 0;transform:rotate(45deg) translate(-1px,-1px)}
+.todo-text{flex:1}
+.todo-item.done .todo-text{text-decoration:line-through;color:var(--muted)}
+.todo-add{border:0;background:none;color:var(--muted);cursor:pointer;padding:4px 0;font-size:13px;opacity:0}
+.card:hover .todo-add,.card.selected .todo-add{opacity:1}
+/* link */
+.t-link{overflow:hidden}
+.link-thumb{position:relative;aspect-ratio:16/9;background:#000;border-radius:6px 6px 0 0;overflow:hidden}
+.link-thumb img{width:100%;height:100%;object-fit:cover;display:block}
+.link-thumb .play{position:absolute;inset:0;margin:auto;width:52px;height:36px;border-radius:10px;background:rgba(0,0,0,.65);color:#fff;display:grid;place-items:center;font-size:16px}
+.link-body{padding:10px 12px}
+.link-host{display:flex;gap:6px;align-items:center;font-size:12px;color:var(--muted);margin-bottom:4px}
+.link-host img{width:16px;height:16px;border-radius:3px}
+.link-title{font-weight:600}
+.link-desc{font-size:13px;color:var(--muted);margin-top:2px}
+.link-url{display:inline-block;margin-top:6px;font-size:12px;color:var(--accent);text-decoration:none}
+/* image/file */
+.t-image{padding:0;overflow:hidden}
+.t-image .img-wrap img,.t-sketch img{display:block;width:100%;height:auto}
+.t-image .caption{padding:8px 10px;font-size:13px}
+.t-file{display:flex;gap:10px;align-items:center;padding:12px}
+.file-ext{width:40px;height:48px;border-radius:6px;background:var(--accent);color:#fff;font-size:11px;font-weight:700;display:grid;place-items:center;flex:none;text-transform:uppercase}
+.file-meta{min-width:0;flex:1}
+.file-name{font-weight:600;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.file-size{font-size:12px;color:var(--muted)}
+/* column */
+.t-column{background:var(--tint,var(--col-bg));padding:8px 8px 10px;box-shadow:none}
+.t-column.color-red,.t-column.color-orange,.t-column.color-yellow,.t-column.color-green,.t-column.color-teal,.t-column.color-blue,.t-column.color-purple,.t-column.color-pink,.t-column.color-gray{background:color-mix(in srgb,var(--cc) 22%,var(--col-bg))}
+.col-head{display:flex;align-items:center;gap:6px;padding:4px 30px 8px 6px}
+.col-title{font-weight:700;flex:1}
+.col-count{font-size:12px;color:var(--muted)}
+.col-toggle{border:0;background:none;cursor:pointer;color:var(--muted);padding:0 4px;font-size:13px}
+.col-body{display:flex;flex-direction:column;gap:8px;min-height:44px}
+.col-body.collapsed{display:none}
+.col-empty{border:2px dashed color-mix(in srgb,var(--muted) 35%,transparent);border-radius:6px;padding:14px;text-align:center;font-size:12px;color:var(--muted)}
+.drop-ph{height:0;margin-bottom:-8px;position:relative}
+.drop-ph::after{content:'';position:absolute;left:0;right:0;top:-1px;height:3px;border-radius:2px;background:var(--accent)}
+/* board card */
+.t-board{padding:10px;text-align:center}
+.board-icon{width:72px;height:72px;margin:4px auto 8px;border-radius:12px;background:var(--cc,var(--accent-weak));display:grid;place-items:center;font-size:32px}
+.board-title{font-weight:600;font-size:13px}
+.board-meta{font-size:11px;color:var(--muted)}
+/* comment */
+.t-comment{padding:10px 12px;border-left:4px solid var(--warn)}
+.cm-item{padding:4px 0 8px}
+.cm-meta{display:flex;align-items:center;gap:6px;font-size:12px}
+.cm-meta .avatar{width:22px;height:22px;font-size:10px}
+.cm-meta .muted{font-size:11px}
+.cm-meta .x-btn{margin-left:auto}
+.cm-text{font-size:13px;margin:3px 0 0 28px;white-space:pre-wrap}
+.cm-input{width:100%;border:1px solid var(--border);border-radius:6px;background:var(--panel);padding:6px 8px;resize:none;font-size:13px;outline:0}
+.cm-input:focus{border-color:var(--accent)}
+/* swatch */
+.t-swatch{overflow:hidden}
+.sw-block{height:96px;border-radius:6px 6px 0 0;position:relative}
+.sw-input{position:absolute;opacity:0;width:1px;height:1px;left:50%;top:50%;pointer-events:none}
+.sw-body{padding:8px 10px}
+.sw-hex{font:600 13px ui-monospace,monospace}
+.sw-name{font-size:12px;color:var(--muted)}
+/* sketch, doc, record */
+.t-sketch{background:#fff;overflow:hidden}
+.sketch-empty{padding:34px 12px;text-align:center;color:#888;font-size:13px}
+.t-doc{padding:14px}
+.doc-ic{font-size:26px}
+.doc-title{font-weight:700;margin:6px 0 4px}
+.doc-snip{font-size:12px;color:var(--muted);display:-webkit-box;-webkit-line-clamp:4;-webkit-box-orient:vertical;overflow:hidden}
+.t-record{padding:12px}
+.rec-head{display:flex;gap:10px;align-items:center;margin-bottom:8px}
+.rec-kind{font-size:10px;text-transform:uppercase;letter-spacing:.06em;color:var(--muted);font-weight:700}
+.rec-title{font-weight:700}
+.rec-sub{font-size:12px;color:var(--muted)}
+.rec-row{display:flex;justify-content:space-between;gap:8px;font-size:12px;padding:3px 0;border-top:1px solid var(--border)}
+.rec-row span{color:var(--muted)}
+.rec-open{margin-top:8px;border:0;background:none;color:var(--accent);cursor:pointer;padding:0;font-weight:600;font-size:12px}
+/* floating bars */
+#fmt,#linebar{position:fixed;z-index:9600;display:flex;gap:2px;background:var(--panel);border:1px solid var(--border);border-radius:10px;padding:4px;box-shadow:var(--shadow-lg)}
+#fmt button,#linebar button,.doc-bar button{border:0;background:none;min-width:30px;height:30px;border-radius:6px;cursor:pointer;font-size:13px;color:var(--text);display:grid;place-items:center;padding:0 6px}
+#fmt button:hover,#linebar button:hover,.doc-bar button:hover{background:var(--hover)}
+#fmt button.on,#linebar button.on{background:var(--accent-weak);color:var(--accent)}
+.fsep{width:1px;background:var(--border);margin:4px 2px}
+#linebar .color-dot{width:18px;height:18px;margin:6px 2px}
+#tool-ghost{position:fixed;z-index:9700;pointer-events:none;background:var(--panel);border:1px solid var(--accent);border-radius:8px;padding:8px 12px;box-shadow:var(--shadow-lg);display:flex;gap:6px;align-items:center;font-size:13px;transform:translate(-50%,-50%)}
+/* doc editor & sketch modal */
+.doc-editor{display:flex;flex-direction:column;height:80vh}
+.doc-bar{display:flex;gap:2px;padding:8px 12px;border-bottom:1px solid var(--border);flex-wrap:wrap;align-items:center}
+.doc-bar .grow{flex:1}
+.doc-title-in{font-size:26px;font-weight:700;border:0;outline:0;background:none;padding:22px 40px 6px}
+.doc-body{flex:1;overflow:auto;padding:6px 40px 40px;outline:0;font-size:15px;line-height:1.6;user-select:text}
+.sketch-wrap{display:flex;flex-direction:column}
+.sketch-bar{display:flex;gap:6px;padding:10px 12px;border-bottom:1px solid var(--border);align-items:center;flex-wrap:wrap}
+.sketch-bar .grow{flex:1}
+.pen{width:24px;height:24px;border-radius:50%;border:2px solid var(--panel);box-shadow:0 0 0 1px var(--border);cursor:pointer;padding:0}
+.pen.on{box-shadow:0 0 0 2px var(--accent)}
+.size-btn{border:1px solid var(--border);background:var(--panel);border-radius:6px;height:28px;min-width:28px;cursor:pointer}
+.size-btn.on{border-color:var(--accent);color:var(--accent)}
+.sketch-canvas{display:block;width:100%;height:auto;max-height:68vh;background:#fff;touch-action:none;cursor:crosshair;aspect-ratio:3/2;object-fit:contain}
+.lightbox img{max-width:100%;max-height:80vh;display:block;margin:auto;border-radius:8px}
+body.is-dragging,body.is-dragging *{cursor:grabbing!important}
+/* responsive */
+@media (max-width:760px){
+  #app{flex-direction:column-reverse}
+  #nav{width:100%;height:auto;flex-direction:row;padding:4px 4px calc(4px + env(safe-area-inset-bottom));border-right:0;border-top:1px solid var(--border);justify-content:space-around;overflow-x:auto;overflow-y:hidden}
+  .brand,.nav-label,#nav-boards,.nav-spacer,.save-state,.nav-item kbd{display:none}
+  .nav-item{flex-direction:column;gap:2px;font-size:10px;padding:6px 4px;width:auto;flex:1;align-items:center;min-width:52px}
+  .view{padding:18px 16px 32px}
+  .search-field{min-width:0;flex:1}
+  .form-grid{grid-template-columns:1fr}
+  .notes-body{flex-direction:column-reverse}
+  .toolbar{width:100%;flex-direction:row;border-right:0;border-top:1px solid var(--border);overflow-x:auto;padding:4px;justify-content:flex-start}
+  .tool{width:auto;min-width:56px;flex:none}
+  .tool-sep{width:1px;height:30px;margin:0 4px}
+  .board-title-input{width:150px}
+  .notes-actions .btn span{display:none}
+  .zoom-ctl{bottom:84px;right:10px}
+  .dash-grid{grid-template-columns:1fr}
+}
+@media (prefers-reduced-motion:reduce){*{transition:none!important}}
+</style>
+</head>
+<body>
+<div id="app">
+  <aside id="nav"></aside>
+  <main id="main">
+    <section id="view-dashboard" class="view"></section>
+    <section id="view-contacts" class="view"></section>
+    <section id="view-companies" class="view"></section>
+    <section id="view-deals" class="view"></section>
+    <section id="view-tasks" class="view"></section>
+    <section id="view-notes" class="view notes">
+      <div class="notes-top">
+        <div class="crumbs" id="crumbs"></div>
+        <input id="board-title" class="board-title-input" spellcheck="false" aria-label="Board title">
+        <span id="board-link"></span>
+        <div class="notes-actions">
+          <button class="icon-btn" data-act="undo" title="Undo (Ctrl+Z)" id="btn-undo"></button>
+          <button class="icon-btn" data-act="redo" title="Redo (Ctrl+Shift+Z)" id="btn-redo"></button>
+          <button class="btn" data-act="templates" id="btn-tpl"></button>
+          <button class="icon-btn" data-act="board-menu" title="Board options" id="btn-bmenu"></button>
+        </div>
+      </div>
+      <div class="notes-body">
+        <div class="toolbar" id="toolbar"></div>
+        <div id="canvas" tabindex="-1">
+          <div id="world">
+            <svg id="lines" xmlns="http://www.w3.org/2000/svg"><g id="lines-g"></g></svg>
+            <div id="cards"></div>
+          </div>
+          <div id="marquee" hidden></div>
+          <div id="empty-hint" hidden><b>This board is empty</b>Drag something from the toolbar, double-click to add a note, or drop images and files here.</div>
+        </div>
+        <div class="zoom-ctl">
+          <button class="icon-btn" data-act="zoom-out" title="Zoom out" id="btn-zo"></button>
+          <span id="zoom-pct" data-act="zoom-reset" title="Reset zoom">100%</span>
+          <button class="icon-btn" data-act="zoom-in" title="Zoom in" id="btn-zi"></button>
+          <button class="icon-btn" data-act="zoom-fit" title="Fit to content" id="btn-zf"></button>
+        </div>
+      </div>
+    </section>
+  </main>
+</div>
+<aside id="drawer" aria-label="Record details"></aside>
+<div id="fmt" hidden></div>
+<div id="linebar" hidden></div>
+<div id="menu" hidden></div>
+<div id="tool-ghost" hidden></div>
+<div id="toast" role="status"></div>
+<div id="modal-root"></div>
+<script>
+'use strict';
+/* ================= Utilities ================= */
+const $ = (s, r = document) => r.querySelector(s);
+const $$ = (s, r = document) => [...r.querySelectorAll(s)];
+const uid = (p = '') => p + Math.random().toString(36).slice(2, 8) + Date.now().toString(36).slice(-5);
+const esc = s => String(s ?? '').replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
+const clamp = (v, a, b) => Math.max(a, Math.min(b, v));
+const money = n => '$' + Math.round(Number(n) || 0).toLocaleString();
+const slug = s => String(s || '').toLowerCase().replace(/[^a-z0-9]+/g, '-');
+const ymd = d => d.getFullYear() + '-' + String(d.getMonth() + 1).padStart(2, '0') + '-' + String(d.getDate()).padStart(2, '0');
+const todayStr = () => ymd(new Date());
+const dateAdd = days => ymd(new Date(Date.now() + days * 864e5));
+const initials = n => String(n || '?').trim().split(/\s+/).slice(0, 2).map(w => w[0] || '').join('').toUpperCase() || '?';
+function fmtDate(s) {
+  if (!s) return '—';
+  const d = new Date(s + 'T00:00:00'); if (isNaN(d)) return s;
+  return d.toLocaleDateString(undefined, { month: 'short', day: 'numeric', year: d.getFullYear() !== new Date().getFullYear() ? 'numeric' : undefined });
+}
+function timeAgo(t) {
+  const s = (Date.now() - t) / 1000;
+  if (s < 60) return 'just now'; if (s < 3600) return Math.floor(s / 60) + 'm ago';
+  if (s < 86400) return Math.floor(s / 3600) + 'h ago'; if (s < 604800) return Math.floor(s / 86400) + 'd ago';
+  return new Date(t).toLocaleDateString();
+}
+function fmtSize(b) { if (b < 1024) return b + ' B'; if (b < 1048576) return (b / 1024).toFixed(0) + ' KB'; return (b / 1048576).toFixed(1) + ' MB'; }
+function h(tag, attrs = {}, ...kids) {
+  const el = document.createElement(tag); let value;
+  for (const [k, v] of Object.entries(attrs || {})) {
+    if (v == null || v === false) continue;
+    if (k.startsWith('on') && typeof v === 'function') el.addEventListener(k.slice(2), v);
+    else if (k === 'class') el.className = v;
+    else if (k === 'html') el.innerHTML = v;
+    else if (k === 'style') el.style.cssText = v;
+    else if (k === 'value') value = v;
+    else el.setAttribute(k, v === true ? '' : v);
+  }
+  for (const kid of kids.flat()) { if (kid == null || kid === false) continue; el.append(kid instanceof Node ? kid : document.createTextNode(String(kid))); }
+  if (value !== undefined) el.value = value;
+  return el;
+}
+function parseHTML(html) { return new DOMParser().parseFromString('<!doctype html><body>' + (html || '') + '</body>', 'text/html'); }
+const ALLOWED = new Set(['B', 'STRONG', 'I', 'EM', 'U', 'S', 'STRIKE', 'DEL', 'A', 'UL', 'OL', 'LI', 'H1', 'H2', 'H3', 'P', 'BR', 'DIV', 'BLOCKQUOTE', 'CODE', 'PRE', 'MARK', 'SUB', 'SUP', 'HR']);
+const DROP = new Set(['SCRIPT', 'STYLE', 'IFRAME', 'OBJECT', 'EMBED', 'META', 'LINK', 'TEMPLATE', 'SVG', 'MATH', 'NOSCRIPT', 'TITLE', 'HEAD', 'FORM', 'INPUT', 'BUTTON', 'SELECT', 'TEXTAREA', 'IMG', 'VIDEO', 'AUDIO']);
+function cleanNode(node) {
+  for (const ch of [...node.childNodes]) {
+    if (ch.nodeType === 3) continue;
+    if (ch.nodeType !== 1) { ch.remove(); continue; }
+    if (DROP.has(ch.tagName)) { ch.remove(); continue; }
+    cleanNode(ch);
+    if (!ALLOWED.has(ch.tagName)) { ch.replaceWith(...ch.childNodes); continue; }
+    for (const a of [...ch.attributes]) {
+      if (ch.tagName === 'A' && a.name === 'href' && /^(https?:|mailto:|tel:)/i.test(a.value.trim())) continue;
+      ch.removeAttribute(a.name);
+    }
+    if (ch.tagName === 'A') { ch.setAttribute('target', '_blank'); ch.setAttribute('rel', 'noopener'); }
+  }
+}
+function sanitize(html) { const d = parseHTML(html); cleanNode(d.body); return d.body.innerHTML; }
+function htmlToText(html) {
+  const d = parseHTML(String(html || '').replace(/<\/(p|div|h\d|li|blockquote|pre)>|<br\s*\/?>/gi, '$&\n'));
+  return d.body.textContent.replace(/\n{2,}/g, '\n').trim();
+}
+function htmlToMd(html) {
+  const d = parseHTML(sanitize(html));
+  const walk = n => {
+    if (n.nodeType === 3) return n.nodeValue;
+    if (n.nodeType !== 1) return '';
+    const inner = () => [...n.childNodes].map(walk).join('');
+    switch (n.tagName) {
+      case 'B': case 'STRONG': return '**' + inner() + '**';
+      case 'I': case 'EM': return '_' + inner() + '_';
+      case 'S': case 'STRIKE': case 'DEL': return '~~' + inner() + '~~';
+      case 'CODE': return '`' + inner() + '`';
+      case 'A': return '[' + inner() + '](' + (n.getAttribute('href') || '') + ')';
+      case 'H1': return '\n# ' + inner() + '\n'; case 'H2': return '\n## ' + inner() + '\n'; case 'H3': return '\n### ' + inner() + '\n';
+      case 'LI': return '\n' + (n.parentNode.tagName === 'OL' ? ([...n.parentNode.children].indexOf(n) + 1) + '. ' : '- ') + inner();
+      case 'UL': case 'OL': return inner() + '\n';
+      case 'BLOCKQUOTE': return '\n> ' + inner() + '\n';
+      case 'BR': return '\n'; case 'P': case 'DIV': return '\n' + inner();
+      default: return inner();
+    }
+  };
+  return walk(d.body).replace(/\n{3,}/g, '\n\n').trim();
+}
+const textToHtml = t => String(t).split(/\r?\n/).map(l => '<div>' + (esc(l) || '<br>') + '</div>').join('');
+const isBlankHtml = html => !htmlToText(html).trim() && !/<(hr|li)/i.test(html || '');
+const isUrl = t => /^(https?:\/\/|www\.)[^\s]+$/i.test(String(t).trim());
+const normUrl = u => { u = String(u || '').trim(); if (!u) return ''; return /^[a-z][a-z0-9+.-]*:/i.test(u) ? u : 'https://' + u; };
+function safeUrl(u) { try { const x = new URL(normUrl(u)); return /^https?:$/.test(x.protocol) ? x : null; } catch { return null; } }
+function ytId(u) { const m = String(u || '').match(/(?:youtube\.com\/(?:watch\?(?:.*&)?v=|shorts\/|embed\/)|youtu\.be\/)([\w-]{11})/); return m ? m[1] : null; }
+const randomHex = () => '#' + ['e5484d', 'f76b15', 'e2b203', '30a46c', '12a594', '3e63dd', '8e4ec6', 'd6409f', '1d1d1f', 'f2e8cf'][Math.floor(Math.random() * 10)];
+function download(name, url) { const a = h('a', { href: url, download: name }); document.body.append(a); a.click(); a.remove(); }
+function downloadText(name, text, type = 'application/json') { const url = URL.createObjectURL(new Blob([text], { type })); download(name, url); setTimeout(() => URL.revokeObjectURL(url), 2000); }
+function readFile(file, as = 'dataURL') { return new Promise((res, rej) => { const r = new FileReader(); r.onload = () => res(r.result); r.onerror = rej; as === 'text' ? r.readAsText(file) : r.readAsDataURL(file); }); }
+function loadImg(src) { return new Promise((res, rej) => { const i = new Image(); i.onload = () => res(i); i.onerror = rej; i.src = src; }); }
+function pickFiles(accept = '', multiple = true) {
+  return new Promise(res => {
+    const inp = h('input', { type: 'file', accept, multiple, style: 'position:fixed;left:-9999px' });
+    inp.onchange = () => { res([...inp.files]); inp.remove(); };
+    inp.addEventListener('cancel', () => { res([]); inp.remove(); });
+    document.body.append(inp); inp.click();
+  });
+}
+
+/* ================= Icons ================= */
+const ICONS = {
+  grid: '<rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/>',
+  users: '<path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/>',
+  building: '<rect x="4" y="2" width="16" height="20" rx="2"/><path d="M9 22v-4h6v4"/><path d="M8 6h.01M16 6h.01M12 6h.01M12 10h.01M12 14h.01M16 10h.01M16 14h.01M8 10h.01M8 14h.01"/>',
+  dollar: '<line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/>',
+  check: '<polyline points="9 11 12 14 22 4"/><path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"/>',
+  layers: '<polygon points="12 2 2 7 12 12 22 7 12 2"/><polyline points="2 17 12 22 22 17"/><polyline points="2 12 12 17 22 12"/>',
+  search: '<circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/>',
+  settings: '<line x1="4" y1="21" x2="4" y2="14"/><line x1="4" y1="10" x2="4" y2="3"/><line x1="12" y1="21" x2="12" y2="12"/><line x1="12" y1="8" x2="12" y2="3"/><line x1="20" y1="21" x2="20" y2="16"/><line x1="20" y1="12" x2="20" y2="3"/><line x1="1" y1="14" x2="7" y2="14"/><line x1="9" y1="8" x2="15" y2="8"/><line x1="17" y1="16" x2="23" y2="16"/>',
+  plus: '<line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/>',
+  minus: '<line x1="5" y1="12" x2="19" y2="12"/>',
+  link: '<path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"/><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"/>',
+  sticky: '<path d="M15.5 3H5a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V8.5L15.5 3z"/><polyline points="15 3 15 9 21 9"/>',
+  todo: '<rect x="3" y="3" width="18" height="18" rx="2"/><polyline points="7 12 10 15 17 8"/>',
+  line: '<line x1="5" y1="19" x2="19" y2="5"/><polyline points="9 5 19 5 19 15"/>',
+  board: '<rect x="3" y="3" width="18" height="18" rx="3"/><rect x="7" y="7" width="4" height="4"/><rect x="13" y="7" width="4" height="10"/><rect x="7" y="13" width="4" height="4"/>',
+  columns: '<rect x="3" y="3" width="7" height="18" rx="1.5"/><rect x="14" y="3" width="7" height="12" rx="1.5"/>',
+  comment: '<path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/>',
+  image: '<rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/>',
+  upload: '<path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/>',
+  download: '<path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/>',
+  pen: '<path d="M12 20h9"/><path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z"/>',
+  droplet: '<path d="M12 2.69l5.66 5.66a8 8 0 1 1-11.31 0z"/>',
+  doc: '<path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/>',
+  idcard: '<rect x="2" y="5" width="20" height="14" rx="2"/><circle cx="8" cy="12" r="2"/><line x1="13" y1="10" x2="18" y2="10"/><line x1="13" y1="14" x2="18" y2="14"/>',
+  undo: '<polyline points="9 14 4 9 9 4"/><path d="M20 20v-7a4 4 0 0 0-4-4H4"/>',
+  redo: '<polyline points="15 14 20 9 15 4"/><path d="M4 20v-7a4 4 0 0 1 4-4h12"/>',
+  fit: '<path d="M8 3H5a2 2 0 0 0-2 2v3m18 0V5a2 2 0 0 0-2-2h-3m0 18h3a2 2 0 0 0 2-2v-3M3 16v3a2 2 0 0 0 2 2h3"/>',
+  more: '<circle cx="12" cy="12" r="1"/><circle cx="19" cy="12" r="1"/><circle cx="5" cy="12" r="1"/>',
+  trash: '<polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/>',
+  x: '<line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/>',
+  copy: '<rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/>',
+  template: '<rect x="3" y="3" width="18" height="18" rx="2"/><line x1="3" y1="9" x2="21" y2="9"/><line x1="9" y1="21" x2="9" y2="9"/>',
+  home: '<path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/>',
+  open: '<path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/>',
+  front: '<rect x="8" y="8" width="13" height="13" rx="2"/><path d="M4 16V4h12"/>',
+  back: '<rect x="3" y="3" width="13" height="13" rx="2"/><path d="M20 8v12H8"/>',
+  smile: '<circle cx="12" cy="12" r="10"/><path d="M8 14s1.5 2 4 2 4-2 4-2"/><line x1="9" y1="9" x2="9.01" y2="9"/><line x1="15" y1="9" x2="15.01" y2="9"/>',
+  moon: '<path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/>',
+  file: '<path d="M13 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V9z"/><polyline points="13 2 13 9 20 9"/>',
+  keyboard: '<rect x="2" y="6" width="20" height="12" rx="2"/><path d="M6 10h.01M10 10h.01M14 10h.01M18 10h.01M7 14h10"/>',
+};
+const icon = n => `<svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">${ICONS[n] || ''}</svg>`;
+
+/* ================= Storage (IndexedDB with localStorage fallback) ================= */
+const Store = {
+  p: null,
+  open() {
+    if (!this.p) this.p = new Promise((res, rej) => {
+      try { const r = indexedDB.open('northstar-crm', 1); r.onupgradeneeded = () => r.result.createObjectStore('kv'); r.onsuccess = () => res(r.result); r.onerror = () => rej(r.error); }
+      catch (e) { rej(e); }
+    });
+    return this.p;
+  },
+  async get(k) {
+    try { const d = await this.open(); return await new Promise((res, rej) => { const q = d.transaction('kv').objectStore('kv').get(k); q.onsuccess = () => res(q.result); q.onerror = () => rej(q.error); }); }
+    catch { try { const v = localStorage.getItem('ns:' + k); return v ? JSON.parse(v) : undefined; } catch { return undefined; } }
+  },
+  async set(k, v) {
+    try { const d = await this.open(); await new Promise((res, rej) => { const tx = d.transaction('kv', 'readwrite'); tx.objectStore('kv').put(v, k); tx.oncomplete = res; tx.onerror = () => rej(tx.error); }); }
+    catch { try { localStorage.setItem('ns:' + k, JSON.stringify(v)); } catch { toast('Storage is full — export a backup from Settings'); } }
+  }
+};
+let db = null, assets = {};
+let saveTimer = 0, assetTimer = 0;
+function save() {
+  if (UI.view === 'notes' && db.boards[N.boardId]) db.boards[N.boardId].updatedAt = Date.now();
+  const st = $('#save-state'); if (st) st.textContent = 'Saving…';
+  clearTimeout(saveTimer);
+  saveTimer = setTimeout(async () => { await Store.set('db', db); const s = $('#save-state'); if (s) s.textContent = 'All changes saved'; }, 300);
+}
+function saveAssets() { clearTimeout(assetTimer); assetTimer = setTimeout(() => Store.set('assets', assets), 200); }
+function addAsset(dataUrl) { const id = uid('a_'); assets[id] = dataUrl; saveAssets(); return id; }
+
+/* ================= Constants & state ================= */
+const STAGES = ['Lead', 'Qualified', 'Proposal', 'Negotiation', 'Won', 'Lost'];
+const STAGE_PROB = { Lead: 10, Qualified: 25, Proposal: 50, Negotiation: 75, Won: 100, Lost: 0 };
+const CONTACT_STATUS = ['Lead', 'Prospect', 'Customer', 'Churned'];
+const COMPANY_SIZES = ['1-10', '11-50', '51-200', '201-1000', '1000+'];
+const PRIORITIES = ['High', 'Medium', 'Low'];
+const COLORS = ['red', 'orange', 'yellow', 'green', 'teal', 'blue', 'purple', 'pink', 'gray'];
+const BOARD_ICONS = ['📁', '💡', '🎯', '🗂️', '📌', '🧭', '🚀', '🎨', '📝', '⭐', '🌱', '🔥', '📊', '🤝', '🏆', '🧩', '📅', '💬', '🛠️', '🌍', '📦', '🎬', '📷', '💼'];
+const DEFAULT_W = { note: 240, todo: 260, link: 280, image: 280, file: 250, column: 290, board: 130, comment: 280, swatch: 150, sketch: 300, doc: 230, record: 260 };
+const MIN_W = { board: 110, swatch: 110, column: 200 };
+const UI = { view: 'dashboard', drawer: null, q: {}, filter: {}, sort: {}, taskTab: 'open' };
+const N = { boardId: null, lineMode: false, editing: null, clipboard: null, cascade: 0, suspendBlur: false };
+
+/* ================= Seed data ================= */
+function seed() {
+  const now = Date.now(), day = 864e5;
+  const d = { version: 1, settings: { user: 'You', theme: 'auto' }, contacts: [], companies: [], deals: [], tasks: [], activities: [], boards: {}, cards: {}, lines: {}, rootBoardId: null, crmBoardId: null };
+  const co = (name, industry, website, size, phone, address) => { const c = { id: uid('co_'), name, industry, website, size, phone, address, createdAt: now - 40 * day }; d.companies.push(c); return c; };
+  const cobalt = co('Cobalt Logistics', 'Logistics', 'cobaltlogistics.example', '201-1000', '(415) 555-0142', '120 Harbor Way, Oakland, CA');
+  const evergreen = co('Evergreen Health', 'Healthcare', 'evergreenhealth.example', '1000+', '(206) 555-0199', '88 Pine St, Seattle, WA');
+  const brightline = co('Brightline Studio', 'Design agency', 'brightline.example', '11-50', '(312) 555-0110', '9 Wabash Ave, Chicago, IL');
+  const northwind = co('Northwind Foods', 'Food & beverage', 'northwindfoods.example', '51-200', '(617) 555-0175', '410 Atlantic Ave, Boston, MA');
+  const pioneer = co('Pioneer Labs', 'Software', 'pioneerlabs.example', '11-50', '(512) 555-0133', '2 Congress Ave, Austin, TX');
+  const ct = (name, title, email, phone, companyId, status, tags, ago) => { const c = { id: uid('ct_'), name, title, email, phone, companyId, status, tags, about: '', createdAt: now - ago * day }; d.contacts.push(c); return c; };
+  const maya = ct('Maya Okafor', 'VP Operations', 'maya@cobaltlogistics.example', '(415) 555-0143', cobalt.id, 'Customer', 'renewal, champion', 38);
+  const leo = ct('Leo Marchetti', 'Procurement Lead', 'leo@cobaltlogistics.example', '(415) 555-0150', cobalt.id, 'Customer', '', 30);
+  const priya = ct('Priya Raman', 'CIO', 'priya@evergreenhealth.example', '(206) 555-0101', evergreen.id, 'Prospect', 'enterprise', 21);
+  const sam = ct('Sam Whitfield', 'Founder', 'sam@brightline.example', '(312) 555-0111', brightline.id, 'Lead', 'inbound', 6);
+  const ana = ct('Ana Souza', 'Head of Growth', 'ana@northwindfoods.example', '(617) 555-0177', northwind.id, 'Prospect', '', 14);
+  const jules = ct('Jules Bernard', 'CTO', 'jules@pioneerlabs.example', '(512) 555-0134', pioneer.id, 'Lead', 'technical', 3);
+  ct('Grace Kim', 'Office Manager', 'grace@brightline.example', '(312) 555-0118', brightline.id, 'Lead', '', 2);
+  ct('Omar Haddad', 'Finance Director', 'omar@evergreenhealth.example', '(206) 555-0108', evergreen.id, 'Prospect', 'budget holder', 12);
+  const dl = (title, value, stage, contactId, companyId, close, ago) => { const x = { id: uid('dl_'), title, value, stage, contactId, companyId, closeDate: dateAdd(close), createdAt: now - ago * day }; d.deals.push(x); return x; };
+  const renewal = dl('Cobalt — annual renewal', 48000, 'Negotiation', maya.id, cobalt.id, 12, 20);
+  dl('Cobalt — fleet add-on', 12500, 'Proposal', leo.id, cobalt.id, 25, 9);
+  const eh = dl('Evergreen — enterprise rollout', 120000, 'Qualified', priya.id, evergreen.id, 60, 18);
+  dl('Brightline — starter plan', 6000, 'Lead', sam.id, brightline.id, 30, 5);
+  dl('Northwind — growth package', 24000, 'Proposal', ana.id, northwind.id, 18, 11);
+  dl('Pioneer — API integration', 18000, 'Lead', jules.id, pioneer.id, 45, 2);
+  dl('Northwind — pilot', 8000, 'Won', ana.id, northwind.id, -10, 40);
+  const tk = (title, due, priority, kind, refId, done) => d.tasks.push({ id: uid('tk_'), title, due, priority, kind, refId, done: !!done, createdAt: now });
+  tk('Send renewal pricing to Maya', dateAdd(0), 'High', 'deal', renewal.id);
+  tk('Security questionnaire for Evergreen', dateAdd(3), 'Medium', 'deal', eh.id);
+  tk('Intro call with Sam', dateAdd(-1), 'High', 'contact', sam.id);
+  tk('Prepare Northwind proposal deck', dateAdd(5), 'Medium', 'company', northwind.id);
+  tk('Follow up with Jules on API docs', dateAdd(8), 'Low', 'contact', jules.id);
+  tk('Log Q3 pilot results', dateAdd(-6), 'Low', 'company', northwind.id, true);
+  const ac = (kind, refId, type, text, ago) => d.activities.push({ id: uid('ac_'), kind, refId, type, text, at: now - ago * 3600e3 });
+  ac('contact', maya.id, 'call', 'Discussed renewal scope. Wants multi-year discount and fleet add-on bundled.', 5);
+  ac('deal', eh.id, 'meeting', 'Discovery session with Priya and Omar. Budget approved for next fiscal year.', 26);
+  ac('contact', sam.id, 'email', 'Inbound from website — asked about starter plan pricing.', 50);
+  ac('company', northwind.id, 'note', 'Pilot wrapped up: 18% faster order processing.', 140);
+
+  // Notes boards
+  const mkBoard = (title, parentId, icon) => { const b = { id: uid('b_'), title, parentId, icon, createdAt: now, updatedAt: now, view: { x: 80, y: 60, z: 1 }, link: null }; d.boards[b.id] = b; return b; };
+  const root = mkBoard('Home', null, '🏠'); d.rootBoardId = root.id;
+  let z = 1;
+  const card = (boardId, type, x, y, data, extra = {}) => { const c = { id: uid('c_'), boardId, type, x, y, w: DEFAULT_W[type], z: z++, color: null, columnId: null, data, createdAt: now, ...extra }; d.cards[c.id] = c; return c; };
+  const line = (boardId, a, b, label = '', extra = {}) => { const l = { id: uid('l_'), boardId, from: { card: a.id }, to: { card: b.id }, bend: 0, label, color: null, arrow: 'end', dashed: false, ...extra }; d.lines[l.id] = l; return l; };
+  const welcome = card(root.id, 'note', 0, 0, { html: '<h1>Welcome to Notes ✨</h1><div>A visual canvas for everything around your deals — ideas, meeting notes, moodboards and plans.</div><div><br></div><div><b>Drag</b> anything from the toolbar, <b>double-click</b> the canvas for a quick note, or <b>drop</b> images and files right here.</div>' }, { w: 320, color: 'yellow' });
+  const todo = card(root.id, 'todo', 380, 0, { title: 'Getting started', items: [
+    { id: uid('i'), text: 'Drag a note onto the board', done: true },
+    { id: uid('i'), text: 'Connect two cards with a line', done: false },
+    { id: uid('i'), text: 'Drop an image from your desktop', done: false },
+    { id: uid('i'), text: 'Open the Ideas board', done: false },
+    { id: uid('i'), text: 'Drag a card into a column', done: false }] });
+  const col = card(root.id, 'column', 700, 0, { title: 'Q4 priorities', items: [], collapsed: false });
+  const n1 = card(root.id, 'note', 0, 0, { html: '<div><b>Close the Cobalt renewal</b></div><div>Multi-year with fleet add-on bundled.</div>' }, { columnId: col.id, color: 'green' });
+  const n2 = card(root.id, 'note', 0, 0, { html: '<div>Launch referral program for agencies</div>' }, { columnId: col.id });
+  const lk = card(root.id, 'link', 0, 0, { url: 'https://en.wikipedia.org/wiki/Customer_relationship_management', title: 'Customer relationship management', desc: 'Background reading for the team offsite.' }, { columnId: col.id });
+  col.data.items = [n1.id, n2.id, lk.id];
+  const ideas = mkBoard('Ideas', root.id, '💡');
+  const ideaCard = card(root.id, 'board', 0, 330, { boardId: ideas.id }, { color: 'purple' });
+  const crm = mkBoard('CRM notes', root.id, '🗂️'); d.crmBoardId = crm.id;
+  card(root.id, 'board', 160, 330, { boardId: crm.id }, { color: 'blue' });
+  card(root.id, 'comment', 380, 300, { items: [{ id: uid('m'), author: 'Alex (Sales lead)', text: 'Love this — let\'s use it for account planning.', at: now - 3 * 3600e3 }] });
+  const sw = [['#3e63dd', 'Brand blue'], ['#f2e8cf', 'Sand'], ['#1d1d1f', 'Ink']];
+  sw.forEach(([hex, name], i) => card(root.id, 'swatch', i * 165, 520, { hex, name }));
+  line(root.id, welcome, todo, 'start here');
+  line(root.id, todo, ideaCard, '', { bend: -40, dashed: true });
+  // Ideas board contents
+  const iz = card(ideas.id, 'note', 0, 0, { html: '<h2>Referral program</h2><ul><li>Agencies get 20% recurring</li><li>Co-branded case studies</li><li>Quarterly partner calls</li></ul>' }, { color: 'pink' });
+  const iz2 = card(ideas.id, 'note', 320, 40, { html: '<h2>Onboarding revamp</h2><div>Shorter kickoff, more async video walkthroughs.</div>' }, { color: 'teal' });
+  card(ideas.id, 'link', 320, 220, { url: 'https://www.youtube.com/watch?v=aircAruvnKk', title: 'Explainer video', desc: '' });
+  line(ideas.id, iz, iz2, 'related');
+  return d;
+}
+</script>
+<script>
+/* ================= Notes: model ================= */
+const sel = new Set();
+let selLine = null;
+let els = new Map();
+const edCfg = new WeakMap();
+const hist = { undo: [], redo: [] };
+let pendingEdit = 0;
+
+const curBoard = () => db.boards[N.boardId];
+function view() { const b = curBoard(); if (!b.view) b.view = { x: 80, y: 60, z: 1 }; return b.view; }
+const boardCards = bid => Object.values(db.cards).filter(c => c.boardId === bid);
+const topCards = bid => boardCards(bid).filter(c => !c.columnId);
+function nextZ() { return Math.max(0, ...topCards(N.boardId).map(c => c.z || 0)) + 1; }
+
+function snap() { return JSON.stringify({ boards: db.boards, cards: db.cards, lines: db.lines }); }
+function checkpoint() { hist.undo.push(snap()); if (hist.undo.length > 80) hist.undo.shift(); hist.redo = []; updateUndoBtns(); }
+function restore(s) {
+  const o = JSON.parse(s); db.boards = o.boards; db.cards = o.cards; db.lines = o.lines;
+  if (!db.boards[N.boardId]) N.boardId = db.rootBoardId;
+  sel.clear(); selLine = null; save(); renderBoard(); updateUndoBtns();
+}
+function undo() { if (!hist.undo.length) return; stopEditing(); hist.redo.push(snap()); restore(hist.undo.pop()); }
+function redo() { if (!hist.redo.length) return; stopEditing(); hist.undo.push(snap()); restore(hist.redo.pop()); }
+function updateUndoBtns() { const u = $('#btn-undo'), r = $('#btn-redo'); if (u) u.disabled = !hist.undo.length; if (r) r.disabled = !hist.redo.length; }
+
+function defaultData(type) {
+  switch (type) {
+    case 'note': return { html: '' };
+    case 'todo': return { title: '', items: [{ id: uid('i'), text: '', done: false }] };
+    case 'link': return { url: '', title: '', desc: '' };
+    case 'image': return { assetId: null, src: '', caption: '' };
+    case 'file': return { assetId: null, name: '', size: 0, mime: '' };
+    case 'column': return { title: '', items: [], collapsed: false };
+    case 'board': return { boardId: null };
+    case 'comment': return { items: [] };
+    case 'swatch': return { hex: randomHex(), name: '' };
+    case 'sketch': return { assetId: null };
+    case 'doc': return { title: '', html: '' };
+    case 'record': return { kind: 'contact', refId: null };
+  }
+  return {};
+}
+function createBoard(title, parentId, extra = {}) {
+  const b = { id: uid('b_'), title, parentId, icon: BOARD_ICONS[Math.floor(Math.random() * 12)], createdAt: Date.now(), updatedAt: Date.now(), view: { x: 80, y: 60, z: 1 }, link: null, ...extra };
+  db.boards[b.id] = b; return b;
+}
+function createCard(type, x, y, data = {}, extra = {}) {
+  const boardId = extra.boardId || N.boardId;
+  const c = { id: uid('c_'), boardId, type, x: Math.round(x), y: Math.round(y), w: DEFAULT_W[type] || 240, z: 0, color: null, columnId: null, data: Object.assign(defaultData(type), data), createdAt: Date.now(), ...extra };
+  c.z = Math.max(0, ...topCards(boardId).map(k => k.z || 0)) + 1;
+  if (type === 'board' && !c.data.boardId) { const b = createBoard(c.data.title || '', boardId); c.data.boardId = b.id; delete c.data.title; }
+  db.cards[c.id] = c; return c;
+}
+function intoColumn(c, colId, index) {
+  const col = db.cards[colId]; if (!col || c.type === 'column') return;
+  if (c.columnId) { const old = db.cards[c.columnId]; if (old) old.data.items = old.data.items.filter(x => x !== c.id); }
+  const items = col.data.items.filter(x => x !== c.id);
+  items.splice(index == null ? items.length : clamp(index, 0, items.length), 0, c.id);
+  col.data.items = items; c.columnId = colId; c.boardId = col.boardId;
+}
+function deleteBoardDeep(bid) {
+  for (const c of Object.values(db.cards)) if (c.boardId === bid) { if (c.type === 'board') deleteBoardDeep(c.data.boardId); delete db.cards[c.id]; }
+  for (const l of Object.values(db.lines)) if (l.boardId === bid) delete db.lines[l.id];
+  if (db.crmBoardId === bid) db.crmBoardId = null;
+  delete db.boards[bid];
+}
+function removeCard(id) {
+  const c = db.cards[id]; if (!c) return;
+  if (c.columnId) { const col = db.cards[c.columnId]; if (col) col.data.items = col.data.items.filter(x => x !== id); }
+  if (c.type === 'column') [...c.data.items].forEach(removeCard);
+  if (c.type === 'board' && c.data.boardId) deleteBoardDeep(c.data.boardId);
+  for (const l of Object.values(db.lines)) if (l.from.card === id || l.to.card === id) delete db.lines[l.id];
+  delete db.cards[id];
+}
+function cloneCard(c, boardId, map) {
+  const n = JSON.parse(JSON.stringify(c)); n.id = uid('c_'); n.boardId = boardId; map[c.id] = n.id;
+  if (c.type === 'board' && db.boards[c.data.boardId]) n.data.boardId = cloneBoardDeep(c.data.boardId, boardId);
+  if (c.type === 'column') n.data.items = c.data.items.filter(cid => db.cards[cid]).map(cid => { const k = cloneCard(db.cards[cid], boardId, map); k.columnId = n.id; return k.id; });
+  db.cards[n.id] = n; return n;
+}
+function cloneBoardDeep(bid, parentId) {
+  const b = db.boards[bid];
+  const nb = { ...JSON.parse(JSON.stringify(b)), id: uid('b_'), parentId, link: null, title: b.title, createdAt: Date.now(), updatedAt: Date.now() };
+  db.boards[nb.id] = nb; const map = {};
+  topCards(bid).forEach(c => cloneCard(c, nb.id, map));
+  Object.values(db.lines).filter(l => l.boardId === bid).forEach(l => cloneLine(l, nb.id, map));
+  return nb.id;
+}
+function cloneLine(l, boardId, map) {
+  const mapEnd = e => e.card ? (map[e.card] ? { card: map[e.card] } : null) : { ...e };
+  const from = mapEnd(l.from), to = mapEnd(l.to); if (!from || !to) return null;
+  const n = { ...JSON.parse(JSON.stringify(l)), id: uid('l_'), boardId, from, to }; db.lines[n.id] = n; return n;
+}
+function addLine(from, to) { const l = { id: uid('l_'), boardId: N.boardId, from, to, bend: 0, label: '', color: null, arrow: 'end', dashed: false }; db.lines[l.id] = l; return l; }
+function linkData(url) { return { url: normUrl(url), title: '', desc: '' }; }
+function getRec(kind, id) { const K = KINDS[kind]; return K ? db[K.store].find(x => x.id === id) : null; }
+function cardText(c) {
+  const d = c.data;
+  switch (c.type) {
+    case 'note': return htmlToText(d.html);
+    case 'todo': return [d.title, ...d.items.map(i => i.text)].join(' ');
+    case 'link': return [d.title, d.desc, d.url].join(' ');
+    case 'column': return d.title;
+    case 'board': return db.boards[d.boardId]?.title || '';
+    case 'comment': return d.items.map(i => i.text).join(' ');
+    case 'doc': return d.title + ' ' + htmlToText(d.html);
+    case 'swatch': return d.name + ' ' + d.hex;
+    case 'image': return d.caption;
+    case 'file': return d.name;
+    case 'record': { const r = getRec(d.kind, d.refId); return r ? KINDS[d.kind].title(r) : ''; }
+  }
+  return '';
+}
+const cardLabel = c => ({ note: 'Note', todo: 'To-do', link: 'Link', image: 'Image', file: 'File', column: 'Column', board: 'Board', comment: 'Comment', swatch: 'Color', sketch: 'Drawing', doc: 'Document', record: 'CRM record' }[c.type] || 'Card');
+
+/* ================= Inline editing ================= */
+function ed(cfg) {
+  const el = h('div', { class: 'ed ' + (cfg.cls || '') + (cfg.rich ? ' rt' : '') + (cfg.optional ? ' optional' : ''), 'data-ph': cfg.ph || '', contenteditable: 'false', spellcheck: 'true' });
+  if (cfg.rich) el.innerHTML = sanitize(cfg.value || ''); else el.textContent = cfg.value || '';
+  edCfg.set(el, cfg);
+  el.addEventListener('input', () => {
+    cfg.onInput(cfg.rich ? el.innerHTML : el.innerText.replace(/\n+$/, ''));
+    markEmpty(el); save(); scheduleLines(); if (cfg.rich) positionFmt();
+  });
+  el.addEventListener('keydown', e => edKey(e, el, cfg));
+  el.addEventListener('paste', e => edPaste(e, el, cfg));
+  el.addEventListener('blur', () => { if (N.editing === el && !N.suspendBlur && document.hasFocus()) stopEditing(); });
+  markEmpty(el);
+  return el;
+}
+function markEmpty(el) { el.classList.toggle('is-empty', !el.textContent.trim() && !el.querySelector('li,hr')); }
+function activateEditable(el, cx, cy) {
+  if (!el || !el.isConnected) return;
+  if (N.editing === el) return;
+  stopEditing();
+  const cfg = edCfg.get(el); if (!cfg) return;
+  checkpoint();
+  el.contentEditable = 'true'; el.classList.add('editing'); N.editing = el;
+  el.closest('.card')?.classList.add('is-editing');
+  el.focus({ preventScroll: true });
+  placeCaret(el, cx, cy);
+  if (cfg.rich) showFmt(el);
+}
+function placeCaret(el, cx, cy) {
+  let range = null;
+  if (cx != null) {
+    if (document.caretRangeFromPoint) range = document.caretRangeFromPoint(cx, cy);
+    else if (document.caretPositionFromPoint) { const p = document.caretPositionFromPoint(cx, cy); if (p) { range = document.createRange(); range.setStart(p.offsetNode, p.offset); } }
+  }
+  if (!range || !el.contains(range.startContainer)) { range = document.createRange(); range.selectNodeContents(el); range.collapse(false); }
+  const s = getSelection(); s.removeAllRanges(); s.addRange(range);
+}
+function stopEditing(silent) {
+  const el = N.editing; if (!el) return;
+  N.editing = null;
+  el.contentEditable = 'false'; el.classList.remove('editing');
+  el.closest('.card')?.classList.remove('is-editing');
+  hideFmt();
+  if (!silent) edCfg.get(el)?.onBlur?.(el);
+}
+function edKey(e, el, cfg) {
+  e.stopPropagation();
+  if (e.key === 'Escape') { e.preventDefault(); e.stopPropagation(); stopEditing(); return; }
+  if (e.key === 'Enter' && !e.shiftKey && !cfg.rich) { e.preventDefault(); cfg.onEnter ? cfg.onEnter() : stopEditing(); return; }
+  if (e.key === 'Enter' && e.shiftKey && !cfg.rich && !cfg.multiline) { e.preventDefault(); return; }
+  if (e.key === 'Backspace' && cfg.onBackspaceEmpty && !el.textContent) { e.preventDefault(); cfg.onBackspaceEmpty(); return; }
+  if (cfg.rich && (e.metaKey || e.ctrlKey) && !e.shiftKey && e.key.toLowerCase() === 'k') { e.preventDefault(); execFmt('link'); return; }
+  if (cfg.rich && e.key === 'Tab') { e.preventDefault(); document.execCommand(e.shiftKey ? 'outdent' : 'indent'); return; }
+  if (cfg.rich && e.key === ' ') mdShortcut(e, el);
+  if (cfg.rich && e.key === 'Enter') richEnter(e, el);
+}
+function blockOf(el) { const s = getSelection(); if (!s.rangeCount) return null; let n = s.anchorNode; n = n && (n.nodeType === 1 ? n : n.parentElement); const b = n && n.closest('h1,h2,h3,blockquote'); return b && el.contains(b) ? b : null; }
+function richEnter(e, el) {
+  if (e.shiftKey || !blockOf(el)) return;
+  setTimeout(() => { if (blockOf(el)) document.execCommand('formatBlock', false, '<div>'); }, 0);
+}
+function mdShortcut(e, el) {
+  const s = getSelection(); if (!s.rangeCount || !s.isCollapsed) return;
+  const n = s.anchorNode, off = s.anchorOffset; if (!n || n.nodeType !== 3) return;
+  const before = n.nodeValue.slice(0, off);
+  const map = { '-': 'ul', '*': 'ul', '1.': 'ol', '#': 'h1', '##': 'h2', '###': 'h3', '>': 'quote' };
+  if (!map[before] || n.previousSibling) return;
+  const par = n.parentElement; if (par !== el && (par.parentElement !== el || par.tagName === 'LI')) return;
+  e.preventDefault();
+  n.nodeValue = n.nodeValue.slice(off) || '​';
+  const r = document.createRange(); r.setStart(n, 0); r.collapse(true); s.removeAllRanges(); s.addRange(r);
+  execFmt(map[before]);
+}
+function edPaste(e, el, cfg) {
+  const cd = e.clipboardData; if (!cd) return;
+  e.preventDefault(); e.stopPropagation();
+  const html = cd.getData('text/html'), text = cd.getData('text/plain');
+  if (cfg.rich && html) document.execCommand('insertHTML', false, sanitize(html));
+  else if (cfg.rich && text) document.execCommand('insertHTML', false, textToHtml(text));
+  else document.execCommand('insertText', false, cfg.multiline ? text : text.replace(/\s*\n\s*/g, ' '));
+}
+function execFmt(cmd) {
+  const q = String(document.queryCommandValue('formatBlock') || '').toLowerCase();
+  switch (cmd) {
+    case 'bold': case 'italic': case 'underline': case 'strikeThrough': document.execCommand(cmd); break;
+    case 'h1': case 'h2': case 'h3': document.execCommand('formatBlock', false, q === cmd ? '<div>' : '<' + cmd + '>'); break;
+    case 'quote': document.execCommand('formatBlock', false, q === 'blockquote' ? '<div>' : '<blockquote>'); break;
+    case 'ul': case 'ol': if (/^h[1-3]$|blockquote/.test(q)) document.execCommand('formatBlock', false, '<div>'); document.execCommand(cmd === 'ul' ? 'insertUnorderedList' : 'insertOrderedList'); break;
+    case 'hr': document.execCommand('insertHTML', false, '<hr><div><br></div>'); break;
+    case 'code': case 'mark': {
+      const s = getSelection(); if (!s.rangeCount || s.isCollapsed) return;
+      document.execCommand('insertHTML', false, `<${cmd}>${esc(s.toString())}</${cmd}>`); break;
+    }
+    case 'clear': document.execCommand('removeFormat'); document.execCommand('unlink'); break;
+    case 'link': {
+      const s = getSelection(); const range = s.rangeCount ? s.getRangeAt(0).cloneRange() : null;
+      const host = range && (range.startContainer.nodeType === 1 ? range.startContainer : range.startContainer.parentElement)?.closest('[contenteditable="true"]');
+      N.suspendBlur = true;
+      promptModal({ title: 'Add link', placeholder: 'https://example.com', okLabel: 'Apply' }).then(u => {
+        N.suspendBlur = false;
+        if (host) { host.focus({ preventScroll: true }); if (range) { s.removeAllRanges(); s.addRange(range); } }
+        if (!u) return;
+        const url = normUrl(u);
+        if (range && range.collapsed) document.execCommand('insertHTML', false, `<a href="${esc(url)}">${esc(u)}</a>`);
+        else document.execCommand('createLink', false, url);
+      });
+      break;
+    }
+  }
+}
+const FMT_BTNS = [['bold', '<b>B</b>', 'Bold (Ctrl+B)'], ['italic', '<i>I</i>', 'Italic (Ctrl+I)'], ['underline', '<u>U</u>', 'Underline'], ['strikeThrough', '<s>S</s>', 'Strikethrough'], '|', ['h1', 'H1', 'Heading'], ['h2', 'H2', 'Subheading'], ['ul', '•', 'Bulleted list'], ['ol', '1.', 'Numbered list'], ['quote', '❝', 'Quote'], '|', ['code', '&lt;/&gt;', 'Inline code'], ['mark', '<mark style="padding:0 3px">H</mark>', 'Highlight'], ['link', icon('link'), 'Link (Ctrl+K)'], ['clear', 'Tx', 'Clear formatting']];
+function fmtButtonsHtml(extra = []) { return [...FMT_BTNS, ...extra].map(b => b === '|' ? '<span class="fsep"></span>' : `<button data-cmd="${b[0]}" title="${b[2]}">${b[1]}</button>`).join(''); }
+function showFmt(el) { const f = $('#fmt'); f.innerHTML = fmtButtonsHtml(); f.hidden = false; f._for = el; positionFmt(); }
+function hideFmt() { const f = $('#fmt'); f.hidden = true; f._for = null; }
+function positionFmt() {
+  const f = $('#fmt'); if (f.hidden || !f._for) return;
+  const card = f._for.closest('.card') || f._for; const r = card.getBoundingClientRect();
+  const fw = f.offsetWidth, fh = f.offsetHeight;
+  let top = r.top - fh - 10; if (top < 8) top = r.bottom + 10;
+  f.style.left = clamp(r.left, 8, innerWidth - fw - 8) + 'px'; f.style.top = clamp(top, 8, innerHeight - fh - 8) + 'px';
+  for (const b of f.querySelectorAll('button')) { const c = b.dataset.cmd; if (['bold', 'italic', 'underline', 'strikeThrough'].includes(c)) b.classList.toggle('on', document.queryCommandState(c)); }
+}
+
+/* ================= Card renderers ================= */
+const R = {};
+R.note = (c, el) => {
+  el.append(ed({ rich: true, immediate: true, cls: 'note-body', value: c.data.html, ph: 'Type something…', onInput: v => c.data.html = v,
+    onBlur: () => { if (isBlankHtml(c.data.html) && db.cards[c.id]) { removeCard(c.id); save(); renderBoard(); } } }));
+};
+R.todo = (c, el) => {
+  const d = c.data, done = d.items.filter(i => i.done).length;
+  el.append(h('div', { class: 'todo-head' },
+    ed({ cls: 'todo-title', immediate: true, value: d.title, ph: 'To-do list', onInput: v => d.title = v, onEnter: () => { if (!d.items.length) addTodoItem(c, 0); else focusTodo(c, 0); } }),
+    h('span', { class: 'todo-count' }, d.items.length ? `${done}/${d.items.length}` : '')));
+  if (d.items.length > 1) el.append(h('div', { class: 'todo-progress' }, h('i', { style: `width:${Math.round(done / d.items.length * 100)}%` })));
+  d.items.forEach((it, idx) => {
+    el.append(h('div', { class: 'todo-item' + (it.done ? ' done' : '') },
+      h('button', { class: 'todo-check', 'aria-label': it.done ? 'Mark not done' : 'Mark done', onclick: () => { checkpoint(); it.done = !it.done; save(); rerenderCard(c.id); } }),
+      ed({ cls: 'todo-text', immediate: true, value: it.text, ph: 'To-do', onInput: v => it.text = v,
+        onEnter: () => addTodoItem(c, idx + 1),
+        onBackspaceEmpty: () => { d.items.splice(idx, 1); save(); rerenderCard(c.id); if (idx > 0) focusTodo(c, idx - 1); else activateEditable(els.get(c.id)?.querySelector('.todo-title')); } })));
+  });
+  el.append(h('button', { class: 'todo-add', onclick: () => { checkpoint(); addTodoItem(c, d.items.length); } }, '+ Add a to-do'));
+};
+function addTodoItem(c, idx) { c.data.items.splice(idx, 0, { id: uid('i'), text: '', done: false }); save(); rerenderCard(c.id); focusTodo(c, idx); }
+function focusTodo(c, idx) { const t = els.get(c.id)?.querySelectorAll('.todo-text')[idx]; if (t) activateEditable(t); }
+R.link = (c, el) => {
+  const d = c.data, u = safeUrl(d.url), host = u ? u.hostname.replace(/^www\./, '') : d.url, yt = ytId(d.url);
+  if (yt) el.append(h('div', { class: 'link-thumb' }, h('img', { src: `https://img.youtube.com/vi/${yt}/hqdefault.jpg`, alt: '', onload: scheduleLines }), h('span', { class: 'play' }, '▶')));
+  el.append(h('div', { class: 'link-body' },
+    h('div', { class: 'link-host' }, u ? h('img', { src: `https://www.google.com/s2/favicons?domain=${encodeURIComponent(u.hostname)}&sz=32`, alt: '', onerror: e => e.target.remove() }) : null, host),
+    ed({ cls: 'link-title', value: d.title || (u ? decodeURIComponent(u.pathname.split('/').filter(Boolean).pop() || host).replace(/[-_]+/g, ' ') : ''), ph: 'Add a title', onInput: v => d.title = v }),
+    ed({ cls: 'link-desc', optional: true, multiline: true, value: d.desc, ph: 'Add a description', onInput: v => d.desc = v }),
+    u ? h('a', { class: 'link-url nodrag', href: u.href, target: '_blank', rel: 'noopener noreferrer' }, 'Open link ↗') : null));
+};
+R.image = (c, el) => {
+  const src = c.data.assetId ? assets[c.data.assetId] : c.data.src;
+  el.append(h('div', { class: 'img-wrap' }, src ? h('img', { src, alt: c.data.caption || 'Image', onload: scheduleLines }) : h('div', { class: 'sketch-empty' }, 'Image unavailable')));
+  el.append(ed({ cls: 'caption', optional: true, value: c.data.caption, ph: 'Add a caption', onInput: v => c.data.caption = v }));
+};
+R.file = (c, el) => {
+  const d = c.data, ext = (d.name.split('.').pop() || 'file').slice(0, 4);
+  el.append(h('div', { class: 'file-ext' }, ext), h('div', { class: 'file-meta' }, h('div', { class: 'file-name', title: d.name }, d.name), h('div', { class: 'file-size' }, fmtSize(d.size || 0))),
+    h('button', { class: 'icon-btn', title: 'Download', html: icon('download'), onclick: () => assets[d.assetId] && download(d.name, assets[d.assetId]) }));
+};
+R.column = (c, el) => {
+  const d = c.data;
+  d.items = d.items.filter(id => db.cards[id] && db.cards[id].columnId === c.id);
+  el.append(h('div', { class: 'col-head' },
+    ed({ cls: 'col-title', value: d.title, ph: 'Untitled column', onInput: v => d.title = v }),
+    h('span', { class: 'col-count' }, String(d.items.length)),
+    h('button', { class: 'col-toggle', title: d.collapsed ? 'Expand' : 'Collapse', onclick: () => { checkpoint(); d.collapsed = !d.collapsed; save(); rerenderCard(c.id); } }, d.collapsed ? '▸' : '▾')));
+  const body = h('div', { class: 'col-body' + (d.collapsed ? ' collapsed' : '') });
+  d.items.forEach(id => body.append(buildCard(db.cards[id])));
+  if (!d.items.length) body.append(h('div', { class: 'col-empty' }, 'Drag cards here'));
+  el.append(body);
+};
+R.board = (c, el) => {
+  const b = db.boards[c.data.boardId];
+  if (!b) { el.append(h('div', { class: 'board-meta' }, 'Missing board')); return; }
+  const n = boardCards(b.id).length;
+  el.append(h('div', { class: 'board-icon' }, b.icon || '📁'),
+    ed({ cls: 'board-title', value: b.title, ph: 'Untitled board', onInput: v => { b.title = v; }, onBlur: renderNavBoards }),
+    h('div', { class: 'board-meta' }, `${n} card${n === 1 ? '' : 's'}`));
+};
+R.comment = (c, el) => {
+  const d = c.data;
+  d.items.forEach((it, i) => el.append(h('div', { class: 'cm-item' },
+    h('div', { class: 'cm-meta' }, h('span', { class: 'avatar' }, initials(it.author)), h('b', {}, it.author), h('span', { class: 'muted' }, timeAgo(it.at)),
+      h('button', { class: 'x-btn', title: 'Delete comment', onclick: () => { checkpoint(); d.items.splice(i, 1); save(); rerenderCard(c.id); } }, '×')),
+    h('div', { class: 'cm-text' }, it.text))));
+  const ta = h('textarea', { class: 'cm-input', rows: 1, placeholder: d.items.length ? 'Reply…' : 'Write a comment…' });
+  ta.addEventListener('keydown', e => {
+    e.stopPropagation();
+    if (e.key === 'Enter' && !e.shiftKey) {
+      e.preventDefault(); const t = ta.value.trim(); if (!t) return;
+      checkpoint(); d.items.push({ id: uid('m'), author: db.settings.user || 'You', text: t, at: Date.now() }); save(); rerenderCard(c.id);
+      els.get(c.id)?.querySelector('.cm-input')?.focus();
+    }
+    if (e.key === 'Escape') ta.blur();
+  });
+  ta.addEventListener('input', () => { ta.style.height = 'auto'; ta.style.height = ta.scrollHeight + 'px'; scheduleLines(); });
+  el.append(ta);
+};
+R.swatch = (c, el) => {
+  const d = c.data;
+  const inp = h('input', { type: 'color', class: 'sw-input', value: d.hex, tabindex: '-1' });
+  const block = h('div', { class: 'sw-block', style: `background:${d.hex}` }, inp);
+  const hex = h('div', { class: 'sw-hex' }, d.hex.toUpperCase());
+  inp.addEventListener('input', () => { d.hex = inp.value; block.style.background = d.hex; hex.textContent = d.hex.toUpperCase(); save(); });
+  el.append(block, h('div', { class: 'sw-body' }, hex, ed({ cls: 'sw-name', optional: true, value: d.name, ph: 'Name this color', onInput: v => d.name = v })));
+};
+R.sketch = (c, el) => {
+  const src = c.data.assetId && assets[c.data.assetId];
+  el.append(src ? h('img', { src, alt: 'Drawing', onload: scheduleLines }) : h('div', { class: 'sketch-empty' }, '✏️ Double-click to draw'));
+};
+R.doc = (c, el) => {
+  const d = c.data;
+  el.append(h('div', { class: 'doc-ic' }, '📄'), h('div', { class: 'doc-title' }, d.title || 'Untitled document'), h('div', { class: 'doc-snip' }, htmlToText(d.html) || 'Double-click to start writing…'));
+};
+R.record = (c, el) => {
+  const { kind, refId } = c.data, r = getRec(kind, refId), K = KINDS[kind];
+  if (!r) { el.append(h('div', { class: 'muted' }, 'This CRM record was deleted.')); return; }
+  el.append(h('div', { class: 'rec-head' }, h('div', { class: 'avatar kind-' + kind, html: kind === 'deal' ? icon('dollar') : esc(initials(K.title(r))) }),
+    h('div', {}, h('div', { class: 'rec-kind' }, K.label), h('div', { class: 'rec-title' }, K.title(r)), h('div', { class: 'rec-sub' }, K.sub(r)))));
+  K.cardRows(r).forEach(([k, v]) => v && el.append(h('div', { class: 'rec-row' }, h('span', {}, k), h('b', {}, v))));
+  el.append(h('button', { class: 'rec-open', onclick: () => openRecord(kind, refId) }, 'Open record →'));
+};
+
+function buildCard(c) {
+  const el = document.createElement('div');
+  el.className = 'card t-' + c.type + (c.color ? ' color-' + c.color : '') + (c.columnId ? ' in-col' : '') + (sel.has(c.id) ? ' selected' : '');
+  el.dataset.id = c.id;
+  if (!c.columnId) el.style.cssText = `left:${c.x}px;top:${c.y}px;width:${c.w}px;z-index:${c.z || 1}`;
+  try { (R[c.type] || (() => el.append('Unknown card')))(c, el); } catch (err) { console.error(err); el.append('⚠ ' + err.message); }
+  el.append(h('button', { class: 'card-more', title: 'More options', html: icon('more'), onclick: e => { e.stopPropagation(); if (!sel.has(c.id)) selectOnly(c.id); const r = e.currentTarget.getBoundingClientRect(); showCardMenu(r.left, r.bottom + 4); } }));
+  el.append(h('div', { class: 'connector', title: 'Drag to connect' }));
+  if (!c.columnId) el.append(h('div', { class: 'resize', title: 'Resize' }));
+  els.set(c.id, el);
+  return el;
+}
+function rerenderCard(id) {
+  const c = db.cards[id], old = els.get(id);
+  if (!c || !old || !old.isConnected) { renderBoard(); return; }
+  if (N.editing && old.contains(N.editing)) stopEditing(true);
+  const nu = buildCard(c); old.replaceWith(nu); scheduleLines();
+}
+</script>
+<script>
+/* ================= Canvas: render ================= */
+const canvas = $('#canvas'), world = $('#world'), cardsEl = $('#cards'), linesG = $('#lines-g');
+let linesRaf = 0, ptr = null, spaceDown = false;
+const pointers = new Map();
+
+function applyView() {
+  const v = view();
+  world.style.transform = `translate(${v.x}px,${v.y}px) scale(${v.z})`;
+  canvas.style.backgroundPosition = `${v.x}px ${v.y}px`;
+  canvas.style.backgroundSize = `${24 * v.z}px ${24 * v.z}px`;
+  $('#zoom-pct').textContent = Math.round(v.z * 100) + '%';
+  positionFmt();
+}
+function screenToWorld(cx, cy) { const r = canvas.getBoundingClientRect(), v = view(); return { x: (cx - r.left - v.x) / v.z, y: (cy - r.top - v.y) / v.z }; }
+function worldToScreen(x, y) { const r = canvas.getBoundingClientRect(), v = view(); return { x: r.left + v.x + x * v.z, y: r.top + v.y + y * v.z }; }
+function viewportCenter() { const r = canvas.getBoundingClientRect(); return screenToWorld(r.left + r.width / 2, r.top + r.height / 2); }
+function cascadePos(type) {
+  const c = viewportCenter(), k = (N.cascade++ % 8) * 22;
+  return { x: c.x - (DEFAULT_W[type] || 240) / 2 + k, y: c.y - 80 + k };
+}
+function renderBoard() {
+  if (!db.boards[N.boardId]) N.boardId = db.rootBoardId;
+  if (N.editing) stopEditing(true);
+  cardsEl.innerHTML = ''; els = new Map();
+  const cards = topCards(N.boardId).sort((a, b) => (a.z || 0) - (b.z || 0));
+  for (const c of cards) cardsEl.append(buildCard(c));
+  for (const id of [...sel]) if (!db.cards[id] || db.cards[id].boardId !== N.boardId) sel.delete(id);
+  if (selLine && !db.lines[selLine]) selLine = null;
+  $('#empty-hint').hidden = cards.length > 0;
+  renderCrumbs(); applyView(); scheduleLines(); renderNavBoards(); updateUndoBtns();
+}
+function renderCrumbs() {
+  const path = []; let b = curBoard(), guard = 0;
+  while (b && guard++ < 60) { path.unshift(b); b = b.parentId ? db.boards[b.parentId] : null; }
+  $('#crumbs').innerHTML = path.slice(0, -1).map(b => `<button class="crumb" data-board="${b.id}">${b.id === db.rootBoardId ? icon('home') + ' Home' : esc((b.icon || '') + ' ' + (b.title || 'Untitled board'))}</button><span class="crumb-sep">›</span>`).join('');
+  const cur = curBoard(), t = $('#board-title');
+  t.value = cur.id === db.rootBoardId ? 'Home' : cur.title; t.placeholder = 'Untitled board'; t.disabled = cur.id === db.rootBoardId;
+  const link = cur.link && getRec(cur.link.kind, cur.link.id);
+  $('#board-link').innerHTML = link ? `<button class="chip" data-open="${cur.link.kind}:${cur.link.id}">${icon(cur.link.kind === 'deal' ? 'dollar' : cur.link.kind === 'company' ? 'building' : 'users')} ${esc(KINDS[cur.link.kind].title(link))}</button>` : '';
+}
+function openBoard(id, focusId, push = true) {
+  if (!db.boards[id]) id = db.rootBoardId;
+  stopEditing(); hideMenu();
+  N.boardId = id; N.cascade = 0; sel.clear(); selLine = null;
+  setView('notes', false);
+  if (push) nav('#/notes/' + id);
+  renderBoard();
+  if (focusId) requestAnimationFrame(() => focusCard(focusId));
+}
+function focusCard(id) {
+  const c = db.cards[id]; const el = els.get(id); if (!c || !el) return;
+  const r = rectOf(id), v = view(), cr = canvas.getBoundingClientRect();
+  v.x = cr.width / 2 - (r.x + r.w / 2) * v.z; v.y = cr.height / 2 - (r.y + r.h / 2) * v.z;
+  applyView(); selectOnly(id); scheduleLines();
+  el.animate([{ outlineColor: 'transparent' }, { outlineColor: 'var(--accent)', outlineWidth: '6px' }, { outlineColor: 'transparent' }], { duration: 900 });
+}
+function rectOf(id) {
+  const el = els.get(id); if (!el || !el.isConnected) return null;
+  const r = el.getBoundingClientRect();
+  if (!r.width && db.cards[id]?.columnId) return rectOf(db.cards[id].columnId);
+  const wr = world.getBoundingClientRect(), z = view().z;
+  return { x: (r.left - wr.left) / z, y: (r.top - wr.top) / z, w: r.width / z, h: r.height / z };
+}
+function zoomAt(nz, cx, cy) {
+  const v = view(), r = canvas.getBoundingClientRect();
+  if (cx == null) { cx = r.left + r.width / 2; cy = r.top + r.height / 2; }
+  nz = clamp(nz, 0.1, 3);
+  const wx = (cx - r.left - v.x) / v.z, wy = (cy - r.top - v.y) / v.z;
+  v.z = nz; v.x = cx - r.left - wx * nz; v.y = cy - r.top - wy * nz;
+  applyView(); scheduleLines(); save();
+}
+function fitView() {
+  const cs = topCards(N.boardId); const v = view(), cr = canvas.getBoundingClientRect();
+  if (!cs.length) { v.x = 80; v.y = 60; v.z = 1; applyView(); scheduleLines(); return; }
+  let x1 = Infinity, y1 = Infinity, x2 = -Infinity, y2 = -Infinity;
+  for (const c of cs) { const el = els.get(c.id); const w = el ? el.offsetWidth : c.w, hh = el ? el.offsetHeight : 100; x1 = Math.min(x1, c.x); y1 = Math.min(y1, c.y); x2 = Math.max(x2, c.x + w); y2 = Math.max(y2, c.y + hh); }
+  const z = clamp(Math.min((cr.width - 120) / (x2 - x1), (cr.height - 120) / (y2 - y1)), 0.15, 1);
+  v.z = z; v.x = (cr.width - (x2 - x1) * z) / 2 - x1 * z; v.y = (cr.height - (y2 - y1) * z) / 2 - y1 * z;
+  applyView(); scheduleLines(); save();
+}
+
+/* ================= Lines ================= */
+function scheduleLines() { if (!linesRaf) linesRaf = requestAnimationFrame(renderLines); }
+function center(end) { if (end.card) { const r = rectOf(end.card); return r ? { x: r.x + r.w / 2, y: r.y + r.h / 2 } : null; } return { x: end.x, y: end.y }; }
+function clipToRect(r, p) {
+  const cx = r.x + r.w / 2, cy = r.y + r.h / 2, dx = p.x - cx, dy = p.y - cy;
+  if (!dx && !dy) return { x: cx, y: cy };
+  const s = Math.min(dx ? (r.w / 2 + 6) / Math.abs(dx) : Infinity, dy ? (r.h / 2 + 6) / Math.abs(dy) : Infinity);
+  return s >= 1 ? { x: cx, y: cy } : { x: cx + dx * s, y: cy + dy * s };
+}
+function lineGeom(l) {
+  const ca = center(l.from), cb = center(l.to); if (!ca || !cb) return null;
+  const mid = { x: (ca.x + cb.x) / 2, y: (ca.y + cb.y) / 2 };
+  const len = Math.hypot(cb.x - ca.x, cb.y - ca.y) || 1, px = -(cb.y - ca.y) / len, py = (cb.x - ca.x) / len;
+  const M = { x: mid.x + px * l.bend, y: mid.y + py * l.bend };
+  const ctl = { x: mid.x + 2 * px * l.bend, y: mid.y + 2 * py * l.bend };
+  const a = l.from.card ? clipToRect(rectOf(l.from.card), ctl) : ca;
+  const b = l.to.card ? clipToRect(rectOf(l.to.card), ctl) : cb;
+  const C = { x: 2 * M.x - (a.x + b.x) / 2, y: 2 * M.y - (a.y + b.y) / 2 };
+  return { a, b, C, M, mid, px, py };
+}
+function arrowHead(tip, from, col) {
+  const dx = tip.x - from.x, dy = tip.y - from.y, L = Math.hypot(dx, dy) || 1, ux = dx / L, uy = dy / L, s = 11;
+  const p1 = `${tip.x - ux * s + uy * s * 0.55},${tip.y - uy * s - ux * s * 0.55}`, p2 = `${tip.x - ux * s - uy * s * 0.55},${tip.y - uy * s + ux * s * 0.55}`;
+  return `<polygon class="line-arrow" points="${tip.x},${tip.y} ${p1} ${p2}" style="fill:${col}"/>`;
+}
+function renderLines() {
+  linesRaf = 0;
+  if (UI.view !== 'notes') return;
+  let out = '', selGeom = null;
+  for (const l of Object.values(db.lines)) {
+    if (l.boardId !== N.boardId) continue;
+    const g = lineGeom(l); if (!g) continue;
+    const col = l.color ? `var(--cc-${l.color})` : 'var(--line)', s = selLine === l.id;
+    const d = `M${g.a.x},${g.a.y} Q${g.C.x},${g.C.y} ${g.b.x},${g.b.y}`;
+    out += `<path class="line-vis${s ? ' sel' : ''}" d="${d}" style="stroke:${s ? 'var(--accent)' : col}"${l.dashed ? ' stroke-dasharray="7 6"' : ''}/>`;
+    if (l.arrow === 'end' || l.arrow === 'both') out += arrowHead(g.b, g.C, s ? 'var(--accent)' : col);
+    if (l.arrow === 'both') out += arrowHead(g.a, g.C, s ? 'var(--accent)' : col);
+    out += `<path class="line-hit" data-id="${l.id}" d="${d}"/>`;
+    if (l.label) out += `<text class="line-label" x="${g.M.x}" y="${g.M.y}">${esc(l.label)}</text>`;
+    if (s) { selGeom = g; out += `<circle class="line-handle" data-id="${l.id}" data-h="from" cx="${g.a.x}" cy="${g.a.y}" r="6"/><circle class="line-handle" data-id="${l.id}" data-h="to" cx="${g.b.x}" cy="${g.b.y}" r="6"/><circle class="line-handle" data-id="${l.id}" data-h="mid" cx="${g.M.x}" cy="${g.M.y}" r="6"/>`; }
+  }
+  if (ptr && ptr.mode === 'line') {
+    const a = center(ptr.from) || ptr.to;
+    const p = ptr.from.card ? clipToRect(rectOf(ptr.from.card), ptr.to) : a;
+    out += `<path class="line-temp" d="M${p.x},${p.y} L${ptr.to.x},${ptr.to.y}"/>`;
+  }
+  linesG.innerHTML = out;
+  renderLineBar(selGeom);
+}
+function renderLineBar(g) {
+  const bar = $('#linebar'), l = selLine && db.lines[selLine];
+  if (!l || !g || (ptr && ptr.mode !== 'none')) { bar.hidden = true; return; }
+  if (bar.dataset.for !== l.id + l.arrow + l.dashed + l.color) {
+    bar.dataset.for = l.id + l.arrow + l.dashed + l.color;
+    bar.innerHTML = `<button data-la="arrow" title="Arrowheads">${{ none: '—', end: '→', both: '↔' }[l.arrow]}</button><button data-la="dashed" class="${l.dashed ? 'on' : ''}" title="Dashed">┄</button><button data-la="label" title="Label">Aa</button><span class="fsep"></span>` +
+      `<button class="color-dot none" data-lc="" title="Default"></button>` + ['red', 'orange', 'green', 'blue', 'purple'].map(c => `<button class="color-dot" data-lc="${c}" style="background:var(--cc-${c})" title="${c}"></button>`).join('') +
+      `<span class="fsep"></span><button data-la="delete" title="Delete line">${icon('trash')}</button>`;
+  }
+  const s = worldToScreen(g.M.x, g.M.y);
+  bar.hidden = false;
+  bar.style.left = clamp(s.x - bar.offsetWidth / 2, 8, innerWidth - bar.offsetWidth - 8) + 'px';
+  bar.style.top = clamp(s.y - bar.offsetHeight - 18, 8, innerHeight - 50) + 'px';
+}
+$('#linebar').addEventListener('pointerdown', e => e.preventDefault());
+$('#linebar').addEventListener('click', async e => {
+  const b = e.target.closest('button'); if (!b) return; const l = db.lines[selLine]; if (!l) return;
+  const a = b.dataset.la;
+  if (a === 'label') { const v = await promptModal({ title: 'Line label', value: l.label, placeholder: 'e.g. depends on' }); if (v === null) return; checkpoint(); l.label = v; }
+  else if (a === 'delete') { checkpoint(); delete db.lines[l.id]; selLine = null; }
+  else { checkpoint(); if (a === 'arrow') l.arrow = { none: 'end', end: 'both', both: 'none' }[l.arrow]; else if (a === 'dashed') l.dashed = !l.dashed; else if ('lc' in b.dataset) l.color = b.dataset.lc || null; }
+  save(); scheduleLines();
+});
+function setLineMode(on) {
+  N.lineMode = on; canvas.classList.toggle('line-mode', on);
+  $$('.tool[data-type="line"]').forEach(t => t.classList.toggle('active', on));
+  if (on) toast('Drag between cards to draw a line · Esc to finish');
+}
+
+/* ================= Selection ================= */
+function applySel() { els.forEach((el, id) => el.classList.toggle('selected', sel.has(id))); scheduleLines(); }
+function selectOnly(id) { sel.clear(); if (id) sel.add(id); selLine = null; applySel(); }
+function clearSel() { sel.clear(); selLine = null; applySel(); }
+function toggleSel(id) { sel.has(id) ? sel.delete(id) : sel.add(id); selLine = null; applySel(); }
+const topSel = () => [...sel].filter(id => db.cards[id] && !(db.cards[id].columnId && sel.has(db.cards[id].columnId)));
+
+/* ================= Drop targets ================= */
+function clearDropUI() { $$('.drop-ph').forEach(x => x.remove()); $$('.drop-into').forEach(x => x.classList.remove('drop-into')); }
+function findDropTarget(cx, cy, exclude = [], opts = {}) {
+  for (const el of document.elementsFromPoint(cx, cy)) {
+    if (exclude.some(x => x && x.contains(el))) continue;
+    if (el.classList?.contains('drop-ph')) continue;
+    if (el === canvas) break;
+    const cardEl = el.closest?.('.card'); if (!cardEl) continue;
+    const c = db.cards[cardEl.dataset.id]; if (!c) continue;
+    if (c.type === 'board' && opts.board !== false) return { type: 'board', id: c.id };
+    const col = c.type === 'column' ? c : (c.columnId ? db.cards[c.columnId] : null);
+    if (col && opts.column !== false) {
+      if (col.data.collapsed) return { type: 'column', id: col.id, index: col.data.items.length };
+      const body = els.get(col.id)?.querySelector(':scope > .col-body'); if (!body) return null;
+      const kids = [...body.children].filter(k => k.classList.contains('card') && !exclude.includes(k));
+      let index = kids.length;
+      for (let i = 0; i < kids.length; i++) { const r = kids[i].getBoundingClientRect(); if (cy < r.top + r.height / 2) { index = i; break; } }
+      return { type: 'column', id: col.id, index };
+    }
+    return null;
+  }
+  return null;
+}
+function showDropUI(t, exclude = []) {
+  clearDropUI(); if (!t) return;
+  if (t.type === 'board') { els.get(t.id)?.classList.add('drop-into'); return; }
+  const colEl = els.get(t.id); const body = colEl?.querySelector(':scope > .col-body');
+  if (!body || body.classList.contains('collapsed')) { colEl?.classList.add('drop-into'); return; }
+  const kids = [...body.children].filter(k => k.classList.contains('card') && !exclude.includes(k));
+  const ph = h('div', { class: 'drop-ph' }); kids[t.index] ? body.insertBefore(ph, kids[t.index]) : body.append(ph);
+}
+function moveCardsToBoard(ids, bid) {
+  const moved = ids.map(id => db.cards[id]).filter(Boolean);
+  const all = new Set();
+  const collect = c => { all.add(c.id); if (c.type === 'column') c.data.items.forEach(i => db.cards[i] && collect(db.cards[i])); };
+  moved.forEach(collect);
+  for (const l of Object.values(db.lines)) if (all.has(l.from.card) || all.has(l.to.card)) delete db.lines[l.id];
+  const existing = topCards(bid);
+  const ox = existing.length ? Math.max(...existing.map(c => c.x + (c.w || 240))) + 60 : 0, oy = existing.length ? Math.min(...existing.map(c => c.y)) : 0;
+  const minX = Math.min(...moved.map(c => c.x)), minY = Math.min(...moved.map(c => c.y));
+  let z = Math.max(0, ...existing.map(c => c.z || 0));
+  moved.forEach(c => { c.x = ox + c.x - minX; c.y = oy + c.y - minY; c.z = ++z; });
+  all.forEach(id => { db.cards[id].boardId = bid; });
+  db.boards[bid].updatedAt = Date.now();
+}
+
+/* ================= Pointer interactions ================= */
+canvas.addEventListener('pointerdown', onDown);
+window.addEventListener('pointermove', onMove);
+window.addEventListener('pointerup', onUp);
+window.addEventListener('pointercancel', e => { pointers.delete(e.pointerId); if (ptr && ptr.mode === 'pinch') ptr = null; });
+
+function onDown(e) {
+  pointers.set(e.pointerId, { x: e.clientX, y: e.clientY });
+  if (pointers.size === 2 && (!ptr || ptr.mode !== 'drag')) { startPinch(); return; }
+  if (e.button === 2) return;
+  hideMenu(); clearTimeout(pendingEdit);
+  const t = e.target, v = view();
+  const touchEmpty = e.pointerType === 'touch' && !t.closest('.card,.line-hit,.line-handle');
+  if (e.button === 1 || (e.button === 0 && spaceDown) || (touchEmpty && !N.lineMode)) {
+    e.preventDefault(); stopEditing(); ptr = { mode: 'pan', sx: e.clientX, sy: e.clientY, vx: v.x, vy: v.y }; canvas.classList.add('panning'); return;
+  }
+  if (t.closest('[contenteditable="true"]')) return;
+  if (t.closest('input,textarea,select,button,.nodrag')) return;
+  const hd = t.closest('.line-handle');
+  if (hd) { e.preventDefault(); checkpoint(); ptr = { mode: 'lineHandle', id: hd.dataset.id, which: hd.dataset.h }; return; }
+  const hit = t.closest('.line-hit');
+  if (hit) { e.preventDefault(); stopEditing(); sel.clear(); selLine = hit.dataset.id; applySel(); ptr = { mode: 'none' }; return; }
+  const rs = t.closest('.resize');
+  if (rs) { e.preventDefault(); stopEditing(); const id = rs.closest('.card').dataset.id; checkpoint(); ptr = { mode: 'resize', id, sx: e.clientX, w: db.cards[id].w }; return; }
+  const con = t.closest('.connector');
+  if (con) { e.preventDefault(); stopEditing(); ptr = { mode: 'line', from: { card: con.closest('.card').dataset.id }, to: screenToWorld(e.clientX, e.clientY) }; return; }
+  const cardEl = t.closest('.card');
+  if (cardEl) {
+    e.preventDefault();
+    const id = cardEl.dataset.id;
+    if (N.editing && !cardEl.contains(N.editing)) stopEditing();
+    if (N.lineMode) { ptr = { mode: 'line', from: { card: id }, to: screenToWorld(e.clientX, e.clientY) }; return; }
+    if (e.shiftKey || e.metaKey || e.ctrlKey) { toggleSel(id); ptr = { mode: 'none' }; return; }
+    const wasSelected = sel.has(id) && sel.size === 1;
+    if (!sel.has(id)) selectOnly(id);
+    selLine = null;
+    ptr = { mode: 'press', id, sx: e.clientX, sy: e.clientY, target: t, wasSelected };
+    return;
+  }
+  // empty canvas
+  stopEditing(); canvas.focus({ preventScroll: true });
+  if (N.lineMode) { const p = screenToWorld(e.clientX, e.clientY); ptr = { mode: 'line', from: { x: p.x, y: p.y }, to: p }; return; }
+  if (!e.shiftKey) clearSel();
+  ptr = { mode: 'marquee', sx: e.clientX, sy: e.clientY, base: new Set(sel) };
+}
+function startPinch() {
+  const [a, b] = [...pointers.values()], v = view();
+  stopEditing(); clearDropUI();
+  ptr = { mode: 'pinch', d0: Math.hypot(a.x - b.x, a.y - b.y) || 1, z0: v.z, c0: { x: (a.x + b.x) / 2, y: (a.y + b.y) / 2 }, vx: v.x, vy: v.y };
+}
+function onMove(e) {
+  if (pointers.has(e.pointerId)) pointers.set(e.pointerId, { x: e.clientX, y: e.clientY });
+  if (!ptr) return;
+  const v = view();
+  switch (ptr.mode) {
+    case 'pinch': {
+      if (pointers.size < 2) return;
+      const [a, b] = [...pointers.values()], r = canvas.getBoundingClientRect();
+      const z = clamp(ptr.z0 * Math.hypot(a.x - b.x, a.y - b.y) / ptr.d0, 0.1, 3), m = { x: (a.x + b.x) / 2, y: (a.y + b.y) / 2 };
+      const wx = (ptr.c0.x - r.left - ptr.vx) / ptr.z0, wy = (ptr.c0.y - r.top - ptr.vy) / ptr.z0;
+      v.z = z; v.x = m.x - r.left - wx * z; v.y = m.y - r.top - wy * z; applyView(); scheduleLines(); break;
+    }
+    case 'pan': v.x = ptr.vx + e.clientX - ptr.sx; v.y = ptr.vy + e.clientY - ptr.sy; applyView(); scheduleLines(); break;
+    case 'press': if (Math.hypot(e.clientX - ptr.sx, e.clientY - ptr.sy) > 4) beginDrag(); break;
+    case 'drag': {
+      const dx = (e.clientX - ptr.sx) / v.z, dy = (e.clientY - ptr.sy) / v.z;
+      for (const it of ptr.items) { const c = db.cards[it.id], el = els.get(it.id); c.x = it.ox + dx; c.y = it.oy + dy; el.style.left = c.x + 'px'; el.style.top = c.y + 'px'; }
+      const ex = ptr.items.map(i => els.get(i.id));
+      const t = findDropTarget(e.clientX, e.clientY, ex, { column: !ptr.items.some(i => db.cards[i.id].type === 'column') });
+      ptr.drop = t; showDropUI(t, ex); scheduleLines(); break;
+    }
+    case 'resize': { const c = db.cards[ptr.id]; c.w = Math.round(Math.max(MIN_W[c.type] || 140, ptr.w + (e.clientX - ptr.sx) / v.z)); els.get(c.id).style.width = c.w + 'px'; scheduleLines(); positionFmt(); break; }
+    case 'line': {
+      ptr.to = screenToWorld(e.clientX, e.clientY);
+      const tid = cardIdAt(e.clientX, e.clientY);
+      $$('.drop-into').forEach(x => x.classList.remove('drop-into'));
+      if (tid && tid !== ptr.from.card) els.get(tid)?.classList.add('drop-into');
+      scheduleLines(); break;
+    }
+    case 'lineHandle': {
+      const l = db.lines[ptr.id]; if (!l) return; const p = screenToWorld(e.clientX, e.clientY);
+      if (ptr.which === 'mid') { const g = lineGeom({ ...l, bend: 0 }); if (g) l.bend = Math.round((p.x - g.mid.x) * g.px + (p.y - g.mid.y) * g.py); }
+      else { l[ptr.which] = { x: p.x, y: p.y }; ptr.moved = true; }
+      scheduleLines(); break;
+    }
+    case 'marquee': {
+      const m = $('#marquee'), cr = canvas.getBoundingClientRect();
+      const x1 = Math.min(ptr.sx, e.clientX), y1 = Math.min(ptr.sy, e.clientY), x2 = Math.max(ptr.sx, e.clientX), y2 = Math.max(ptr.sy, e.clientY);
+      if (x2 - x1 < 3 && y2 - y1 < 3) return;
+      m.hidden = false; m.style.cssText = `left:${x1 - cr.left}px;top:${y1 - cr.top}px;width:${x2 - x1}px;height:${y2 - y1}px`;
+      const a = screenToWorld(x1, y1), b = screenToWorld(x2, y2);
+      sel.clear(); ptr.base.forEach(i => sel.add(i));
+      for (const c of topCards(N.boardId)) { const el = els.get(c.id); if (!el) continue; if (c.x < b.x && c.x + el.offsetWidth > a.x && c.y < b.y && c.y + el.offsetHeight > a.y) sel.add(c.id); }
+      applySel(); break;
+    }
+    case 'tool': {
+      const g = $('#tool-ghost');
+      if (!ptr.moved && Math.hypot(e.clientX - ptr.sx, e.clientY - ptr.sy) > 5) { ptr.moved = true; g.innerHTML = icon(ptr.icon) + ' ' + esc(ptr.label); g.hidden = false; }
+      if (ptr.moved) { g.style.left = e.clientX + 'px'; g.style.top = e.clientY + 'px'; const t = findDropTarget(e.clientX, e.clientY, [], { board: false }); ptr.drop = t; showDropUI(t); }
+      break;
+    }
+  }
+}
+function cardIdAt(cx, cy) { for (const el of document.elementsFromPoint(cx, cy)) { const c = el.closest?.('.card'); if (c && canvas.contains(c)) return c.dataset.id; if (el === canvas) break; } return null; }
+function beginDrag() {
+  if (N.editing) stopEditing();
+  checkpoint();
+  const items = [];
+  for (const id of topSel()) {
+    const c = db.cards[id], el = els.get(id); if (!el) continue;
+    if (c.columnId) {
+      const r = rectOf(id), col = db.cards[c.columnId];
+      if (col) col.data.items = col.data.items.filter(x => x !== id);
+      c.columnId = null; c.x = r.x; c.y = r.y; c.w = Math.round(r.w);
+      el.classList.remove('in-col'); el.style.width = c.w + 'px'; cardsEl.append(el);
+    }
+    c.z = nextZ(); el.style.zIndex = c.z; el.classList.add('dragging');
+    items.push({ id, ox: c.x, oy: c.y });
+  }
+  ptr.mode = 'drag'; ptr.items = items; document.body.classList.add('is-dragging');
+}
+function onUp(e) {
+  pointers.delete(e.pointerId);
+  if (!ptr) return;
+  const p = ptr; ptr = null;
+  canvas.classList.remove('panning'); document.body.classList.remove('is-dragging');
+  $('#marquee').hidden = true;
+  switch (p.mode) {
+    case 'pan': case 'pinch': save(); break;
+    case 'press': handleClick(p, e); break;
+    case 'drag': {
+      clearDropUI();
+      const ids = p.items.map(i => i.id);
+      if (p.drop && p.drop.type === 'column') { let idx = p.drop.index; ids.forEach(id => { if (db.cards[id].type !== 'column') intoColumn(db.cards[id], p.drop.id, idx++); }); }
+      else if (p.drop && p.drop.type === 'board') { const bid = db.cards[p.drop.id].data.boardId; moveCardsToBoard(ids, bid); sel.clear(); toast(`Moved ${ids.length} card${ids.length > 1 ? 's' : ''} to “${db.boards[bid].title || 'Untitled board'}”`, { label: 'Open', run: () => openBoard(bid) }); }
+      else ids.forEach(id => { const c = db.cards[id]; c.x = Math.round(c.x); c.y = Math.round(c.y); });
+      save(); renderBoard(); break;
+    }
+    case 'resize': save(); rerenderCard(p.id); break;
+    case 'line': {
+      $$('.drop-into').forEach(x => x.classList.remove('drop-into'));
+      const tid = cardIdAt(e.clientX, e.clientY), to = tid ? { card: tid } : { x: p.to.x, y: p.to.y };
+      const fc = center(p.from) || p.to, tc = center(to) || p.to;
+      const tooShort = !p.from.card && !to.card && Math.hypot(fc.x - tc.x, fc.y - tc.y) < 12;
+      if ((p.from.card && to.card === p.from.card) || tooShort || (p.from.card && !to.card && Math.hypot(fc.x - p.to.x, fc.y - p.to.y) < 30)) { scheduleLines(); break; }
+      checkpoint(); const l = addLine(p.from, to); sel.clear(); selLine = l.id; applySel(); save(); break;
+    }
+    case 'lineHandle': {
+      const l = db.lines[p.id];
+      if (l && p.which !== 'mid' && p.moved) { const tid = cardIdAt(e.clientX, e.clientY); const other = p.which === 'from' ? l.to : l.from; if (tid && tid !== other.card) l[p.which] = { card: tid }; }
+      save(); scheduleLines(); break;
+    }
+    case 'tool': {
+      $('#tool-ghost').hidden = true; clearDropUI();
+      if (!p.moved) { createFromTool(p.type, null, null); break; }
+      const r = canvas.getBoundingClientRect();
+      if (e.clientX >= r.left && e.clientX <= r.right && e.clientY >= r.top && e.clientY <= r.bottom) {
+        const w = screenToWorld(e.clientX, e.clientY), dw = DEFAULT_W[p.type] || 240;
+        createFromTool(p.type, { x: w.x - dw / 2, y: w.y - 20 }, p.drop);
+      }
+      break;
+    }
+    case 'marquee': case 'none': scheduleLines(); break;
+  }
+}
+function handleClick(p, e) {
+  const t = p.target; if (!t.isConnected) return;
+  const a = t.closest('a[href]'); if (a) { window.open(a.href, '_blank', 'noopener'); return; }
+  const edEl = t.closest('.ed'); if (!edEl) return;
+  const cfg = edCfg.get(edEl); if (!cfg) return;
+  if (cfg.immediate) activateEditable(edEl, e.clientX, e.clientY);
+  else if (p.wasSelected) { const cx = e.clientX, cy = e.clientY; pendingEdit = setTimeout(() => activateEditable(edEl, cx, cy), 280); }
+}
+canvas.addEventListener('wheel', e => {
+  e.preventDefault();
+  if (e.ctrlKey || e.metaKey) zoomAt(view().z * Math.exp(-e.deltaY * 0.01), e.clientX, e.clientY);
+  else { const v = view(); const k = e.deltaMode === 1 ? 16 : 1; v.x -= (e.shiftKey && !e.deltaX ? e.deltaY : e.deltaX) * k; v.y -= (e.shiftKey && !e.deltaX ? 0 : e.deltaY) * k; applyView(); scheduleLines(); clearTimeout(canvas._ws); canvas._ws = setTimeout(save, 300); }
+}, { passive: false });
+canvas.addEventListener('dblclick', e => {
+  clearTimeout(pendingEdit);
+  if (e.target.closest('[contenteditable="true"],input,textarea,button,.nodrag')) return;
+  const hit = e.target.closest('.line-hit');
+  if (hit) { selLine = hit.dataset.id; $('#linebar [data-la="label"]')?.click(); return; }
+  const cardEl = e.target.closest('.card');
+  if (cardEl) { openCard(db.cards[cardEl.dataset.id]); return; }
+  const w = screenToWorld(e.clientX, e.clientY);
+  createFromTool('note', { x: w.x - 120, y: w.y - 20 }, null);
+});
+canvas.addEventListener('contextmenu', e => {
+  if (e.target.closest('[contenteditable="true"],input,textarea')) return;
+  e.preventDefault();
+  const cardEl = e.target.closest('.card');
+  if (cardEl) { const id = cardEl.dataset.id; if (!sel.has(id)) selectOnly(id); showCardMenu(e.clientX, e.clientY); return; }
+  const w = screenToWorld(e.clientX, e.clientY);
+  showMenu(e.clientX, e.clientY, [
+    { label: 'Add note here', icon: 'sticky', run: () => createFromTool('note', { x: w.x - 120, y: w.y - 20 }) },
+    { label: 'Add to-do here', icon: 'todo', run: () => createFromTool('todo', { x: w.x - 130, y: w.y - 20 }) },
+    { label: 'Add column here', icon: 'columns', run: () => createFromTool('column', { x: w.x - 145, y: w.y - 20 }) },
+    { label: 'Paste', icon: 'copy', kbd: 'Ctrl+V', run: () => pasteInternal(w) , disabled: !N.clipboard },
+    '-',
+    { label: 'Select all', kbd: 'Ctrl+A', run: selectAll },
+    { label: 'Fit to content', icon: 'fit', run: fitView },
+    { label: 'Templates…', icon: 'template', run: openTemplates },
+  ]);
+});
+function selectAll() { sel.clear(); topCards(N.boardId).forEach(c => sel.add(c.id)); applySel(); }
+
+/* ================= Files, drop, paste ================= */
+async function compressImage(file) {
+  const url = await readFile(file);
+  if (/gif|svg/.test(file.type) || file.size < 700 * 1024) return url;
+  try {
+    const img = await loadImg(url), s = Math.min(1, 1800 / Math.max(img.naturalWidth, img.naturalHeight));
+    const cv = h('canvas'); cv.width = Math.round(img.naturalWidth * s); cv.height = Math.round(img.naturalHeight * s);
+    cv.getContext('2d').drawImage(img, 0, 0, cv.width, cv.height);
+    const out = cv.toDataURL(file.type === 'image/png' ? 'image/png' : 'image/jpeg', 0.86);
+    return out.length < url.length ? out : url;
+  } catch { return url; }
+}
+async function filesToCards(files, pos, target) {
+  if (!files.length) return;
+  checkpoint(); let off = 0; const made = [];
+  for (const f of files) {
+    let c;
+    if (f.type.startsWith('image/')) c = createCard('image', pos.x + off, pos.y + off, { assetId: addAsset(await compressImage(f)) });
+    else { if (f.size > 15 * 1048576) { toast(`${f.name} is over 15 MB and was skipped`); continue; } c = createCard('file', pos.x + off, pos.y + off, { assetId: addAsset(await readFile(f)), name: f.name, size: f.size, mime: f.type }); }
+    if (target && target.type === 'column') intoColumn(c, target.id, target.index + made.length);
+    made.push(c.id); off += 24;
+  }
+  save(); renderBoard(); sel.clear(); made.forEach(i => sel.add(i)); applySel();
+}
+canvas.addEventListener('dragover', e => { if (UI.view !== 'notes') return; e.preventDefault(); e.dataTransfer.dropEffect = 'copy'; canvas.classList.add('drop-hover'); });
+canvas.addEventListener('dragleave', e => { if (!canvas.contains(e.relatedTarget)) canvas.classList.remove('drop-hover'); });
+canvas.addEventListener('drop', async e => {
+  e.preventDefault(); canvas.classList.remove('drop-hover');
+  const p = screenToWorld(e.clientX, e.clientY), target = findDropTarget(e.clientX, e.clientY, [], { board: false });
+  const files = [...e.dataTransfer.files];
+  if (files.length) return filesToCards(files, { x: p.x - 140, y: p.y - 40 }, target);
+  const txt = (e.dataTransfer.getData('text/uri-list') || e.dataTransfer.getData('text/plain') || '').split('\n').find(l => l && !l.startsWith('#'));
+  if (!txt) return;
+  checkpoint(); const t = txt.trim(); let c;
+  if (isUrl(t) && /\.(png|jpe?g|gif|webp|avif|svg)(\?|$)/i.test(t)) c = createCard('image', p.x - 140, p.y - 40, { src: normUrl(t) });
+  else if (isUrl(t)) c = createCard('link', p.x - 140, p.y - 20, linkData(t));
+  else c = createCard('note', p.x - 120, p.y - 20, { html: textToHtml(t) });
+  if (target && target.type === 'column') intoColumn(c, target.id, target.index);
+  save(); renderBoard(); selectOnly(c.id);
+});
+const isTyping = t => !!(t && t.closest && t.closest('input,textarea,select,[contenteditable="true"]'));
+const modalOpen = () => $('#modal-root').children.length > 0;
+function copySel(cd) {
+  const ids = topSel(); if (!ids.length) return false;
+  const text = ids.map(id => cardText(db.cards[id])).filter(Boolean).join('\n\n');
+  N.clipboard = { ids, token: uid('clip'), text, from: N.boardId };
+  cd.setData('text/plain', text || ' '); try { cd.setData('text/x-northstar', N.clipboard.token); } catch { }
+  return true;
+}
+function pasteInternal(at) {
+  const clip = N.clipboard; if (!clip) return;
+  const src = clip.ids.map(id => db.cards[id]).filter(Boolean); if (!src.length) return;
+  checkpoint();
+  const map = {}, made = src.map(c => { const n = cloneCard(c, N.boardId, map); n.columnId = null; return n; });
+  const minX = Math.min(...src.map(c => c.x || 0)), minY = Math.min(...src.map(c => c.y || 0));
+  const base = at || (clip.from === N.boardId ? { x: minX + 30, y: minY + 30 } : cascadePos('note'));
+  let z = nextZ();
+  made.forEach((n, i) => { const s = src[i]; n.x = Math.round(base.x + ((s.columnId ? minX : s.x) - minX)); n.y = Math.round(base.y + ((s.columnId ? minY + i * 30 : s.y) - minY)); n.z = z++; n.w = s.columnId ? DEFAULT_W[s.type] : s.w; });
+  Object.values(db.lines).filter(l => l.boardId === clip.from && map[l.from.card] && map[l.to.card]).forEach(l => cloneLine(l, N.boardId, map));
+  if (clip.from === N.boardId && !at) clip.ids = made.map(m => m.id);
+  save(); renderBoard(); sel.clear(); made.forEach(m => sel.add(m.id)); applySel();
+}
+document.addEventListener('copy', e => { if (UI.view !== 'notes' || isTyping(e.target) || modalOpen() || getSelection().toString()) return; if (copySel(e.clipboardData)) e.preventDefault(); });
+document.addEventListener('cut', e => { if (UI.view !== 'notes' || isTyping(e.target) || modalOpen()) return; if (copySel(e.clipboardData)) { e.preventDefault(); deleteSel(); } });
+document.addEventListener('paste', e => {
+  if (UI.view !== 'notes' || isTyping(e.target) || modalOpen() || e.defaultPrevented) return;
+  const cd = e.clipboardData; if (!cd) return; e.preventDefault();
+  const token = cd.getData('text/x-northstar'), text = cd.getData('text/plain');
+  if (N.clipboard && (token === N.clipboard.token || (!token && text && text === N.clipboard.text))) return pasteInternal();
+  const files = [...cd.files]; if (files.length) return filesToCards(files, cascadePos('image'));
+  const t = (text || '').trim(); if (!t && !cd.getData('text/html')) return;
+  checkpoint(); const p = cascadePos('note'); let c;
+  if (isUrl(t)) c = createCard('link', p.x, p.y, linkData(t));
+  else if (/^#[0-9a-f]{6}$/i.test(t)) c = createCard('swatch', p.x, p.y, { hex: t.toLowerCase() });
+  else c = createCard('note', p.x, p.y, { html: cd.getData('text/html') ? sanitize(cd.getData('text/html')) : textToHtml(t) });
+  save(); renderBoard(); selectOnly(c.id);
+});
+</script>
+<script>
+/* ================= Toolbar & creation ================= */
+const TOOLS = [
+  { type: 'note', label: 'Note', icon: 'sticky' }, { type: 'link', label: 'Link', icon: 'link' }, { type: 'todo', label: 'To-do', icon: 'todo' },
+  { type: 'line', label: 'Line', icon: 'line' }, { type: 'board', label: 'Board', icon: 'board' }, { type: 'column', label: 'Column', icon: 'columns' },
+  { type: 'comment', label: 'Comment', icon: 'comment' }, { sep: true },
+  { type: 'image', label: 'Image', icon: 'image' }, { type: 'file', label: 'Upload', icon: 'upload' }, { type: 'sketch', label: 'Draw', icon: 'pen' },
+  { type: 'swatch', label: 'Color', icon: 'droplet' }, { type: 'doc', label: 'Doc', icon: 'doc' }, { type: 'record', label: 'Record', icon: 'idcard' },
+];
+function buildToolbar() {
+  const tb = $('#toolbar');
+  tb.innerHTML = TOOLS.map(t => t.sep ? '<div class="tool-sep"></div>' : `<button class="tool" data-type="${t.type}" title="${t.label} — click to add, or drag onto the board">${icon(t.icon)}<span>${t.label}</span></button>`).join('');
+  tb.addEventListener('pointerdown', e => {
+    const b = e.target.closest('.tool'); if (!b || e.button !== 0) return;
+    e.preventDefault(); stopEditing();
+    const t = TOOLS.find(x => x.type === b.dataset.type);
+    ptr = { mode: 'tool', type: t.type, icon: t.icon, label: t.label, sx: e.clientX, sy: e.clientY, moved: t.type === 'line' ? false : false };
+    if (t.type === 'line') ptr.noDrag = true;
+  });
+}
+async function createFromTool(type, pos, target) {
+  if (type === 'line') { setLineMode(!N.lineMode); return; }
+  const at = pos || cascadePos(type);
+  const place = c => { if (target && target.type === 'column') intoColumn(c, target.id, target.index); };
+  if (type === 'image' || type === 'file') { const files = await pickFiles(type === 'image' ? 'image/*' : ''); return filesToCards(files, at, target); }
+  if (type === 'link') {
+    const url = await promptModal({ title: 'Add a link', placeholder: 'Paste a web address', okLabel: 'Add link' }); if (!url) return;
+    checkpoint(); const c = createCard('link', at.x, at.y, linkData(url)); place(c); save(); renderBoard(); selectOnly(c.id); return;
+  }
+  if (type === 'record') {
+    const ref = await pickRecord(); if (!ref) return;
+    checkpoint(); const c = createCard('record', at.x, at.y, ref); place(c); save(); renderBoard(); selectOnly(c.id); return;
+  }
+  checkpoint();
+  const c = createCard(type, at.x, at.y);
+  place(c); save(); renderBoard(); selectOnly(c.id);
+  const el = els.get(c.id); if (!el) return;
+  if (type === 'note') activateEditable(el.querySelector('.note-body'));
+  else if (type === 'todo') activateEditable(el.querySelector('.todo-text'));
+  else if (type === 'column') activateEditable(el.querySelector('.col-title'));
+  else if (type === 'board') activateEditable(el.querySelector('.board-title'));
+  else if (type === 'comment') el.querySelector('.cm-input')?.focus();
+  else if (type === 'sketch') openSketch(c);
+  else if (type === 'doc') openDoc(c);
+  else if (type === 'swatch') openSwatchPicker(c);
+}
+function openSwatchPicker(c) { const inp = els.get(c.id)?.querySelector('.sw-input'); if (!inp) return; checkpoint(); try { inp.showPicker(); } catch { inp.click(); } }
+function openCard(c) {
+  if (!c) return;
+  switch (c.type) {
+    case 'board': openBoard(c.data.boardId); break;
+    case 'link': { const u = safeUrl(c.data.url); if (u) window.open(u.href, '_blank', 'noopener'); break; }
+    case 'image': { const src = c.data.assetId ? assets[c.data.assetId] : c.data.src; if (src) { const m = modal(`<div class="lightbox"><img alt=""></div>`, { wide: true, cls: 'lb' }); m.querySelector('img').src = src; m.style.padding = '12px'; } break; }
+    case 'file': if (assets[c.data.assetId]) download(c.data.name, assets[c.data.assetId]); break;
+    case 'sketch': openSketch(c); break;
+    case 'doc': openDoc(c); break;
+    case 'record': openRecord(c.data.kind, c.data.refId); break;
+    case 'swatch': openSwatchPicker(c); break;
+  }
+}
+
+/* ================= Card actions & menus ================= */
+function deleteSel() {
+  const ids = topSel();
+  if (selLine && db.lines[selLine]) { checkpoint(); delete db.lines[selLine]; selLine = null; save(); scheduleLines(); return; }
+  if (!ids.length) return;
+  checkpoint(); ids.forEach(removeCard); sel.clear(); save(); renderBoard();
+  toast(`Deleted ${ids.length} card${ids.length > 1 ? 's' : ''}`, { label: 'Undo', run: undo });
+}
+function duplicateSel() {
+  const ids = topSel(); if (!ids.length) return;
+  checkpoint(); const map = {}; const made = [];
+  for (const id of ids) {
+    const c = db.cards[id], n = cloneCard(c, N.boardId, map);
+    if (c.columnId) { n.columnId = null; intoColumn(n, c.columnId, db.cards[c.columnId].data.items.indexOf(id) + 1); }
+    else { n.x += 24; n.y += 24; n.z = nextZ(); }
+    made.push(n.id);
+  }
+  Object.values(db.lines).filter(l => l.boardId === N.boardId && map[l.from.card] && map[l.to.card]).forEach(l => cloneLine(l, N.boardId, map));
+  save(); renderBoard(); sel.clear(); made.forEach(i => sel.add(i)); applySel();
+}
+function reorder(dir) {
+  const ids = topSel().filter(id => !db.cards[id].columnId); if (!ids.length) return;
+  checkpoint(); const all = topCards(N.boardId).map(c => c.z || 0);
+  ids.forEach((id, i) => db.cards[id].z = dir > 0 ? Math.max(0, ...all) + 1 + i : Math.min(0, ...all) - ids.length + i);
+  save(); renderBoard(); ids.forEach(i => sel.add(i)); applySel();
+}
+function showMenu(x, y, items) {
+  const m = $('#menu'); m.innerHTML = '';
+  for (const it of items) {
+    if (it === '-') { m.append(h('div', { class: 'menu-sep' })); continue; }
+    if (it.colors) {
+      const row = h('div', { class: 'color-row' }, h('button', { class: 'color-dot none', title: 'No color', onclick: () => { hideMenu(); it.run(null); } }));
+      COLORS.forEach(c => row.append(h('button', { class: 'color-dot', title: c, style: `background:var(--cc-${c})`, onclick: () => { hideMenu(); it.run(c); } })));
+      m.append(row); continue;
+    }
+    m.append(h('button', { class: 'menu-item' + (it.danger ? ' danger' : ''), disabled: it.disabled, onclick: () => { hideMenu(); it.run(); } }, h('span', { html: it.icon ? icon(it.icon) : '<span style="width:16px;display:inline-block"></span>' }), it.label, it.kbd ? h('kbd', {}, it.kbd) : null));
+  }
+  m.hidden = false;
+  m.style.left = clamp(x, 8, innerWidth - m.offsetWidth - 8) + 'px';
+  m.style.top = clamp(y, 8, innerHeight - m.offsetHeight - 8) + 'px';
+}
+function hideMenu() { $('#menu').hidden = true; }
+document.addEventListener('pointerdown', e => { if (!$('#menu').hidden && !e.target.closest('#menu')) hideMenu(); }, true);
+function showCardMenu(x, y) {
+  const ids = topSel(); if (!ids.length) return;
+  const one = ids.length === 1 ? db.cards[ids[0]] : null;
+  const items = [{ colors: true, run: col => { checkpoint(); ids.forEach(id => db.cards[id].color = col); save(); renderBoard(); ids.forEach(i => sel.add(i)); applySel(); } }];
+  if (one) {
+    const t = one.type;
+    if (t === 'board') items.push({ label: 'Open board', icon: 'open', run: () => openCard(one) }, { label: 'Change icon…', icon: 'smile', run: () => pickIcon(one.data.boardId) });
+    if (t === 'link') items.push({ label: 'Open link', icon: 'open', run: () => openCard(one) }, { label: 'Edit address…', icon: 'link', run: async () => { const u = await promptModal({ title: 'Link address', value: one.data.url }); if (u) { checkpoint(); one.data.url = normUrl(u); save(); rerenderCard(one.id); } } });
+    if (t === 'image') items.push({ label: 'View full size', icon: 'open', run: () => openCard(one) }, { label: 'Download', icon: 'download', run: () => { const s = one.data.assetId ? assets[one.data.assetId] : one.data.src; if (s) download((one.data.caption || 'image') + '.png', s); } });
+    if (t === 'file') items.push({ label: 'Download', icon: 'download', run: () => openCard(one) });
+    if (t === 'sketch') items.push({ label: 'Edit drawing', icon: 'pen', run: () => openSketch(one) });
+    if (t === 'doc') items.push({ label: 'Open document', icon: 'open', run: () => openDoc(one) });
+    if (t === 'record') items.push({ label: 'Open record', icon: 'open', run: () => openCard(one) });
+    if (t === 'swatch') items.push({ label: 'Change color', icon: 'droplet', run: () => openSwatchPicker(one) });
+    if (t === 'column') items.push({ label: one.data.collapsed ? 'Expand column' : 'Collapse column', run: () => { checkpoint(); one.data.collapsed = !one.data.collapsed; save(); rerenderCard(one.id); } });
+    if (t === 'todo') items.push({ label: 'Clear completed', icon: 'check', run: () => { checkpoint(); one.data.items = one.data.items.filter(i => !i.done); save(); rerenderCard(one.id); } });
+    if (one.columnId) items.push({ label: 'Move out of column', run: () => { checkpoint(); const col = db.cards[one.columnId]; col.data.items = col.data.items.filter(x => x !== one.id); one.columnId = null; one.x = col.x + col.w + 30; one.y = col.y; one.w = DEFAULT_W[one.type]; one.z = nextZ(); save(); renderBoard(); } });
+  }
+  items.push('-', { label: 'Duplicate', icon: 'copy', kbd: 'Ctrl+D', run: duplicateSel }, { label: 'Bring to front', icon: 'front', run: () => reorder(1) }, { label: 'Send to back', icon: 'back', run: () => reorder(-1) }, '-', { label: ids.length > 1 ? `Delete ${ids.length} cards` : 'Delete', icon: 'trash', kbd: 'Del', danger: true, run: deleteSel });
+  showMenu(x, y, items);
+}
+function pickIcon(bid) {
+  const m = modal(`<h2>Choose an icon</h2><div class="emoji-grid">${BOARD_ICONS.map(i => `<button data-i="${i}">${i}</button>`).join('')}</div>`);
+  m.addEventListener('click', e => { const b = e.target.closest('[data-i]'); if (!b) return; checkpoint(); db.boards[bid].icon = b.dataset.i; save(); m.close(); renderBoard(); });
+}
+function showBoardMenu(x, y) {
+  const b = curBoard(), isRoot = b.id === db.rootBoardId;
+  showMenu(x, y, [
+    { label: 'Fit to content', icon: 'fit', run: fitView },
+    { label: 'Select all', kbd: 'Ctrl+A', run: selectAll },
+    !isRoot && { label: 'Change icon…', icon: 'smile', run: () => pickIcon(b.id) },
+    '-',
+    { label: 'Export as Markdown', icon: 'download', run: exportMarkdown },
+    { label: 'Export board (.json)', icon: 'download', run: exportBoard },
+    { label: 'Import board (.json)', icon: 'upload', run: importBoard },
+    '-',
+    { label: 'Keyboard shortcuts', icon: 'keyboard', kbd: '?', run: showShortcuts },
+    !isRoot && '-',
+    !isRoot && { label: 'Delete this board', icon: 'trash', danger: true, run: async () => {
+      if (!await confirmModal(`Delete “${b.title || 'Untitled board'}” and everything inside it?`, 'Delete board')) return;
+      checkpoint(); const parent = b.parentId; const cardRef = Object.values(db.cards).find(c => c.type === 'board' && c.data.boardId === b.id);
+      if (cardRef) removeCard(cardRef.id); else deleteBoardDeep(b.id);
+      save(); openBoard(parent || db.rootBoardId); toast('Board deleted', { label: 'Undo', run: undo });
+    } },
+  ].filter(Boolean));
+}
+
+/* ================= Templates ================= */
+const TEMPLATES = [
+  { id: 'kanban', icon: '🗂️', name: 'Kanban', desc: 'To do, doing, done columns' },
+  { id: 'meeting', icon: '🗓️', name: 'Meeting notes', desc: 'Agenda, decisions, action items' },
+  { id: 'mood', icon: '🎨', name: 'Moodboard', desc: 'Palette, references and mood words' },
+  { id: 'brain', icon: '🧠', name: 'Brainstorm', desc: 'A central idea with connected thoughts' },
+  { id: 'account', icon: '🤝', name: 'Account plan', desc: 'Goals, stakeholders, risks, next steps' },
+  { id: 'week', icon: '📅', name: 'Weekly planner', desc: 'One column per weekday' },
+];
+function openTemplates() {
+  const m = modal(`<h2>Add a template to this board</h2><div class="tpl-grid">${TEMPLATES.map(t => `<button class="tpl" data-t="${t.id}"><span class="tpl-ic">${t.icon}</span><b>${t.name}</b><span>${t.desc}</span></button>`).join('')}</div>`, { cls: 'tpl-modal' });
+  m.style.width = 'min(640px,100%)';
+  m.addEventListener('click', e => { const b = e.target.closest('[data-t]'); if (!b) return; m.close(); applyTemplate(b.dataset.t); });
+}
+function applyTemplate(id) {
+  checkpoint();
+  const ex = topCards(N.boardId).map(c => ({ c, el: els.get(c.id) }));
+  const o = viewportCenter();
+  const base = ex.length ? { x: Math.round(Math.max(...ex.map(({ c, el }) => c.x + (el ? el.offsetWidth : c.w))) + 120), y: Math.round(Math.min(...ex.map(({ c }) => c.y))) } : { x: Math.round(o.x - 360), y: Math.round(o.y - 200) };
+  const ids = [];
+  const add = (type, x, y, data, extra) => { const c = createCard(type, base.x + x, base.y + y, data, extra); ids.push(c.id); return c; };
+  const col = (x, y, title, kids, extra) => { const c = add('column', x, y, { title }, extra); kids.forEach(k => { const n = createCard(k[0], 0, 0, k[1], k[2] || {}); intoColumn(n, c.id); }); return c; };
+  const note = html => ['note', { html }];
+  const line = (a, b, label = '', extra = {}) => { const l = addLine({ card: a.id }, { card: b.id }); Object.assign(l, { label }, extra); };
+  const todo = (title, items) => ({ title, items: items.map(t => ({ id: uid('i'), text: t, done: false })) });
+  switch (id) {
+    case 'kanban': col(0, 0, 'To do', [note('<div>First task</div>'), note('<div>Second task</div>')]); col(320, 0, 'Doing', [note('<div>In progress</div>')], { color: 'blue' }); col(640, 0, 'Done', [], { color: 'green' }); break;
+    case 'meeting': add('note', 0, 0, { html: `<h1>Meeting — ${new Date().toLocaleDateString()}</h1><h3>Agenda</h3><ol><li>Updates</li><li>Discussion</li><li>Next steps</li></ol>` }, { w: 320 }); add('note', 350, 0, { html: '<h2>Decisions</h2><ul><li></li></ul>' }, { color: 'green' }); add('todo', 350, 170, todo('Action items', ['Owner — task', 'Owner — task'])); add('comment', 0, 260, {}); break;
+    case 'mood': add('note', 0, 0, { html: '<h1>Moodboard</h1><div>Mood words: calm, confident, warm</div>' }, { w: 300 }); [['#1d3557', 'Navy'], ['#e63946', 'Coral'], ['#f1faee', 'Mist'], ['#a8dadc', 'Sea']].forEach(([hex, name], i) => add('swatch', i * 165, 150, { hex, name })); col(680, 0, 'References', [note('<div>Drop images or links here</div>')]); break;
+    case 'brain': { const c = add('note', 300, 160, { html: '<h2>Central idea</h2>' }, { color: 'yellow' }); [[0, 0], [620, 0], [0, 330], [620, 330], [310, 400]].forEach(([x, y], i) => { const n = add('note', x, y, { html: `<div>Idea ${i + 1}</div>` }); line(c, n); }); break; }
+    case 'account': { const g = add('note', 0, 0, { html: '<h1>Account plan</h1><h3>Goals</h3><ul><li>Expand to new teams</li><li>Multi-year renewal</li></ul>' }, { w: 300 }); const s = col(340, 0, 'Stakeholders', [note('<div><b>Champion</b></div>'), note('<div><b>Economic buyer</b></div>'), note('<div><b>Blocker?</b></div>')]); const r = add('note', 0, 260, { html: '<h3>Risks</h3><ul><li>Budget timing</li></ul>' }, { color: 'red' }); const t = add('todo', 680, 0, todo('Next steps', ['Book exec sponsor meeting', 'Send ROI summary'])); line(g, s); line(s, t, 'owners'); line(g, r, '', { dashed: true }); break; }
+    case 'week': ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday'].forEach((d, i) => col(i * 310, 0, d, [])); break;
+  }
+  save(); renderBoard(); sel.clear(); ids.forEach(i => sel.add(i)); applySel();
+  const v = view(); v.x = 120 - base.x * v.z; v.y = 100 - base.y * v.z; applyView(); scheduleLines(); save();
+}
+
+/* ================= Sketch editor ================= */
+function openSketch(c) {
+  const W = 1200, H = 800, PENS = ['#1d1d1f', '#e5484d', '#f76b15', '#30a46c', '#3e63dd', '#8e4ec6'];
+  const m = modal(`<div class="sketch-wrap"><div class="sketch-bar">${PENS.map((p, i) => `<button class="pen${i ? '' : ' on'}" data-pen="${p}" style="background:${p}" title="Pen color"></button>`).join('')}<span class="fsep"></span>${[2, 5, 10].map((s, i) => `<button class="size-btn${i === 1 ? ' on' : ''}" data-size="${s}" title="Brush size">${['S', 'M', 'L'][i]}</button>`).join('')}<button class="size-btn" data-erase title="Eraser">Eraser</button><span class="fsep"></span><button class="btn" data-undo>${icon('undo')} Undo</button><button class="btn" data-clear>Clear</button><span class="grow"></span><button class="btn" data-cancel>Cancel</button><button class="btn primary" data-done>Done</button></div><canvas class="sketch-canvas"></canvas></div>`, { wide: true, top: true });
+  const cv = m.querySelector('canvas'); cv.width = W; cv.height = H;
+  const ctx = cv.getContext('2d'); ctx.lineCap = 'round'; ctx.lineJoin = 'round';
+  if (c.data.assetId && assets[c.data.assetId]) loadImg(assets[c.data.assetId]).then(img => ctx.drawImage(img, 0, 0, W, H));
+  let color = PENS[0], size = 5, erase = false, drawing = false, last = null, dirty = false; const stack = [];
+  const pos = e => { const r = cv.getBoundingClientRect(); return { x: (e.clientX - r.left) * W / r.width, y: (e.clientY - r.top) * H / r.height }; };
+  const stroke = (a, b) => { ctx.globalCompositeOperation = erase ? 'destination-out' : 'source-over'; ctx.strokeStyle = color; ctx.lineWidth = erase ? size * 4 : size; ctx.beginPath(); ctx.moveTo(a.x, a.y); ctx.lineTo(b.x, b.y); ctx.stroke(); };
+  cv.addEventListener('pointerdown', e => { cv.setPointerCapture(e.pointerId); drawing = true; dirty = true; stack.push(ctx.getImageData(0, 0, W, H)); if (stack.length > 30) stack.shift(); last = pos(e); stroke(last, { x: last.x + .1, y: last.y + .1 }); });
+  cv.addEventListener('pointermove', e => { if (!drawing) return; const p = pos(e); stroke(last, p); last = p; });
+  cv.addEventListener('pointerup', () => drawing = false);
+  m.addEventListener('click', e => {
+    const t = e.target.closest('button'); if (!t) return;
+    if (t.dataset.pen) { color = t.dataset.pen; erase = false; m.querySelectorAll('.pen').forEach(x => x.classList.toggle('on', x === t)); m.querySelector('[data-erase]').classList.remove('on'); }
+    else if (t.dataset.size) { size = +t.dataset.size; m.querySelectorAll('[data-size]').forEach(x => x.classList.toggle('on', x === t)); }
+    else if ('erase' in t.dataset) { erase = !erase; t.classList.toggle('on', erase); }
+    else if ('undo' in t.dataset) { const s = stack.pop(); if (s) ctx.putImageData(s, 0, 0); }
+    else if ('clear' in t.dataset) { stack.push(ctx.getImageData(0, 0, W, H)); ctx.clearRect(0, 0, W, H); dirty = true; }
+    else if ('cancel' in t.dataset) m.close();
+    else if ('done' in t.dataset) {
+      if (dirty) { checkpoint(); c.data.assetId = addAsset(cv.toDataURL('image/png')); save(); }
+      m.close(); if (db.cards[c.id] && els.get(c.id)) rerenderCard(c.id);
+    }
+  });
+}
+
+/* ================= Document editor ================= */
+function openDoc(c) {
+  checkpoint();
+  const m = modal(`<div class="doc-editor"><div class="doc-bar">${fmtButtonsHtml(['|', ['hr', '―', 'Divider']])}<span class="grow"></span><button class="btn primary" data-close>Done</button></div><input class="doc-title-in" placeholder="Untitled document"><div class="doc-body rt" contenteditable="true" data-ph="Start writing…"></div></div>`, { wide: true, top: true, onClose: () => { save(); if (els.get(c.id)) rerenderCard(c.id); } });
+  const title = m.querySelector('.doc-title-in'), body = m.querySelector('.doc-body');
+  title.value = c.data.title; body.innerHTML = sanitize(c.data.html);
+  title.oninput = () => { c.data.title = title.value; save(); };
+  body.oninput = () => { c.data.html = body.innerHTML; save(); };
+  body.addEventListener('paste', e => { e.preventDefault(); const html = e.clipboardData.getData('text/html'), t = e.clipboardData.getData('text/plain'); document.execCommand('insertHTML', false, html ? sanitize(html) : textToHtml(t)); });
+  body.addEventListener('keydown', e => { if (e.key === ' ') mdShortcut(e, body); if (e.key === 'Enter') richEnter(e, body); if (e.key === 'Tab') { e.preventDefault(); document.execCommand(e.shiftKey ? 'outdent' : 'indent'); } if ((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === 'k') { e.preventDefault(); execFmt('link'); } });
+  title.addEventListener('keydown', e => { if (e.key === 'Enter') { e.preventDefault(); body.focus(); } });
+  const bar = m.querySelector('.doc-bar');
+  bar.addEventListener('mousedown', e => { if (e.target.closest('[data-cmd]')) e.preventDefault(); });
+  bar.addEventListener('click', e => { const b = e.target.closest('[data-cmd]'); if (b) { if (!body.contains(getSelection().anchorNode)) body.focus(); execFmt(b.dataset.cmd); } if (e.target.closest('[data-close]')) m.close(); });
+  (c.data.title ? body : title).focus();
+}
+$('#fmt').addEventListener('mousedown', e => e.preventDefault());
+$('#fmt').addEventListener('click', e => { const b = e.target.closest('[data-cmd]'); if (b && N.editing) { execFmt(b.dataset.cmd); positionFmt(); } });
+document.addEventListener('selectionchange', () => { if (N.editing && !$('#fmt').hidden) positionFmt(); });
+
+/* ================= Export / import ================= */
+function boardBundle(bid) {
+  const out = { kind: 'northstar-board', version: 1, root: bid, boards: {}, cards: {}, lines: {}, assets: {} };
+  const walk = id => {
+    out.boards[id] = db.boards[id];
+    for (const c of boardCards(id)) { out.cards[c.id] = c; if (c.data.assetId && assets[c.data.assetId]) out.assets[c.data.assetId] = assets[c.data.assetId]; if (c.type === 'board' && db.boards[c.data.boardId]) walk(c.data.boardId); }
+    for (const l of Object.values(db.lines)) if (l.boardId === id) out.lines[l.id] = l;
+  };
+  walk(bid); return out;
+}
+const fileSafe = s => (s || 'board').replace(/[^\w\- ]+/g, '').trim().replace(/\s+/g, '-').toLowerCase() || 'board';
+function exportBoard() { const b = curBoard(); downloadText(fileSafe(b.title) + '.northstar.json', JSON.stringify(boardBundle(b.id))); }
+function boardToMd(bid, depth = 1) {
+  const b = db.boards[bid]; let md = `${'#'.repeat(Math.min(depth, 6))} ${b.icon || ''} ${b.title || 'Untitled board'}\n\n`;
+  const one = (c, ind = '') => {
+    const d = c.data;
+    switch (c.type) {
+      case 'note': return htmlToMd(d.html).split('\n').map(l => ind + l).join('\n') + '\n\n';
+      case 'todo': return (d.title ? `${ind}**${d.title}**\n` : '') + d.items.map(i => `${ind}- [${i.done ? 'x' : ' '}] ${i.text}`).join('\n') + '\n\n';
+      case 'link': return `${ind}[${d.title || d.url}](${d.url})${d.desc ? ' — ' + d.desc : ''}\n\n`;
+      case 'column': return `${ind}**${d.title || 'Column'}**\n\n` + d.items.map(i => db.cards[i] ? one(db.cards[i], ind + '  ') : '').join('');
+      case 'board': return db.boards[d.boardId] ? boardToMd(d.boardId, depth + 1) : '';
+      case 'comment': return d.items.map(i => `${ind}> ${i.author}: ${i.text}`).join('\n') + '\n\n';
+      case 'swatch': return `${ind}Color ${d.hex.toUpperCase()}${d.name ? ' — ' + d.name : ''}\n\n`;
+      case 'doc': return `${ind}**${d.title || 'Document'}**\n\n${htmlToMd(d.html)}\n\n`;
+      case 'image': return `${ind}[Image${d.caption ? ': ' + d.caption : ''}]\n\n`;
+      case 'file': return `${ind}[File: ${d.name}]\n\n`;
+      case 'record': { const r = getRec(d.kind, d.refId); return r ? `${ind}${KINDS[d.kind].label}: ${KINDS[d.kind].title(r)}\n\n` : ''; }
+    }
+    return '';
+  };
+  topCards(bid).sort((a, b) => a.y - b.y || a.x - b.x).forEach(c => md += one(c));
+  return md;
+}
+function exportMarkdown() { const b = curBoard(); downloadText(fileSafe(b.title) + '.md', boardToMd(b.id), 'text/markdown'); }
+async function importBoard() {
+  const [f] = await pickFiles('.json,application/json', false); if (!f) return;
+  let bundle; try { bundle = JSON.parse(await readFile(f, 'text')); } catch { toast('That file is not valid JSON'); return; }
+  if (bundle.kind !== 'northstar-board' || !bundle.boards || !bundle.boards[bundle.root]) { toast('Not a Northstar board export'); return; }
+  const ids = [...Object.keys(bundle.boards), ...Object.keys(bundle.cards || {}), ...Object.keys(bundle.lines || {}), ...Object.keys(bundle.assets || {})];
+  let s = JSON.stringify(bundle);
+  for (const id of ids) s = s.split('"' + id + '"').join('"' + uid(id.split('_')[0] + '_') + '"');
+  const b = JSON.parse(s);
+  checkpoint();
+  Object.assign(db.boards, b.boards); Object.assign(db.cards, b.cards || {}); Object.assign(db.lines, b.lines || {}); Object.assign(assets, b.assets || {}); saveAssets();
+  db.boards[b.root].parentId = N.boardId; db.boards[b.root].link = null;
+  const p = cascadePos('board'); const card = createCard('board', p.x, p.y, { boardId: b.root });
+  save(); renderBoard(); selectOnly(card.id); toast('Board imported');
+}
+
+/* ================= Keyboard ================= */
+document.addEventListener('keydown', e => {
+  const mod = e.metaKey || e.ctrlKey, k = e.key.toLowerCase();
+  if (mod && k === 'k' && !N.editing) { e.preventDefault(); openSearch(); return; }
+  if (e.key === 'Escape') {
+    if (!$('#menu').hidden) { hideMenu(); return; }
+    if (closeTopModal()) return;
+    if (UI.drawer) { closeDrawer(); return; }
+    if (UI.view === 'notes') { if (N.lineMode) setLineMode(false); clearSel(); }
+    return;
+  }
+  if (isTyping(e.target) || modalOpen()) return;
+  if (UI.view !== 'notes') { if (e.key === '/') { e.preventDefault(); openSearch(); } return; }
+  if (e.code === 'Space' && !spaceDown) { spaceDown = true; canvas.classList.add('panning'); e.preventDefault(); return; }
+  if (mod && k === 'z') { e.preventDefault(); e.shiftKey ? redo() : undo(); return; }
+  if (mod && k === 'y') { e.preventDefault(); redo(); return; }
+  if (mod && k === 'd') { e.preventDefault(); duplicateSel(); return; }
+  if (mod && k === 'a') { e.preventDefault(); selectAll(); return; }
+  if (mod && (k === '=' || k === '+')) { e.preventDefault(); zoomAt(view().z * 1.2); return; }
+  if (mod && k === '-') { e.preventDefault(); zoomAt(view().z / 1.2); return; }
+  if (mod && k === '0') { e.preventDefault(); zoomAt(1); return; }
+  if (e.key === 'Delete' || e.key === 'Backspace') { e.preventDefault(); deleteSel(); return; }
+  if (e.key.startsWith('Arrow') && sel.size) {
+    e.preventDefault(); const s = e.shiftKey ? 20 : 4; const dx = e.key === 'ArrowLeft' ? -s : e.key === 'ArrowRight' ? s : 0, dy = e.key === 'ArrowUp' ? -s : e.key === 'ArrowDown' ? s : 0;
+    if (!e.repeat) checkpoint();
+    topSel().forEach(id => { const c = db.cards[id]; if (c.columnId) return; c.x += dx; c.y += dy; const el = els.get(id); el.style.left = c.x + 'px'; el.style.top = c.y + 'px'; });
+    save(); scheduleLines(); return;
+  }
+  if (e.key === 'Enter' && sel.size === 1) { const el = els.get([...sel][0]); const t = el?.querySelector('.ed'); if (t) { e.preventDefault(); activateEditable(t); } return; }
+  if (mod || e.altKey) return;
+  const map = { n: 'note', t: 'todo', c: 'column', b: 'board', l: 'line' };
+  if (map[k]) { e.preventDefault(); createFromTool(map[k]); return; }
+  if (e.key === '?') showShortcuts();
+});
+document.addEventListener('keyup', e => { if (e.code === 'Space') { spaceDown = false; if (!ptr || ptr.mode !== 'pan') canvas.classList.remove('panning'); } });
+window.addEventListener('blur', () => { spaceDown = false; canvas.classList.remove('panning'); });
+function showShortcuts() {
+  const rows = [['Add note / to-do / column / board', 'N · T · C · B'], ['Line mode', 'L'], ['Quick note', 'Double-click canvas'], ['Edit selected card', 'Enter'], ['Pan', 'Scroll · Space+drag · middle-drag'], ['Zoom', 'Ctrl+scroll · Ctrl + / −'], ['Reset zoom', 'Ctrl+0'], ['Undo / redo', 'Ctrl+Z · Ctrl+Shift+Z'], ['Duplicate', 'Ctrl+D'], ['Copy / cut / paste', 'Ctrl+C · X · V'], ['Select all', 'Ctrl+A'], ['Multi-select', 'Shift+click · drag on canvas'], ['Nudge', 'Arrow keys (Shift = 20px)'], ['Delete', 'Delete / Backspace'], ['Markdown in notes', '# ## - 1. > + space'], ['Search everything', 'Ctrl+K']];
+  modal(`<h2>Keyboard shortcuts</h2><div class="shortcuts">${rows.map(([a, b]) => `<span>${a}</span><kbd>${b}</kbd>`).join('')}</div>`).style.width = 'min(560px,100%)';
+}
+</script>
+<script>
+/* ================= CRM definitions ================= */
+const companyName = id => db.companies.find(c => c.id === id)?.name || '';
+const contactName = id => db.contacts.find(c => c.id === id)?.name || '';
+const badge = s => s ? `<span class="badge b-${slug(s)}">${esc(s)}</span>` : '';
+const KINDS = {
+  contact: {
+    store: 'contacts', label: 'Contact', plural: 'Contacts', view: 'contacts',
+    title: r => r.name || 'Untitled contact', sub: r => [r.title, companyName(r.companyId)].filter(Boolean).join(' · '),
+    search: r => [r.name, r.email, r.phone, r.title, companyName(r.companyId), r.tags].join(' '),
+    fields: [{ k: 'name', l: 'Name' }, { k: 'title', l: 'Job title' }, { k: 'email', l: 'Email', t: 'email' }, { k: 'phone', l: 'Phone', t: 'tel' }, { k: 'companyId', l: 'Company', t: 'company' }, { k: 'status', l: 'Status', t: 'select', o: CONTACT_STATUS }, { k: 'tags', l: 'Tags', ph: 'comma, separated', full: true }, { k: 'about', l: 'About', t: 'textarea', full: true }],
+    cols: [{ k: 'name', l: 'Name', html: r => `<div class="cell-name"><span class="avatar sm">${esc(initials(r.name))}</span><div><b>${esc(r.name || 'Untitled')}</b><div class="muted">${esc(r.title || '')}</div></div></div>` }, { k: 'company', l: 'Company', v: r => companyName(r.companyId) }, { k: 'email', l: 'Email' }, { k: 'phone', l: 'Phone' }, { k: 'status', l: 'Status', html: r => badge(r.status) }, { k: 'createdAt', l: 'Added', v: r => new Date(r.createdAt).toLocaleDateString(), sv: r => r.createdAt }],
+    filter: { k: 'status', label: 'statuses', o: CONTACT_STATUS },
+    cardRows: r => [['Email', r.email], ['Phone', r.phone], ['Status', r.status]],
+    blank: () => ({ name: '', title: '', email: '', phone: '', companyId: '', status: 'Lead', tags: '', about: '' }),
+  },
+  company: {
+    store: 'companies', label: 'Company', plural: 'Companies', view: 'companies',
+    title: r => r.name || 'Untitled company', sub: r => [r.industry, r.website].filter(Boolean).join(' · '),
+    search: r => [r.name, r.industry, r.website, r.address].join(' '),
+    fields: [{ k: 'name', l: 'Name' }, { k: 'industry', l: 'Industry' }, { k: 'website', l: 'Website' }, { k: 'phone', l: 'Phone', t: 'tel' }, { k: 'size', l: 'Employees', t: 'select', o: COMPANY_SIZES }, { k: 'address', l: 'Address', full: true }],
+    cols: [{ k: 'name', l: 'Name', html: r => `<div class="cell-name"><span class="avatar sm kind-company">${esc(initials(r.name))}</span><b>${esc(r.name || 'Untitled')}</b></div>` }, { k: 'industry', l: 'Industry' }, { k: 'size', l: 'Employees' }, { k: 'contacts', l: 'Contacts', v: r => db.contacts.filter(c => c.companyId === r.id).length, sv: r => db.contacts.filter(c => c.companyId === r.id).length }, { k: 'pipeline', l: 'Open pipeline', v: r => money(openDeals().filter(d => d.companyId === r.id).reduce((s, d) => s + (+d.value || 0), 0)), sv: r => openDeals().filter(d => d.companyId === r.id).reduce((s, d) => s + (+d.value || 0), 0) }],
+    cardRows: r => [['Industry', r.industry], ['Website', r.website], ['Employees', r.size]],
+    blank: () => ({ name: '', industry: '', website: '', phone: '', size: '', address: '' }),
+  },
+  deal: {
+    store: 'deals', label: 'Deal', plural: 'Deals', view: 'deals',
+    title: r => r.title || 'Untitled deal', sub: r => [companyName(r.companyId), money(r.value)].filter(Boolean).join(' · '),
+    search: r => [r.title, companyName(r.companyId), contactName(r.contactId), r.stage].join(' '),
+    fields: [{ k: 'title', l: 'Deal name', full: true }, { k: 'value', l: 'Value ($)', t: 'number' }, { k: 'stage', l: 'Stage', t: 'select', o: STAGES }, { k: 'companyId', l: 'Company', t: 'company' }, { k: 'contactId', l: 'Primary contact', t: 'contact' }, { k: 'closeDate', l: 'Expected close', t: 'date' }],
+    cardRows: r => [['Value', money(r.value)], ['Stage', r.stage], ['Close', fmtDate(r.closeDate)]],
+    blank: () => ({ title: '', value: 0, stage: 'Lead', companyId: '', contactId: '', closeDate: dateAdd(30) }),
+  },
+};
+const openDeals = () => db.deals.filter(d => d.stage !== 'Won' && d.stage !== 'Lost');
+function logActivity(kind, refId, type, text) { db.activities.unshift({ id: uid('ac_'), kind, refId, type, text, at: Date.now() }); }
+const ACT_IC = { note: '📝', call: '📞', email: '✉️', meeting: '👥', system: '⚙️', task: '✅' };
+const refLabel = (kind, id) => { const r = getRec(kind, id); return r ? KINDS[kind].title(r) : ''; };
+
+/* ================= Navigation ================= */
+const VIEWS = [['dashboard', 'Dashboard', 'grid'], ['contacts', 'Contacts', 'users'], ['companies', 'Companies', 'building'], ['deals', 'Deals', 'dollar'], ['tasks', 'Tasks', 'check'], ['notes', 'Notes', 'layers']];
+function buildNav() {
+  $('#nav').innerHTML = `<div class="brand"><div class="brand-mark">✦</div><span>Northstar</span></div>` +
+    VIEWS.map(([v, l, i]) => `<button class="nav-item" data-nav="${v}">${icon(i)}<span>${l}</span></button>`).join('') +
+    `<div class="nav-label">Recent boards</div><div id="nav-boards"></div><div class="nav-spacer"></div>
+     <button class="nav-item" data-act="search">${icon('search')}<span>Search</span><kbd>Ctrl K</kbd></button>
+     <button class="nav-item" data-act="settings">${icon('settings')}<span>Settings</span></button>
+     <div class="save-state" id="save-state">All changes saved</div>`;
+}
+function renderNavBoards() {
+  const el = $('#nav-boards'); if (!el) return;
+  const bs = Object.values(db.boards).filter(b => b.id !== db.rootBoardId).sort((a, b) => (b.updatedAt || 0) - (a.updatedAt || 0)).slice(0, 6);
+  el.innerHTML = bs.map(b => `<button class="nav-board" data-board="${b.id}">${esc(b.icon || '📁')} ${esc(b.title || 'Untitled board')}</button>`).join('') || '<div class="muted" style="font-size:12px;padding:4px 10px">No boards yet</div>';
+}
+function nav(hash) { try { if (location.hash !== hash) history.pushState(null, '', hash); } catch { } }
+function setView(v, push = true) {
+  if (UI.view === 'notes' && v !== 'notes') { stopEditing(); setLineMode(false); hideFmt(); $('#linebar').hidden = true; }
+  UI.view = v;
+  $$('.view').forEach(s => s.classList.toggle('active', s.id === 'view-' + v));
+  $$('.nav-item[data-nav]').forEach(b => b.classList.toggle('active', b.dataset.nav === v));
+  if (push) nav(v === 'notes' ? '#/notes/' + N.boardId : '#/' + v);
+  if (v !== 'notes') renderCurrent();
+}
+function renderCurrent() {
+  switch (UI.view) {
+    case 'dashboard': renderDashboard(); break;
+    case 'contacts': renderList('contact'); break;
+    case 'companies': renderList('company'); break;
+    case 'deals': renderDeals(); break;
+    case 'tasks': renderTasks(); break;
+    case 'notes': renderBoard(); break;
+  }
+  renderNavBoards();
+}
+function route() {
+  const [v, arg] = location.hash.replace(/^#\/?/, '').split('/');
+  if (v === 'notes') openBoard(arg && db.boards[arg] ? arg : (N.boardId || db.rootBoardId), null, false);
+  else setView(VIEWS.some(x => x[0] === v) ? v : 'dashboard', false);
+}
+window.addEventListener('popstate', route);
+
+/* ================= Dashboard ================= */
+function renderDashboard() {
+  const open = openDeals(), openVal = open.reduce((s, d) => s + (+d.value || 0), 0);
+  const weighted = open.reduce((s, d) => s + (+d.value || 0) * STAGE_PROB[d.stage] / 100, 0);
+  const won = db.deals.filter(d => d.stage === 'Won'), wonVal = won.reduce((s, d) => s + (+d.value || 0), 0);
+  const tasks = db.tasks.filter(t => !t.done).sort((a, b) => (a.due || '9') < (b.due || '9') ? -1 : 1), td = todayStr(), overdue = tasks.filter(t => t.due && t.due < td);
+  const max = Math.max(1, ...STAGES.map(s => db.deals.filter(d => d.stage === s).reduce((x, d) => x + (+d.value || 0), 0)));
+  const hr = new Date().getHours(), greet = hr < 12 ? 'morning' : hr < 18 ? 'afternoon' : 'evening';
+  const boards = Object.values(db.boards).filter(b => b.id !== db.rootBoardId).sort((a, b) => (b.updatedAt || 0) - (a.updatedAt || 0)).slice(0, 6);
+  $('#view-dashboard').innerHTML = `
+  <header class="page-head"><div><h1>Good ${greet}, ${esc(db.settings.user || 'there')}</h1><p class="muted">Here's what's happening across your pipeline.</p></div>
+    <div class="head-actions"><button class="btn" data-new="contact">${icon('plus')} Contact</button><button class="btn" data-new="deal">${icon('plus')} Deal</button><button class="btn primary" data-nav="notes">${icon('layers')} Open notes</button></div></header>
+  <div class="kpis">
+    <div class="kpi"><div class="k-label">Open pipeline</div><div class="k-val">${money(openVal)}</div><div class="k-sub">${open.length} open deals</div></div>
+    <div class="kpi"><div class="k-label">Weighted forecast</div><div class="k-val">${money(weighted)}</div><div class="k-sub">by stage probability</div></div>
+    <div class="kpi"><div class="k-label">Closed won</div><div class="k-val">${money(wonVal)}</div><div class="k-sub">${won.length} deals won</div></div>
+    <div class="kpi"><div class="k-label">Open tasks</div><div class="k-val">${tasks.length}</div><div class="k-sub" style="${overdue.length ? 'color:var(--danger)' : ''}">${overdue.length} overdue</div></div>
+  </div>
+  <div class="dash-grid">
+    <section class="panel"><h3>Pipeline by stage <button class="linkish" data-nav="deals">View deals</button></h3>
+      ${STAGES.map(s => { const v = db.deals.filter(d => d.stage === s).reduce((x, d) => x + (+d.value || 0), 0); return `<div class="bar-row"><span>${s}</span><div class="bar"><i style="width:${v / max * 100}%;background:var(--cc-${{ Lead: 'gray', Qualified: 'blue', Proposal: 'purple', Negotiation: 'orange', Won: 'green', Lost: 'red' }[s]})"></i></div><b>${money(v)}</b></div>`; }).join('')}</section>
+    <section class="panel"><h3>Upcoming tasks <button class="linkish" data-nav="tasks">All tasks</button></h3>
+      ${tasks.slice(0, 7).map(t => `<div class="mini-row${t.due && t.due < td ? ' overdue' : ''}"><input type="checkbox" data-task-toggle="${t.id}" aria-label="Complete task"><span class="grow">${esc(t.title)}</span>${t.refId && refLabel(t.kind, t.refId) ? `<button class="chip" data-open="${t.kind}:${t.refId}">${esc(refLabel(t.kind, t.refId))}</button>` : ''}<span class="due muted">${fmtDate(t.due)}</span></div>`).join('') || '<div class="empty">Nothing due — nice work.</div>'}</section>
+    <section class="panel"><h3>Recent activity</h3>
+      ${db.activities.slice(0, 7).map(a => `<div class="mini-row"><span class="act-ic">${ACT_IC[a.type] || '•'}</span><span class="grow">${esc(a.text)}</span>${refLabel(a.kind, a.refId) ? `<button class="chip" data-open="${a.kind}:${a.refId}">${esc(refLabel(a.kind, a.refId))}</button>` : ''}<span class="muted" style="font-size:12px">${timeAgo(a.at)}</span></div>`).join('') || '<div class="empty">No activity yet.</div>'}</section>
+    <section class="panel"><h3>Recent boards <button class="linkish" data-nav="notes">Notes home</button></h3>
+      <div class="board-tiles">${boards.map(b => `<button class="board-tile" data-board="${b.id}"><div class="bt-ic">${esc(b.icon || '📁')}</div><div class="bt-t">${esc(b.title || 'Untitled board')}</div><div class="muted" style="font-size:12px">${boardCards(b.id).length} cards · ${timeAgo(b.updatedAt || b.createdAt)}</div></button>`).join('')}</div></section>
+  </div>`;
+}
+
+/* ================= Lists (contacts, companies) ================= */
+function renderList(kind) {
+  const K = KINDS[kind], root = $('#view-' + K.view), all = db[K.store];
+  const q = (UI.q[kind] || '').toLowerCase(), f = UI.filter[kind] || '', s = UI.sort[kind] || { k: K.cols[0].k, dir: 1 };
+  const col = K.cols.find(c => c.k === s.k) || K.cols[0];
+  const sv = r => col.sv ? col.sv(r) : col.v ? col.v(r) : r[col.k];
+  const rows = all.filter(r => (!q || K.search(r).toLowerCase().includes(q)) && (!f || r[K.filter.k] === f))
+    .sort((a, b) => { const x = sv(a), y = sv(b); return (typeof x === 'number' && typeof y === 'number' ? x - y : String(x ?? '').localeCompare(String(y ?? ''))) * s.dir; });
+  const focused = document.activeElement?.dataset?.q === kind;
+  root.innerHTML = `<header class="page-head"><div><h1>${K.plural}</h1><p class="muted">${rows.length} of ${all.length}</p></div><div class="head-actions"><button class="btn primary" data-new="${kind}">${icon('plus')} New ${K.label.toLowerCase()}</button></div></header>
+  <div class="list-tools"><div class="search-field">${icon('search')}<input type="search" data-q="${kind}" placeholder="Search ${K.plural.toLowerCase()}…" value="${esc(UI.q[kind] || '')}"></div>
+  ${K.filter ? `<select class="inp" data-filter="${kind}"><option value="">All ${K.filter.label}</option>${K.filter.o.map(o => `<option ${o === f ? 'selected' : ''}>${o}</option>`).join('')}</select>` : ''}</div>
+  <div class="table-wrap"><table class="table"><thead><tr>${K.cols.map(c => `<th data-sort="${kind}:${c.k}" class="${s.k === c.k ? 'sorted' : ''}">${c.l}${s.k === c.k ? (s.dir > 0 ? ' ↑' : ' ↓') : ''}</th>`).join('')}</tr></thead>
+  <tbody>${rows.map(r => `<tr data-open="${kind}:${r.id}">${K.cols.map(c => `<td>${c.html ? c.html(r) : esc(c.v ? c.v(r) : r[c.k])}</td>`).join('')}</tr>`).join('') || `<tr><td colspan="${K.cols.length}" class="empty">No ${K.plural.toLowerCase()} match.</td></tr>`}</tbody></table></div>`;
+  if (focused) { const i = root.querySelector('[data-q]'); i.focus(); i.setSelectionRange(i.value.length, i.value.length); }
+}
+
+/* ================= Deals kanban ================= */
+function renderDeals() {
+  const root = $('#view-deals'), q = (UI.q.deal || '').toLowerCase();
+  const match = d => !q || KINDS.deal.search(d).toLowerCase().includes(q);
+  const focused = document.activeElement?.dataset?.q === 'deal';
+  root.innerHTML = `<header class="page-head"><div><h1>Deals</h1><p class="muted">${money(openDeals().reduce((s, d) => s + (+d.value || 0), 0))} open across ${openDeals().length} deals · drag cards between stages</p></div><div class="head-actions"><button class="btn primary" data-new="deal">${icon('plus')} New deal</button></div></header>
+  <div class="list-tools"><div class="search-field">${icon('search')}<input type="search" data-q="deal" placeholder="Search deals…" value="${esc(UI.q.deal || '')}"></div></div>
+  <div class="kanban">${STAGES.map(st => { const ds = db.deals.filter(d => d.stage === st && match(d)); return `<div class="kcol" data-stage="${st}"><div class="kcol-head"><span class="dot st-${slug(st)}"></span>${st}<span class="muted">${ds.length}</span><span class="kcol-sum">${money(ds.reduce((s, d) => s + (+d.value || 0), 0))}</span></div><div class="kcol-body">${ds.map(d => `<div class="kcard" draggable="true" data-deal="${d.id}" data-open="deal:${d.id}"><div class="kcard-title">${esc(d.title || 'Untitled deal')}</div><div class="muted">${esc(companyName(d.companyId))}${d.contactId ? ' · ' + esc(contactName(d.contactId)) : ''}</div><div class="kcard-foot"><b>${money(d.value)}</b><span class="muted">${fmtDate(d.closeDate)}</span></div></div>`).join('')}</div></div>`; }).join('')}</div>`;
+  if (focused) { const i = root.querySelector('[data-q]'); i.focus(); i.setSelectionRange(i.value.length, i.value.length); }
+}
+const dealsView = $('#view-deals');
+dealsView.addEventListener('dragstart', e => { const c = e.target.closest('.kcard'); if (c) { e.dataTransfer.setData('text/deal', c.dataset.deal); e.dataTransfer.effectAllowed = 'move'; } });
+dealsView.addEventListener('dragover', e => { const col = e.target.closest('.kcol'); if (col && [...e.dataTransfer.types].includes('text/deal')) { e.preventDefault(); $$('.kcol.over').forEach(x => x !== col && x.classList.remove('over')); col.classList.add('over'); } });
+dealsView.addEventListener('dragleave', e => { const col = e.target.closest('.kcol'); if (col && !col.contains(e.relatedTarget)) col.classList.remove('over'); });
+dealsView.addEventListener('drop', e => {
+  const col = e.target.closest('.kcol'); if (!col) return; e.preventDefault();
+  const d = db.deals.find(x => x.id === e.dataTransfer.getData('text/deal'));
+  if (d && d.stage !== col.dataset.stage) { setDealStage(d, col.dataset.stage); save(); }
+  renderDeals();
+});
+function setDealStage(d, stage) { const from = d.stage; d.stage = stage; logActivity('deal', d.id, 'system', `Stage changed: ${from} → ${stage}`); if (stage === 'Won') toast(`🎉 ${d.title} won!`); }
+
+/* ================= Tasks ================= */
+function renderTasks() {
+  const td = todayStr(), tab = UI.taskTab;
+  const filt = { open: t => !t.done, today: t => !t.done && t.due === td, overdue: t => !t.done && t.due && t.due < td, upcoming: t => !t.done && t.due > td, done: t => t.done };
+  const list = db.tasks.filter(filt[tab]).sort((a, b) => (a.due || '9999') < (b.due || '9999') ? -1 : (a.due || '9999') > (b.due || '9999') ? 1 : PRIORITIES.indexOf(a.priority) - PRIORITIES.indexOf(b.priority));
+  const groups = tab === 'open' ? [['Overdue', list.filter(filt.overdue)], ['Today', list.filter(filt.today)], ['Upcoming', list.filter(filt.upcoming)], ['No date', list.filter(t => !t.due)]] : [[null, list]];
+  const row = t => `<div class="task-row${t.done ? ' done' : ''}"><input type="checkbox" data-task-toggle="${t.id}" ${t.done ? 'checked' : ''} aria-label="Complete"><input class="t-title" data-task-field="title" data-id="${t.id}" value="${esc(t.title)}" aria-label="Task title">
+    ${t.refId && refLabel(t.kind, t.refId) ? `<button class="chip" data-open="${t.kind}:${t.refId}">${esc(refLabel(t.kind, t.refId))}</button>` : ''}
+    <select data-task-field="priority" data-id="${t.id}" aria-label="Priority">${PRIORITIES.map(p => `<option ${p === t.priority ? 'selected' : ''}>${p}</option>`).join('')}</select>
+    <input type="date" class="t-due${t.due && t.due < td && !t.done ? ' overdue' : ''}" data-task-field="due" data-id="${t.id}" value="${esc(t.due || '')}" aria-label="Due date">
+    <button class="x-btn" data-task-del="${t.id}" title="Delete task">${icon('x')}</button></div>`;
+  const counts = Object.fromEntries(Object.entries(filt).map(([k, f]) => [k, db.tasks.filter(f).length]));
+  $('#view-tasks').innerHTML = `<header class="page-head"><div><h1>Tasks</h1><p class="muted">${counts.open} open · ${counts.overdue} overdue</p></div></header>
+  <form class="task-add" data-form="task"><input class="inp" name="title" placeholder="Add a task and press Enter…" required><input class="inp" type="date" name="due" value="${todayStr()}"><select class="inp" name="priority">${PRIORITIES.map(p => `<option ${p === 'Medium' ? 'selected' : ''}>${p}</option>`).join('')}</select><button class="btn primary">${icon('plus')} Add</button></form>
+  <div class="tabs">${[['open', 'All open'], ['today', 'Today'], ['overdue', 'Overdue'], ['upcoming', 'Upcoming'], ['done', 'Completed']].map(([k, l]) => `<button class="tab${tab === k ? ' on' : ''}" data-tab="${k}">${l} <span class="muted">${counts[k]}</span></button>`).join('')}</div>
+  ${groups.filter(g => g[1].length).map(([name, ts]) => `${name ? `<div class="task-group">${name}</div>` : ''}<div class="task-list">${ts.map(row).join('')}</div>`).join('') || '<div class="empty panel">No tasks here.</div>'}`;
+}
+function toggleTask(id) {
+  const t = db.tasks.find(x => x.id === id); if (!t) return;
+  t.done = !t.done; t.doneAt = t.done ? Date.now() : null;
+  if (t.done && t.refId) logActivity(t.kind, t.refId, 'task', 'Completed task: ' + t.title);
+  save(); renderCurrent(); if (UI.drawer) renderDrawer();
+}
+
+/* ================= Record drawer ================= */
+function boardFor(kind, id) { return Object.values(db.boards).find(b => b.link && b.link.kind === kind && b.link.id === id); }
+function ensureCrmContainer() {
+  if (db.crmBoardId && db.boards[db.crmBoardId]) return db.boards[db.crmBoardId];
+  const root = db.rootBoardId, ex = topCards(root);
+  const c = createCard('board', ex.length ? Math.min(...ex.map(x => x.x)) : 0, ex.length ? Math.max(...ex.map(x => x.y)) + 260 : 0, { title: 'CRM notes' }, { boardId: root, color: 'blue' });
+  db.boards[c.data.boardId].icon = '🗂️'; db.crmBoardId = c.data.boardId; return db.boards[c.data.boardId];
+}
+function ensureBoard(kind, id) {
+  let b = boardFor(kind, id); if (b) return b;
+  const r = getRec(kind, id), K = KINDS[kind], cont = ensureCrmContainer();
+  checkpoint();
+  const n = topCards(cont.id).filter(c => c.type === 'board').length;
+  const card = createCard('board', (n % 5) * 160, Math.floor(n / 5) * 190, { title: K.title(r) }, { boardId: cont.id });
+  b = db.boards[card.data.boardId]; b.icon = { contact: '👤', company: '🏢', deal: '💼' }[kind]; b.link = { kind, id };
+  createCard('record', 0, 0, { kind, refId: id }, { boardId: b.id });
+  createCard('note', 300, 0, { html: `<h2>Notes on ${esc(K.title(r))}</h2><div>Context, goals, and anything worth remembering.</div>` }, { boardId: b.id, color: 'yellow' });
+  createCard('todo', 580, 0, { title: 'Next steps', items: [{ id: uid('i'), text: '', done: false }] }, { boardId: b.id });
+  logActivity(kind, id, 'system', 'Created notes board'); save(); return b;
+}
+function openRecord(kind, id) { if (!getRec(kind, id)) return; UI.drawer = { kind, id }; renderDrawer(); $('#drawer').classList.add('open'); }
+function closeDrawer() { UI.drawer = null; $('#drawer').classList.remove('open'); }
+function fieldHtml(f, r) {
+  const v = r[f.k] ?? '', a = `class="inp" data-field="${f.k}"`;
+  let input;
+  if (f.t === 'select') input = `<select ${a}>${f.k === 'size' ? '<option value="">—</option>' : ''}${f.o.map(o => `<option ${o === v ? 'selected' : ''}>${o}</option>`).join('')}</select>`;
+  else if (f.t === 'company') input = `<select ${a}><option value="">— None —</option>${db.companies.map(c => `<option value="${c.id}" ${c.id === v ? 'selected' : ''}>${esc(c.name)}</option>`).join('')}</select>`;
+  else if (f.t === 'contact') input = `<select ${a}><option value="">— None —</option>${db.contacts.map(c => `<option value="${c.id}" ${c.id === v ? 'selected' : ''}>${esc(c.name)}</option>`).join('')}</select>`;
+  else if (f.t === 'textarea') input = `<textarea ${a} placeholder="${esc(f.ph || '')}">${esc(v)}</textarea>`;
+  else input = `<input ${a} type="${f.t || 'text'}" value="${esc(v)}" placeholder="${esc(f.ph || '')}">`;
+  return `<label class="${f.full ? 'full' : ''}">${f.l}${input}</label>`;
+}
+function renderDrawer() {
+  if (!UI.drawer) return;
+  const { kind, id } = UI.drawer, K = KINDS[kind], r = getRec(kind, id); if (!r) { closeDrawer(); return; }
+  const rel = [];
+  if (kind === 'contact') { rel.push(['Deals', db.deals.filter(d => d.contactId === id).map(d => ['deal', d.id, d.title, money(d.value) + ' · ' + d.stage])]); if (r.companyId) rel.push(['Company', [['company', r.companyId, companyName(r.companyId), '']]]); }
+  if (kind === 'company') { rel.push(['People', db.contacts.filter(c => c.companyId === id).map(c => ['contact', c.id, c.name, c.title])]); rel.push(['Deals', db.deals.filter(d => d.companyId === id).map(d => ['deal', d.id, d.title, money(d.value) + ' · ' + d.stage])]); }
+  if (kind === 'deal') { if (r.contactId) rel.push(['Contact', [['contact', r.contactId, contactName(r.contactId), '']]]); if (r.companyId) rel.push(['Company', [['company', r.companyId, companyName(r.companyId), '']]]); }
+  const tasks = db.tasks.filter(t => t.kind === kind && t.refId === id), acts = db.activities.filter(a => a.kind === kind && a.refId === id), board = boardFor(kind, id);
+  $('#drawer').innerHTML = `
+  <div class="drawer-head"><div class="avatar lg kind-${kind}">${kind === 'deal' ? icon('dollar') : esc(initials(K.title(r)))}</div><div class="dh-text"><div class="eyebrow">${K.label}</div><h2 id="dr-title">${esc(K.title(r))}</h2><div class="muted" id="dr-sub">${esc(K.sub(r))}</div></div><button class="icon-btn" data-act="close-drawer" title="Close">${icon('x')}</button></div>
+  <div class="drawer-actions"><button class="btn primary" data-act="record-board">${icon('layers')} ${board ? 'Open notes board' : 'Create notes board'}</button><button class="btn danger" data-act="delete-record">${icon('trash')} Delete</button></div>
+  <div class="drawer-body">
+    <section><h3>Details</h3><div class="form-grid">${K.fields.map(f => fieldHtml(f, r)).join('')}</div></section>
+    ${rel.filter(x => x[1].length).map(([t, items]) => `<section><h3>${t}</h3>${items.map(([k, i, n, s]) => `<div class="mini-row"><span class="avatar sm kind-${k}">${k === 'deal' ? icon('dollar') : esc(initials(n))}</span><span class="grow"><b>${esc(n)}</b> <span class="muted">${esc(s || '')}</span></span><button class="chip" data-open="${k}:${i}">Open</button></div>`).join('')}</section>`).join('')}
+    <section><h3>Tasks</h3>${tasks.map(t => `<div class="mini-row${t.due && t.due < todayStr() && !t.done ? ' overdue' : ''}"><input type="checkbox" data-task-toggle="${t.id}" ${t.done ? 'checked' : ''} aria-label="Complete"><span class="grow" style="${t.done ? 'text-decoration:line-through;color:var(--muted)' : ''}">${esc(t.title)}</span><span class="due muted">${fmtDate(t.due)}</span><button class="x-btn" data-task-del="${t.id}">${icon('x')}</button></div>`).join('')}
+      <form class="composer-row" data-form="drawer-task" style="margin-top:8px"><input class="inp" name="title" placeholder="Add a task…" required><input class="inp" type="date" name="due" value="${dateAdd(1)}" style="width:150px"><button class="btn">Add</button></form></section>
+    <section><h3>Activity</h3><form class="composer" data-form="activity"><textarea class="inp" name="text" placeholder="Log a note, call, email or meeting…" required></textarea><div class="composer-row"><select class="inp" name="type"><option value="note">📝 Note</option><option value="call">📞 Call</option><option value="email">✉️ Email</option><option value="meeting">👥 Meeting</option></select><span style="flex:1"></span><button class="btn primary">Log activity</button></div></form>
+      ${acts.map(a => `<div class="timeline-item"><span class="act-ic">${ACT_IC[a.type] || '•'}</span><div class="ti-text">${esc(a.text)}<div class="ti-meta">${a.type} · ${timeAgo(a.at)}</div></div><button class="x-btn" data-act-del="${a.id}" title="Delete">${icon('x')}</button></div>`).join('') || '<div class="muted" style="font-size:13px">No activity yet.</div>'}</section>
+  </div>`;
+}
+async function deleteRecord(kind, id) {
+  const K = KINDS[kind], r = getRec(kind, id);
+  if (!await confirmModal(`Delete ${K.label.toLowerCase()} “${K.title(r)}”? Related tasks and activity will be removed too.`, 'Delete')) return;
+  db[K.store] = db[K.store].filter(x => x.id !== id);
+  db.tasks = db.tasks.filter(t => !(t.kind === kind && t.refId === id)); db.activities = db.activities.filter(a => !(a.kind === kind && a.refId === id));
+  for (const c of db.contacts) if (kind === 'company' && c.companyId === id) c.companyId = '';
+  for (const d of db.deals) { if (kind === 'company' && d.companyId === id) d.companyId = ''; if (kind === 'contact' && d.contactId === id) d.contactId = ''; }
+  const b = boardFor(kind, id); if (b) b.link = null;
+  closeDrawer(); save(); renderCurrent(); toast(`${K.label} deleted`);
+}
+function newRecord(kind) {
+  const K = KINDS[kind], r = { id: uid(kind.slice(0, 2) + '_'), ...K.blank(), createdAt: Date.now() };
+  db[K.store].unshift(r); logActivity(kind, r.id, 'system', `${K.label} created`); save();
+  if (UI.view !== 'notes' && UI.view !== 'dashboard') setView(K.view); else renderCurrent();
+  openRecord(kind, r.id); requestAnimationFrame(() => $('#drawer [data-field]')?.focus());
+}
+
+/* ================= Delegated events ================= */
+document.addEventListener('click', async e => {
+  const t = e.target.closest('[data-nav],[data-open],[data-board],[data-new],[data-act],[data-sort],[data-task-del],[data-act-del],[data-tab]');
+  if (!t || t.closest('#canvas')) return;
+  const d = t.dataset;
+  if (d.nav) { if (d.nav === 'notes') openBoard(N.boardId || db.rootBoardId); else setView(d.nav); }
+  else if (d.open) { const [k, i] = d.open.split(':'); openRecord(k, i); }
+  else if (d.board) { closeDrawer(); openBoard(d.board); }
+  else if (d.new) newRecord(d.new);
+  else if (d.sort) { const [k, f] = d.sort.split(':'); const s = UI.sort[k] || { k: KINDS[k].cols[0].k, dir: 1 }; UI.sort[k] = { k: f, dir: s.k === f ? -s.dir : 1 }; renderList(k); }
+  else if (d.taskDel) { db.tasks = db.tasks.filter(x => x.id !== d.taskDel); save(); renderCurrent(); renderDrawer(); }
+  else if (d.actDel) { db.activities = db.activities.filter(x => x.id !== d.actDel); save(); renderDrawer(); }
+  else if (d.tab) { UI.taskTab = d.tab; renderTasks(); }
+  else if (d.act) {
+    switch (d.act) {
+      case 'search': openSearch(); break;
+      case 'settings': openSettings(); break;
+      case 'close-drawer': closeDrawer(); break;
+      case 'record-board': { const { kind, id } = UI.drawer; const b = ensureBoard(kind, id); closeDrawer(); openBoard(b.id); break; }
+      case 'delete-record': deleteRecord(UI.drawer.kind, UI.drawer.id); break;
+      case 'undo': undo(); break;
+      case 'redo': redo(); break;
+      case 'templates': openTemplates(); break;
+      case 'board-menu': { const r = t.getBoundingClientRect(); showBoardMenu(r.right - 220, r.bottom + 6); break; }
+      case 'zoom-in': zoomAt(view().z * 1.2); break;
+      case 'zoom-out': zoomAt(view().z / 1.2); break;
+      case 'zoom-reset': zoomAt(1); break;
+      case 'zoom-fit': fitView(); break;
+    }
+  }
+});
+document.addEventListener('input', e => {
+  const t = e.target;
+  if (t.dataset.q) { UI.q[t.dataset.q] = t.value; t.dataset.q === 'deal' ? renderDeals() : renderList(t.dataset.q); }
+  if (t.id === 'board-title') { const b = curBoard(); b.title = t.value; save(); }
+});
+document.addEventListener('change', e => {
+  const t = e.target;
+  if (t.dataset.filter) { UI.filter[t.dataset.filter] = t.value; renderList(t.dataset.filter); }
+  else if (t.dataset.taskToggle) toggleTask(t.dataset.taskToggle);
+  else if (t.dataset.taskField) { const k = db.tasks.find(x => x.id === t.dataset.id); if (k) { k[t.dataset.taskField] = t.value; save(); if (t.dataset.taskField !== 'title') renderTasks(); } }
+  else if (t.dataset.field && t.closest('#drawer') && UI.drawer) {
+    const { kind, id } = UI.drawer, r = getRec(kind, id), f = t.dataset.field;
+    if (kind === 'deal' && f === 'stage') setDealStage(r, t.value); else r[f] = f === 'value' ? (+t.value || 0) : t.value;
+    const b = boardFor(kind, id); if (b && (f === 'name' || f === 'title')) b.title = KINDS[kind].title(r);
+    $('#dr-title').textContent = KINDS[kind].title(r); $('#dr-sub').textContent = KINDS[kind].sub(r);
+    save(); renderCurrent();
+  }
+  else if (t.id === 'board-title') renderNavBoards();
+});
+document.addEventListener('submit', e => {
+  const f = e.target, fd = new FormData(f); e.preventDefault();
+  if (f.dataset.form === 'task') { db.tasks.push({ id: uid('tk_'), title: fd.get('title').trim(), due: fd.get('due'), priority: fd.get('priority'), kind: '', refId: '', done: false, createdAt: Date.now() }); save(); renderTasks(); $('#view-tasks [name=title]')?.focus(); }
+  else if (f.dataset.form === 'drawer-task') { const { kind, id } = UI.drawer; db.tasks.push({ id: uid('tk_'), title: fd.get('title').trim(), due: fd.get('due'), priority: 'Medium', kind, refId: id, done: false, createdAt: Date.now() }); save(); renderDrawer(); renderCurrent(); }
+  else if (f.dataset.form === 'activity') { const { kind, id } = UI.drawer; logActivity(kind, id, fd.get('type'), fd.get('text').trim()); save(); renderDrawer(); renderCurrent(); }
+});
+
+/* ================= Modals ================= */
+function modal(content, opts = {}) {
+  const wrap = h('div', { class: 'modal-wrap' + (opts.top ? ' top' : '') }), box = h('div', { class: 'modal' + (opts.wide ? ' wide' : '') + (opts.cls ? ' ' + opts.cls : ''), role: 'dialog', 'aria-modal': 'true' });
+  if (typeof content === 'string') box.innerHTML = content; else box.append(content);
+  wrap.append(box);
+  const close = () => { if (!wrap.isConnected) return; wrap.remove(); opts.onClose?.(); };
+  wrap.addEventListener('pointerdown', e => { if (e.target === wrap) close(); });
+  wrap._close = close; box.close = close;
+  $('#modal-root').append(wrap); return box;
+}
+function closeTopModal() { const w = $('#modal-root').lastElementChild; if (w) { w._close(); return true; } return false; }
+function promptModal({ title, value = '', placeholder = '', okLabel = 'OK' }) {
+  return new Promise(res => {
+    let done = false;
+    const m = modal(`<h2>${esc(title)}</h2><form><input class="inp" value="${esc(value)}" placeholder="${esc(placeholder)}"><div class="modal-actions"><button type="button" class="btn" data-c>Cancel</button><button class="btn primary">${esc(okLabel)}</button></div></form>`, { onClose: () => { if (!done) res(null); } });
+    const inp = m.querySelector('input'); inp.focus(); inp.select();
+    m.querySelector('[data-c]').onclick = () => m.close();
+    m.querySelector('form').onsubmit = e => { e.preventDefault(); done = true; res(inp.value.trim()); m.close(); };
+  });
+}
+function confirmModal(msg, okLabel = 'Confirm') {
+  return new Promise(res => {
+    let done = false;
+    const m = modal(`<h2>Are you sure?</h2><p class="muted">${esc(msg)}</p><div class="modal-actions"><button class="btn" data-c>Cancel</button><button class="btn primary" data-ok style="background:var(--danger);border-color:var(--danger)">${esc(okLabel)}</button></div>`, { onClose: () => { if (!done) res(false); } });
+    m.querySelector('[data-c]').onclick = () => m.close();
+    const ok = m.querySelector('[data-ok]'); ok.onclick = () => { done = true; res(true); m.close(); }; ok.focus();
+  });
+}
+function pickRecord() {
+  return new Promise(res => {
+    let done = false;
+    const m = modal(`<h2>Add a CRM record to this board</h2><div class="search-field">${icon('search')}<input placeholder="Search contacts, companies, deals…"></div><div class="pick-list"></div>`, { onClose: () => { if (!done) res(null); } });
+    const inp = m.querySelector('input'), list = m.querySelector('.pick-list');
+    const draw = () => {
+      const q = inp.value.toLowerCase();
+      list.innerHTML = ['contact', 'company', 'deal'].map(k => { const K = KINDS[k]; const rs = db[K.store].filter(r => !q || K.search(r).toLowerCase().includes(q)).slice(0, 8); return rs.length ? `<div class="sr-group">${K.plural}</div>` + rs.map(r => `<div class="sr-item" data-k="${k}" data-i="${r.id}"><span class="avatar sm kind-${k}">${k === 'deal' ? icon('dollar') : esc(initials(K.title(r)))}</span><div><div class="sr-t">${esc(K.title(r))}</div><div class="sr-s">${esc(K.sub(r))}</div></div></div>`).join('') : ''; }).join('') || '<div class="empty">No records found</div>';
+    };
+    inp.oninput = draw; draw(); inp.focus();
+    list.onclick = e => { const it = e.target.closest('.sr-item'); if (!it) return; done = true; res({ kind: it.dataset.k, refId: it.dataset.i }); m.close(); };
+  });
+}
+function openSearch() {
+  if ($('.search-modal')) return;
+  const m = modal(`<div class="search-field">${icon('search')}<input placeholder="Search contacts, deals, boards and notes…" aria-label="Search"></div><div class="search-results"></div><div class="search-foot muted">↑ ↓ to move · Enter to open · Esc to close</div>`, { cls: 'search-modal' });
+  const inp = m.querySelector('input'), res = m.querySelector('.search-results'); let items = [], idx = 0;
+  const run = () => {
+    const q = inp.value.trim().toLowerCase(); items = [];
+    const push = (group, title, sub, go, ic) => items.push({ group, title, sub, go, ic });
+    for (const k of ['contact', 'company', 'deal']) { const K = KINDS[k]; db[K.store].filter(r => q ? K.search(r).toLowerCase().includes(q) : false).slice(0, 5).forEach(r => push(K.plural, K.title(r), K.sub(r), () => openRecord(k, r.id), k === 'deal' ? '💼' : k === 'company' ? '🏢' : '👤')); }
+    if (q) db.tasks.filter(t => t.title.toLowerCase().includes(q)).slice(0, 4).forEach(t => push('Tasks', t.title, fmtDate(t.due), () => setView('tasks'), t.done ? '✅' : '⬜'));
+    Object.values(db.boards).filter(b => !q || (b.title || '').toLowerCase().includes(q)).sort((a, b) => (b.updatedAt || 0) - (a.updatedAt || 0)).slice(0, q ? 5 : 6).forEach(b => push(q ? 'Boards' : 'Recent boards', b.title || 'Untitled board', boardCards(b.id).length + ' cards', () => openBoard(b.id), b.icon || '📁'));
+    if (q) Object.values(db.cards).filter(c => c.type !== 'board' && cardText(c).toLowerCase().includes(q)).slice(0, 8).forEach(c => { const t = cardText(c), i = t.toLowerCase().indexOf(q); push('Cards', t.slice(Math.max(0, i - 20), i + 60) || cardLabel(c), cardLabel(c) + ' in ' + (db.boards[c.boardId]?.title || 'Untitled board'), () => openBoard(c.boardId, c.columnId || c.id), '🗒️'); });
+    idx = 0; draw();
+  };
+  const draw = () => {
+    let g = ''; res.innerHTML = items.map((it, i) => { const head = it.group !== g ? `<div class="sr-group">${esc(it.group)}</div>` : ''; g = it.group; return head + `<div class="sr-item${i === idx ? ' on' : ''}" data-i="${i}"><span style="font-size:18px">${it.ic}</span><div style="min-width:0"><div class="sr-t">${esc(it.title)}</div><div class="sr-s">${esc(it.sub || '')}</div></div></div>`; }).join('') || '<div class="empty">No results</div>';
+    res.querySelector('.on')?.scrollIntoView({ block: 'nearest' });
+  };
+  const go = i => { const it = items[i]; if (!it) return; m.close(); it.go(); };
+  inp.oninput = run;
+  inp.onkeydown = e => { if (e.key === 'ArrowDown') { e.preventDefault(); idx = Math.min(items.length - 1, idx + 1); draw(); } else if (e.key === 'ArrowUp') { e.preventDefault(); idx = Math.max(0, idx - 1); draw(); } else if (e.key === 'Enter') { e.preventDefault(); go(idx); } };
+  res.onclick = e => { const it = e.target.closest('.sr-item'); if (it) go(+it.dataset.i); };
+  run(); inp.focus();
+}
+function applyTheme() { const t = db.settings.theme; if (t === 'light' || t === 'dark') document.documentElement.dataset.theme = t; else delete document.documentElement.dataset.theme; }
+function openSettings() {
+  const m = modal(`<h2>Settings</h2><div class="form-grid"><label class="full">Your name (shown on comments)<input class="inp" name="user" value="${esc(db.settings.user || '')}"></label><label class="full">Theme<select class="inp" name="theme">${[['auto', 'Match system'], ['light', 'Light'], ['dark', 'Dark']].map(([v, l]) => `<option value="${v}" ${db.settings.theme === v ? 'selected' : ''}>${l}</option>`).join('')}</select></label></div>
+  <h2 style="margin-top:22px">Data</h2><p class="muted" style="font-size:13px;margin-top:-6px">Everything is stored in this browser. Export a backup to move it or keep it safe.</p>
+  <div style="display:flex;gap:8px;flex-wrap:wrap"><button class="btn" data-x="export">${icon('download')} Export backup</button><button class="btn" data-x="import">${icon('upload')} Import backup</button><button class="btn" data-x="shortcuts">${icon('keyboard')} Shortcuts</button><button class="btn danger" data-x="reset">Reset demo data</button></div>
+  <div class="modal-actions"><button class="btn primary" data-x="close">Done</button></div>`);
+  m.querySelector('[name=user]').oninput = e => { db.settings.user = e.target.value; save(); };
+  m.querySelector('[name=theme]').onchange = e => { db.settings.theme = e.target.value; applyTheme(); save(); };
+  m.addEventListener('click', async e => {
+    const x = e.target.closest('[data-x]')?.dataset.x; if (!x) return;
+    if (x === 'close') { m.close(); renderCurrent(); }
+    if (x === 'shortcuts') showShortcuts();
+    if (x === 'export') downloadText(`northstar-backup-${todayStr()}.json`, JSON.stringify({ kind: 'northstar-backup', db, assets }));
+    if (x === 'import') {
+      const [f] = await pickFiles('.json,application/json', false); if (!f) return;
+      try { const o = JSON.parse(await readFile(f, 'text')); if (o.kind !== 'northstar-backup' || !o.db?.boards) throw 0; if (!await confirmModal('Replace all current data with this backup?', 'Replace')) return; db = o.db; assets = o.assets || {}; await Store.set('db', db); await Store.set('assets', assets); location.reload(); }
+      catch { toast('That is not a valid Northstar backup'); }
+    }
+    if (x === 'reset') { if (!await confirmModal('Erase everything and restore the demo data?', 'Reset')) return; db = seed(); assets = {}; await Store.set('db', db); await Store.set('assets', assets); location.hash = ''; location.reload(); }
+  });
+}
+function toast(msg, action) {
+  const t = $('#toast'); t.innerHTML = ''; t.append(h('span', {}, msg));
+  if (action) t.append(h('button', { onclick: () => { t.classList.remove('show'); action.run(); } }, action.label));
+  t.classList.add('show'); clearTimeout(t._t); t._t = setTimeout(() => t.classList.remove('show'), 4200);
+}
+
+/* ================= Init ================= */
+(async function init() {
+  buildNav(); buildToolbar();
+  [['#btn-undo', 'undo'], ['#btn-redo', 'redo'], ['#btn-bmenu', 'more'], ['#btn-zo', 'minus'], ['#btn-zi', 'plus'], ['#btn-zf', 'fit']].forEach(([s, i]) => $(s).innerHTML = icon(i));
+  $('#btn-tpl').innerHTML = icon('template') + '<span>Templates</span>';
+  db = await Store.get('db'); assets = (await Store.get('assets')) || {};
+  if (!db || !db.version || !db.boards || !db.boards[db.rootBoardId]) { db = seed(); assets = {}; save(); }
+  db.settings = db.settings || { user: 'You', theme: 'auto' };
+  // prune assets no card references
+  const used = new Set(Object.values(db.cards).map(c => c.data && c.data.assetId).filter(Boolean));
+  let pruned = false; for (const k of Object.keys(assets)) if (!used.has(k)) { delete assets[k]; pruned = true; } if (pruned) saveAssets();
+  N.boardId = db.rootBoardId;
+  applyTheme(); route();
+  window.addEventListener('resize', () => { scheduleLines(); positionFmt(); });
+})();
+</script>
+</body>
+</html>

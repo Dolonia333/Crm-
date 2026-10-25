@@ -662,6 +662,34 @@ body.presenting-body #nav{display:none}
 .sh-text{border-radius:6px}
 .sh-shape svg{display:block}
 .sh-shape-text{position:absolute;inset:0;display:grid;place-items:center;text-align:center;font-weight:600;padding:8px;pointer-events:none}
+.sh-conn{pointer-events:none}.sh-conn svg{display:block;overflow:visible}
+.conn-hit{fill:none;stroke:transparent;stroke-width:14;pointer-events:stroke;cursor:move}
+.sh-obj.sh-conn.sel-obj{outline:none}
+.sh-conn.sel-obj path:not(.conn-hit){filter:drop-shadow(0 0 2px var(--accent))}
+.conn-h{position:absolute;width:14px;height:14px;border-radius:50%;background:var(--panel);border:2px solid var(--accent);pointer-events:auto;cursor:crosshair;box-sizing:border-box}
+.sh-obj.conn-target{outline:2px dashed var(--accent)!important;outline-offset:3px}
+.sh-obj.multi-sel{outline:2px solid var(--accent)!important;outline-offset:2px}
+.sh-obj.multi-sel.sh-conn{outline:none!important}
+.sh-obj.is-locked::after{content:"🔒";position:absolute;top:-10px;right:-10px;font-size:12px;background:var(--panel);border:1px solid var(--border);border-radius:50%;width:20px;height:20px;display:grid;place-items:center;pointer-events:none}
+.sh-marquee{position:absolute;border:1px solid var(--accent);background:color-mix(in srgb,var(--accent) 10%,transparent);pointer-events:none;z-index:9999}
+.sh-guide{position:absolute;background:var(--s5);pointer-events:none;z-index:9998}.sh-guide.v{width:1px;top:0;bottom:0}.sh-guide.hz{height:1px;left:0;right:0}
+.sh-eq{padding:6px 8px;cursor:default;line-height:0}.sh-eq svg{display:block}.sh-eq code{font-size:14px;line-height:1.4}
+.eq-src{width:100%;font:14px ui-monospace,monospace;resize:vertical}
+.eq-prev{min-height:80px;display:grid;place-items:center;border:1px solid var(--border);border-radius:10px;padding:12px;margin-top:8px;font-size:22px;overflow:auto;background:var(--panel-2)}
+.sh-audio{background:var(--panel);border:1px solid var(--border);border-radius:12px;padding:10px;box-shadow:0 1px 3px rgba(0,0,0,.06)}
+.sh-audio audio{width:100%;display:block;margin-top:8px}
+.au-head{display:flex;align-items:center;gap:8px;min-width:0;cursor:move}.au-ic{width:28px;height:28px;border-radius:8px;background:var(--accent-weak);color:var(--accent);display:grid;place-items:center;flex:none}
+.rec-ui{display:flex;align-items:center;gap:10px;font-size:22px;justify-content:center;padding:16px}.rec-dot{width:14px;height:14px;border-radius:50%;background:var(--danger);animation:recp 1s infinite}
+@keyframes recp{50%{opacity:.3}}
+.sh-gallery{display:flex;flex-direction:column;background:var(--panel);border:1px solid var(--border);border-radius:12px;overflow:hidden}
+.gl-img{position:relative;flex:1;min-height:0;display:grid;place-items:center;background:var(--panel-2)}.gl-img img{width:100%;height:100%;object-fit:cover;display:block}
+.gl-nav{position:absolute;top:50%;left:8px;transform:translateY(-50%);width:32px;height:32px;border-radius:50%;border:0;background:rgba(0,0,0,.5);color:#fff;font-size:20px;cursor:pointer;line-height:1}.gl-nav.r{left:auto;right:8px}
+.gl-cap{display:flex;align-items:center;gap:8px;justify-content:space-between;padding:6px 10px;font-size:13px;min-height:30px}
+.gl-dots{display:flex;gap:4px;margin-left:auto}.gl-dots i{width:6px;height:6px;border-radius:50%;background:var(--border)}.gl-dots i.on{background:var(--accent)}
+.sh-model{background:var(--panel);border:1px solid var(--border);border-radius:12px;overflow:hidden;display:flex;flex-direction:column}
+.md-bar{height:26px;flex:none;font-size:11.5px;color:var(--muted);display:flex;align-items:center;padding:0 10px;border-bottom:1px solid var(--border);cursor:move;white-space:nowrap;overflow:hidden}
+.model-host{flex:1;min-height:0;display:grid;place-items:center}.model-canvas{display:block;touch-action:none}
+.btn-grid.three{grid-template-columns:repeat(3,minmax(0,1fr))}.al-btn{flex-direction:column;gap:2px}.al-btn span{font-size:16px}
 .sh-image img{width:100%;height:100%;object-fit:cover;display:block;border-radius:6px;pointer-events:none}
 .sh-resize{position:absolute;right:-6px;bottom:-6px;width:14px;height:14px;border-radius:50%;background:var(--panel);border:2px solid var(--accent);cursor:nwse-resize;z-index:4;touch-action:none}
 .sh-side{width:300px;flex:none;border-left:1px solid var(--border);background:var(--panel);overflow-y:auto;min-height:0}
@@ -3954,6 +3982,8 @@ function renderSheetEditor() {
           <button class="sh-tool" data-sh="ins-text" title="Add a text box">${ICON_TEXT}<span>Text</span></button>
           <button class="sh-tool" data-sh="ins-shape" title="Add a shape">${ICON_SHAPE}<span>Shape</span></button>
           <button class="sh-tool" data-sh="ins-image" title="Add an image">${icon('image')}<span>Image</span></button>
+          <button class="sh-tool" data-sh="ins-line" title="Add a line or arrow"><svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 20L19 5"/><path d="M11 5h8v8"/></svg><span>Line</span></button>
+          <button class="sh-tool" data-sh="ins-media" title="Add an equation, audio, gallery or 3D object"><svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3l8 4.5v9L12 21l-8-4.5v-9z"/><path d="M12 12l8-4.5M12 12v9M12 12L4 7.5"/></svg><span>Media</span></button>
           <button class="sh-tool" data-sh="ins-crm" title="Add a table of CRM data">${icon('users')}<span>CRM data</span></button>
           <span class="sh-sep"></span>
           <button class="sh-tool" data-sh="functions" title="Formulas and functions">${ICON_FX}<span>Functions</span></button>
@@ -5515,7 +5545,419 @@ $('#view-sheets').addEventListener('change', e => {
   else if (el.dataset.ccolor != null) { shPush(); o.colors = o.colors || []; o.colors[+el.dataset.ccolor] = el.value || null; shSave(); shRender(); }
 });
 </script>
+<script>
+/* ================= Sheets: lines, multi-select, groups, guides, equations, audio, galleries, 3D, fonts ================= */
+SH.multi = [];
+const TEXT_FONTS = [['system', 'System', 'ui-sans-serif,system-ui,sans-serif'], ['serif', 'Serif', '\'Iowan Old Style\',Georgia,\'Times New Roman\',serif'], ['mono', 'Monospace', 'ui-monospace,\'SF Mono\',Menlo,Consolas,monospace'], ['rounded', 'Rounded', 'ui-rounded,\'SF Pro Rounded\',\'Nunito\',\'Arial Rounded MT Bold\',system-ui,sans-serif'], ['hand', 'Handwriting', '\'Caveat\',\'Bradley Hand\',\'Segoe Print\',cursive'], ['display', 'Display', '\'Playfair Display\',\'Didot\',Georgia,serif']];
+const fontStack = k => (TEXT_FONTS.find(f => f[0] === k) || TEXT_FONTS[0])[2];
+let webFontsOn = false;
+function ensureWebFonts() { if (webFontsOn) return; webFontsOn = true; document.head.append(h('link', { rel: 'stylesheet', href: 'https://fonts.googleapis.com/css2?family=Caveat:wght@400;700&family=Playfair+Display:wght@400;700&display=swap' })); }
+const scriptCache = {};
+function loadScriptOnce(src) { return scriptCache[src] || (scriptCache[src] = new Promise((res, rej) => { const s = h('script', { src }); s.onload = res; s.onerror = () => { delete scriptCache[src]; rej(new Error('Could not load ' + src)); }; document.head.append(s); })); }
+const objBox = o => { const el = $(`#sh-page [data-id="${o.id}"]`); return { x: o.x, y: o.y, w: el ? el.offsetWidth : o.w || 100, h: el ? el.offsetHeight : o.h || 60 }; };
+const colorVar = c => c ? `var(--cc-${c})` : 'var(--text)';
 
+/* ----- builders ----- */
+const mkConn = (x1, y1, x2, y2, opts = {}) => ({ id: uid('ln_'), kind: 'conn', x: Math.min(x1, x2), y: Math.min(y1, y2), w: 0, h: 0, z: maxZ() + 1, p1: { dx: x1 - Math.min(x1, x2), dy: y1 - Math.min(y1, y2) }, p2: { dx: x2 - Math.min(x1, x2), dy: y2 - Math.min(y1, y2) }, from: null, to: null, fill: 'gray', width: 2, dash: false, arrowEnd: true, arrowStart: false, curve: false, ...opts });
+
+/* ----- connection lines ----- */
+function edgePoint(b, toward) {
+  const cx = b.x + b.w / 2, cy = b.y + b.h / 2, dx = toward[0] - cx, dy = toward[1] - cy;
+  if (!dx && !dy) return [cx, cy];
+  const sx = dx ? (b.w / 2) / Math.abs(dx) : Infinity, sy = dy ? (b.h / 2) / Math.abs(dy) : Infinity, k = Math.min(sx, sy);
+  return [cx + dx * k, cy + dy * k];
+}
+function connPoints(o) {
+  let a = [o.x + o.p1.dx, o.y + o.p1.dy], b = [o.x + o.p2.dx, o.y + o.p2.dy];
+  const A = o.from && findObj(o.from), B = o.to && findObj(o.to), ba = A && objBox(A), bb = B && objBox(B);
+  const ca = ba ? [ba.x + ba.w / 2, ba.y + ba.h / 2] : a, cb = bb ? [bb.x + bb.w / 2, bb.y + bb.h / 2] : b;
+  if (ba) a = edgePoint(ba, cb); if (bb) b = edgePoint(bb, ca);
+  return [a, b];
+}
+function connInner(o) {
+  const [a, b] = connPoints(o), pad = 14, x = Math.min(a[0], b[0]) - pad, y = Math.min(a[1], b[1]) - pad, w = Math.abs(a[0] - b[0]) + pad * 2, hh = Math.abs(a[1] - b[1]) + pad * 2;
+  o.x = Math.round(x + pad); o.y = Math.round(y + pad); o.p1 = { dx: a[0] - o.x, dy: a[1] - o.y }; o.p2 = { dx: b[0] - o.x, dy: b[1] - o.y };
+  const A = [a[0] - x, a[1] - y], B = [b[0] - x, b[1] - y], col = colorVar(o.fill), sw = o.width || 2;
+  const mid = [(A[0] + B[0]) / 2, (A[1] + B[1]) / 2], len = Math.hypot(B[0] - A[0], B[1] - A[1]) || 1, nx = -(B[1] - A[1]) / len, ny = (B[0] - A[0]) / len, bend = Math.min(80, len * .25);
+  const C = [mid[0] + nx * bend, mid[1] + ny * bend], d = o.curve ? `M${A}Q${C} ${B}` : `M${A}L${B}`;
+  const mk = `mk_${o.id}`;
+  const marker = (id, orient) => `<marker id="${id}" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="${Math.max(4, 3 + sw)}" markerHeight="${Math.max(4, 3 + sw)}" markerUnits="userSpaceOnUse" orient="${orient}"><path d="M0,0L10,5L0,10Z" style="fill:${col}"/></marker>`;
+  const sel = SH.sel && SH.sel.obj === o.id;
+  return { x: Math.round(x), y: Math.round(y), w: Math.round(w), h: Math.round(hh), svg: `<svg width="${Math.round(w)}" height="${Math.round(hh)}" overflow="visible"><defs>${o.arrowEnd ? marker(mk + 'e', 'auto') : ''}${o.arrowStart ? marker(mk + 's', 'auto-start-reverse') : ''}</defs><path class="conn-hit" d="${d}"/><path d="${d}" fill="none" style="stroke:${col};stroke-width:${sw}${o.dash ? `;stroke-dasharray:${sw * 3} ${sw * 2.5}` : ''}" stroke-linecap="round"${o.arrowEnd ? ` marker-end="url(#${mk}e)"` : ''}${o.arrowStart ? ` marker-start="url(#${mk}s)"` : ''}/></svg>${sel ? `<span class="conn-h ctl" data-end="1" style="left:${A[0] - 7}px;top:${A[1] - 7}px"></span><span class="conn-h ctl" data-end="2" style="left:${B[0] - 7}px;top:${B[1] - 7}px"></span>` : ''}` };
+}
+function connHTML(o) { const c = connInner(o); return `<div class="sh-obj sh-conn${SH.sel && SH.sel.obj === o.id ? ' sel-obj' : ''}" data-id="${o.id}" style="left:${c.x}px;top:${c.y}px;width:${c.w}px;height:${c.h}px;z-index:${o.z || 2}">${c.svg}</div>`; }
+function updateConns() { curSheet()?.objects.forEach(o => { if (o.kind !== 'conn') return; const el = $(`#sh-page [data-id="${o.id}"]`); if (el) el.outerHTML = connHTML(o); }); }
+
+/* ----- equations (MathJax, loaded on first use) ----- */
+const EQ_SRC = 'https://cdnjs.cloudflare.com/ajax/libs/mathjax/3.2.2/es5/tex-svg.min.js';
+const EQ_PRESETS = [['Quadratic formula', 'x = \\frac{-b \\pm \\sqrt{b^2 - 4ac}}{2a}'], ['Compound interest', 'A = P\\left(1 + \\frac{r}{n}\\right)^{nt}'], ['Sum', '\\sum_{i=1}^{n} x_i'], ['Mean', '\\bar{x} = \\frac{1}{n}\\sum_{i=1}^{n} x_i'], ['Integral', '\\int_0^1 x^2\\,dx = \\frac{1}{3}'], ['Matrix', '\\begin{pmatrix} a & b \\\\ c & d \\end{pmatrix}'], ['Euler', 'e^{i\\pi} + 1 = 0']];
+let mjReady = null;
+function loadMathJax() {
+  if (mjReady) return mjReady;
+  window.MathJax = { startup: { typeset: false }, svg: { fontCache: 'local' }, tex: { packages: { '[+]': ['ams'] } } };
+  mjReady = loadScriptOnce(EQ_SRC).then(() => window.MathJax.startup.promise).catch(e => { mjReady = null; throw e; });
+  return mjReady;
+}
+async function texToSvg(tex) { await loadMathJax(); const node = window.MathJax.tex2svg(tex, { display: true }), svg = node.querySelector('svg'); if (!svg || node.querySelector('[data-mjx-error]')) throw new Error(node.querySelector('[data-mjx-error]')?.getAttribute('data-mjx-error') || 'Invalid equation'); return svg.outerHTML; }
+function openEquation(o) {
+  const m = modal(`<h2>${o ? 'Edit equation' : 'Insert equation'}</h2><p class="muted" style="font-size:13px;margin-top:-6px">Type LaTeX. The preview updates as you type.</p>
+    <textarea class="inp eq-src" id="eq-src" rows="3" spellcheck="false" placeholder="x = \\frac{-b \\pm \\sqrt{b^2-4ac}}{2a}">${esc(o?.tex || '')}</textarea>
+    <div class="chip-row">${EQ_PRESETS.map(([l, t]) => `<button class="chip" data-eqp="${esc(t)}">${esc(l)}</button>`).join('')}</div>
+    <div class="eq-prev" id="eq-prev"><span class="muted">Preview</span></div>
+    <div class="modal-actions"><button class="btn" data-c>Cancel</button><button class="btn primary" data-ok>${o ? 'Save' : 'Insert'}</button></div>`);
+  m.style.width = 'min(560px,100%)';
+  const src = m.querySelector('#eq-src'), prev = m.querySelector('#eq-prev'); let last = '', tm, ok = null;
+  const upd = () => { clearTimeout(tm); tm = setTimeout(async () => { const t = src.value.trim(); if (t === last) return; last = t; if (!t) { prev.innerHTML = '<span class="muted">Preview</span>'; ok = null; return; } prev.innerHTML = '<span class="muted">Rendering…</span>'; try { const svg = await texToSvg(t); if (t === last) { prev.innerHTML = svg; ok = svg; } } catch (e) { if (t === last) { prev.innerHTML = `<span class="muted">${esc(/load/.test(e.message) ? 'Couldn’t load the equation renderer. Check your connection.' : e.message)}</span>`; ok = null; } } }, 220); };
+  src.addEventListener('input', upd); upd(); src.focus();
+  m.addEventListener('click', async e => {
+    const p = e.target.closest('[data-eqp]'); if (p) { src.value = p.dataset.eqp; upd(); return; }
+    if (e.target.closest('[data-c]')) { m.close(); return; }
+    if (e.target.closest('[data-ok]')) {
+      const t = src.value.trim(); if (!t) return; let svg = ok;
+      if (!svg || last !== t) { try { svg = await texToSvg(t); } catch (err) { toast(err.message); return; } }
+      shPush(); if (o) { o.tex = t; o.svg = svg; } else { const p0 = insertPos(240); const n = { id: uid('eq_'), kind: 'eq', tex: t, svg, x: p0.x, y: p0.y, w: 0, h: 0, z: maxZ() + 1, size: 22, fill: '' }; curSheet().objects.push(n); SH.sel = { obj: n.id }; }
+      shSave(); shRender(); m.close();
+    }
+  });
+}
+
+/* ----- audio ----- */
+const MAX_MEDIA = 12 * 1024 * 1024;
+const fileToDataUrl = f => new Promise((res, rej) => { const r = new FileReader(); r.onload = () => res(r.result); r.onerror = rej; r.readAsDataURL(f); });
+async function insertAudioFile() {
+  const [f] = await pickFiles('audio/*', false); if (!f) return;
+  if (f.size > MAX_MEDIA) { toast('That file is over 12 MB. Try a shorter clip.'); return; }
+  const p = insertPos(300); insertObj({ id: uid('au_'), kind: 'audio', assetId: addAsset(await fileToDataUrl(f)), name: f.name.replace(/\.[^.]+$/, ''), x: p.x, y: p.y, w: 300, h: 0, z: maxZ() + 1 });
+}
+async function recordAudio() {
+  if (!navigator.mediaDevices?.getUserMedia || !window.MediaRecorder) { toast('Recording isn’t supported in this browser'); return; }
+  let stream; try { stream = await navigator.mediaDevices.getUserMedia({ audio: true }); } catch { toast('Microphone access was blocked. Allow it in your browser to record.'); return; }
+  const rec = new MediaRecorder(stream), chunks = []; let t0 = Date.now(), iv;
+  const m = modal(`<h2>Record audio</h2><div class="rec-ui"><span class="rec-dot"></span><b id="rec-t">0:00</b></div><div class="modal-actions"><button class="btn" data-c>Cancel</button><button class="btn primary" data-ok>Stop and insert</button></div>`, { onClose: () => { clearInterval(iv); if (rec.state !== 'inactive') { rec.onstop = null; rec.stop(); } stream.getTracks().forEach(t => t.stop()); } });
+  m.style.width = 'min(360px,100%)';
+  rec.ondataavailable = e => chunks.push(e.data);
+  rec.onstop = async () => { const blob = new Blob(chunks, { type: rec.mimeType || 'audio/webm' }); stream.getTracks().forEach(t => t.stop()); if (blob.size > MAX_MEDIA) { toast('The recording is too long to save'); return; } const p = insertPos(300); insertObj({ id: uid('au_'), kind: 'audio', assetId: addAsset(await fileToDataUrl(blob)), name: 'Recording ' + new Date().toLocaleTimeString([], { hour: 'numeric', minute: '2-digit' }), x: p.x, y: p.y, w: 300, h: 0, z: maxZ() + 1 }); };
+  rec.start(); iv = setInterval(() => { const s = Math.floor((Date.now() - t0) / 1000); const el = m.querySelector('#rec-t'); if (el) el.textContent = `${Math.floor(s / 60)}:${String(s % 60).padStart(2, '0')}`; }, 250);
+  m.addEventListener('click', e => { if (e.target.closest('[data-c]')) m.close(); if (e.target.closest('[data-ok]')) { const stop = rec.onstop; rec.onstop = null; clearInterval(iv); rec.addEventListener('stop', stop, { once: true }); rec.stop(); m.close(); } });
+}
+
+/* ----- image gallery ----- */
+async function insertGallery(o) {
+  const files = await pickFiles('image/*', true); if (!files.length) return;
+  const items = []; for (const f of files) items.push({ assetId: addAsset(await compressImage(f)), caption: '' });
+  if (o) { shPush(); o.items.push(...items); o.i = o.items.length - items.length; shSave(); shRender(); return; }
+  const p = insertPos(360); insertObj({ id: uid('gl_'), kind: 'gallery', items, i: 0, x: p.x, y: p.y, w: 360, h: 280, z: maxZ() + 1 });
+}
+
+/* ----- 3D objects (three.js, loaded on first use) ----- */
+const THREE_SRC = ['https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js', 'https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/loaders/GLTFLoader.js', 'https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/controls/OrbitControls.js'];
+const MODEL_SAMPLES = [['cube', 'Cube'], ['sphere', 'Sphere'], ['torus', 'Ring'], ['knot', 'Knot'], ['cone', 'Cone']];
+let threeReady = null;
+function loadThree() { return threeReady || (threeReady = loadScriptOnce(THREE_SRC[0]).then(() => Promise.all(THREE_SRC.slice(1).map(loadScriptOnce))).catch(e => { threeReady = null; throw e; })); }
+const MODELS = new Map();
+function cssColor(c) { const v = getComputedStyle(document.documentElement).getPropertyValue(`--cc-${c || 'blue'}`).trim(); return v || '#3e63dd'; }
+async function buildModel(o) {
+  await loadThree(); const T = window.THREE;
+  let gl; try { gl = new T.WebGLRenderer({ antialias: true, alpha: true, preserveDrawingBuffer: true }); } catch { throw new Error('3D isn’t available in this browser'); }
+  gl.setPixelRatio(Math.min(2, devicePixelRatio || 1));
+  const scene = new T.Scene(), cam = new T.PerspectiveCamera(40, 1, .01, 1000);
+  scene.add(new T.HemisphereLight(0xffffff, 0x444455, 1.1)); const dl = new T.DirectionalLight(0xffffff, .9); dl.position.set(3, 5, 4); scene.add(dl);
+  const root = new T.Group(); scene.add(root);
+  if (o.assetId && assets[o.assetId]) {
+    const b64 = assets[o.assetId].split(',')[1], bin = atob(b64), buf = new Uint8Array(bin.length); for (let i = 0; i < bin.length; i++) buf[i] = bin.charCodeAt(i);
+    const gltf = await new Promise((res, rej) => new T.GLTFLoader().parse(buf.buffer, '', res, rej)); root.add(gltf.scene);
+  } else {
+    const geo = { cube: () => new T.BoxGeometry(1, 1, 1), sphere: () => new T.SphereGeometry(.65, 48, 32), torus: () => new T.TorusGeometry(.55, .22, 32, 96), knot: () => new T.TorusKnotGeometry(.45, .15, 160, 24), cone: () => new T.ConeGeometry(.6, 1.2, 48) }[o.sample || 'cube']();
+    root.add(new T.Mesh(geo, new T.MeshStandardMaterial({ color: cssColor(o.fill), roughness: .45, metalness: .1 })));
+  }
+  const box = new T.Box3().setFromObject(root), size = box.getSize(new T.Vector3()).length() || 1, c = box.getCenter(new T.Vector3());
+  root.position.sub(c); cam.position.set(size * .9, size * .55, size * 1.1); cam.lookAt(0, 0, 0);
+  const ctl = new T.OrbitControls(cam, gl.domElement); ctl.enableDamping = true; ctl.enablePan = false;
+  if (o.view) { cam.position.fromArray(o.view); ctl.update(); }
+  ctl.addEventListener('end', () => { o.view = cam.position.toArray().map(v => +v.toFixed(3)); save(); });
+  gl.domElement.className = 'model-canvas';
+  const rec = { gl, scene, cam, ctl, root, key: (o.assetId || '') + '|' + (o.sample || '') + '|' + (o.fill || '') };
+  MODELS.set(o.id, rec); return rec;
+}
+let modelLoop = false;
+function runModelLoop() {
+  if (modelLoop) return; modelLoop = true;
+  const tick = () => {
+    let any = false;
+    MODELS.forEach((m, id) => { if (!m.gl.domElement.isConnected) return; any = true; const o = findObj(id); if (o?.spin) m.root.rotation.y += .01; m.ctl.update(); m.gl.render(m.scene, m.cam); });
+    if (any) requestAnimationFrame(tick); else modelLoop = false;
+  };
+  requestAnimationFrame(tick);
+}
+async function mountModels() {
+  for (const o of curSheet()?.objects || []) {
+    if (o.kind !== 'model') continue;
+    const host = $(`#sh-page [data-id="${o.id}"] .model-host`); if (!host) continue;
+    let m = MODELS.get(o.id); const key = (o.assetId || '') + '|' + (o.sample || '') + '|' + (o.fill || '');
+    if (m && m.key !== key) { m.gl.dispose(); MODELS.delete(o.id); m = null; }
+    if (!m) { host.innerHTML = '<span class="muted">Loading 3D…</span>'; try { m = await buildModel(o); } catch (e) { host.innerHTML = `<span class="muted">${esc(e.message.startsWith('Could not load') ? 'Couldn’t load the 3D viewer. Check your connection.' : e.message)}</span>`; continue; } }
+    const host2 = $(`#sh-page [data-id="${o.id}"] .model-host`); if (!host2) continue;
+    const w = Math.max(80, o.w), hh = Math.max(60, o.h - 26); m.gl.setSize(w, hh); m.cam.aspect = w / hh; m.cam.updateProjectionMatrix();
+    host2.innerHTML = ''; host2.append(m.gl.domElement); m.gl.domElement.classList.toggle('ctl', !!(SH.sel && SH.sel.obj === o.id));
+  }
+  if (MODELS.size) runModelLoop();
+}
+async function insertModel(sample) {
+  let assetId = null, name = '';
+  if (!sample) { const [f] = await pickFiles('.glb,model/gltf-binary', false); if (!f) return; if (f.size > MAX_MEDIA) { toast('That model is over 12 MB'); return; } if (!/\.glb$/i.test(f.name)) { toast('Use a .glb file (binary glTF)'); return; } assetId = addAsset(await fileToDataUrl(f)); name = f.name; }
+  const p = insertPos(320); insertObj({ id: uid('md_'), kind: 'model', assetId, sample, name, fill: 'blue', spin: true, x: p.x, y: p.y, w: 320, h: 286, z: maxZ() + 1 });
+}
+
+/* ----- rendering ----- */
+const _objHTML0 = objHTML;
+objHTML = function (o) {
+  const selC = SH.sel && SH.sel.obj === o.id ? ' sel-obj' : '', rs = selC && !o.locked ? '<div class="sh-resize" title="Resize"></div>' : '', z = `z-index:${o.z || 2}`;
+  if (o.kind === 'conn') return connHTML(o);
+  if (o.kind === 'eq') return `<div class="sh-obj sh-eq${selC}" data-id="${o.id}" style="left:${o.x}px;top:${o.y}px;${z};font-size:${o.size || 22}px;color:${colorVar(o.fill)}" title="Double-click to edit">${o.svg || `<code>${esc(o.tex)}</code>`}</div>`;
+  if (o.kind === 'audio') return `<div class="sh-obj sh-audio${selC}" data-id="${o.id}" style="left:${o.x}px;top:${o.y}px;width:${o.w}px;${z}"><div class="au-head"><span class="au-ic">♪</span><b class="ellip">${esc(o.name || 'Audio')}</b></div><audio class="ctl" controls preload="metadata" src="${esc(assets[o.assetId] || '')}"></audio>${rs}</div>`;
+  if (o.kind === 'gallery') {
+    const n = o.items.length, i = clamp(o.i || 0, 0, Math.max(0, n - 1)), it = o.items[i];
+    return `<div class="sh-obj sh-gallery${selC}" data-id="${o.id}" style="left:${o.x}px;top:${o.y}px;width:${o.w}px;height:${o.h}px;${z}"><div class="gl-img">${it ? `<img alt="${esc(it.caption || 'Image ' + (i + 1))}" src="${esc(assets[it.assetId] || '')}" draggable="false">` : '<span class="muted">No images</span>'}${n > 1 ? `<button class="gl-nav ctl" data-gl="-1" aria-label="Previous image">‹</button><button class="gl-nav ctl r" data-gl="1" aria-label="Next image">›</button>` : ''}</div><div class="gl-cap">${esc(it?.caption || '')}${n > 1 ? `<span class="gl-dots">${o.items.map((_, k) => `<i class="${k === i ? 'on' : ''}"></i>`).join('')}</span>` : ''}</div>${rs}</div>`;
+  }
+  if (o.kind === 'model') return `<div class="sh-obj sh-model${selC}" data-id="${o.id}" style="left:${o.x}px;top:${o.y}px;width:${o.w}px;height:${o.h}px;${z}"><div class="md-bar">${selC ? 'Drag here to move · drag the model to rotate' : esc(o.name || '3D object')}</div><div class="model-host"></div>${rs}</div>`;
+  let html = _objHTML0(o);
+  if (o.locked) html = html.replace('<div class="sh-resize" title="Resize"></div>', '');
+  if (o.kind === 'text' && (o.font || o.color)) { if (['hand', 'display'].includes(o.font)) ensureWebFonts(); html = html.replace('<div class="sh-text-body rt" style="', `<div class="sh-text-body rt" style="font-family:${fontStack(o.font)};${o.color ? `color:var(--cc-${o.color});` : ''}`); }
+  if (o.kind === 'shape' && (o.font || o.color)) { if (['hand', 'display'].includes(o.font)) ensureWebFonts(); html = html.replace('<div class="sh-shape-text">', `<div class="sh-shape-text" style="font-family:${fontStack(o.font)};${o.color ? `color:var(--cc-${o.color})` : ''}">`); }
+  return html;
+};
+const _renderSheetCanvas0 = renderSheetCanvas;
+renderSheetCanvas = function () {
+  _renderSheetCanvas0();
+  const s = curSheet(); if (!s) return;
+  SH.multi = SH.multi.filter(id => s.objects.some(o => o.id === id));
+  if (s.objects.some(o => o.kind === 'conn')) updateConns();
+  SH.multi.forEach(id => $(`#sh-page [data-id="${id}"]`)?.classList.add('multi-sel'));
+  s.objects.forEach(o => { if (o.locked) $(`#sh-page [data-id="${o.id}"]`)?.classList.add('is-locked'); });
+  if (s.objects.some(o => o.kind === 'model')) mountModels();
+};
+
+/* ----- selection, marquee, multi-move, guides ----- */
+const groupOf = o => o.group ? curSheet().objects.filter(x => x.group === o.group).map(x => x.id) : [o.id];
+function setMulti(ids) { SH.multi = [...new Set(ids)]; if (SH.multi.length) SH.sel = { obj: SH.multi[SH.multi.length - 1] }; }
+(function bindObjects() {
+  const cv = $('#view-sheets');
+  let marq = null, starts = null, guides = [];
+  const page = () => $('#sh-page');
+  cv.addEventListener('pointerdown', e => {
+    if (!e.target.closest('#sh-canvas') || e.button === 2) return;
+    const objEl = e.target.closest('.sh-obj'), o = objEl && findObj(objEl.dataset.id);
+    const handle = e.target.closest('.conn-h');
+    if (handle && o) { e.preventDefault(); e.stopPropagation(); shPush(); SH.drag = { mode: 'connEnd', o, end: handle.dataset.end }; return; }
+    if (o && o.locked && e.target.closest('.sh-resize')) { e.stopPropagation(); return; }
+    if (!objEl && !e.target.closest('.ctl,.sh-cell-input,.sh-add,.sh-fill') && e.pointerType === 'mouse') {
+      if (SH.edit) commitEdit();
+      e.preventDefault(); e.stopPropagation();
+      const pr = page().getBoundingClientRect(); marq = { x0: e.clientX - pr.left, y0: e.clientY - pr.top, add: e.shiftKey ? SH.multi.slice() : [], el: null };
+      return;
+    }
+    if (!o) return;
+    const inCell = e.target.closest('td[data-r]') || e.target.closest('th');
+    if (e.shiftKey && !inCell && !e.target.closest('.ctl')) {
+      e.preventDefault(); e.stopPropagation();
+      const ids = groupOf(o), has = SH.multi.includes(o.id), base = SH.multi.length ? SH.multi : (SH.sel?.obj ? groupOf(findObj(SH.sel.obj) || o) : []);
+      setMulti(has ? base.filter(id => !ids.includes(id)) : [...base, ...ids]); if (!SH.multi.length) SH.sel = null; shRender(); return;
+    }
+    if (inCell) { SH.multi = []; return; }
+    if (!SH.multi.includes(o.id)) SH.multi = o.group ? groupOf(o) : [];
+    starts = SH.multi.length > 1 ? Object.fromEntries(SH.multi.map(id => { const x = findObj(id); return [id, { x: x.x, y: x.y }]; })) : null;
+  }, true);
+  window.addEventListener('pointermove', e => {
+    if (marq) {
+      const pr = page().getBoundingClientRect(), x = e.clientX - pr.left, y = e.clientY - pr.top;
+      if (!marq.el && Math.hypot(x - marq.x0, y - marq.y0) < 4) return;
+      if (!marq.el) { marq.el = h('div', { class: 'sh-marquee' }); page().append(marq.el); }
+      Object.assign(marq.r = { x: Math.min(x, marq.x0), y: Math.min(y, marq.y0), w: Math.abs(x - marq.x0), h: Math.abs(y - marq.y0) });
+      Object.assign(marq.el.style, { left: marq.r.x + 'px', top: marq.r.y + 'px', width: marq.r.w + 'px', height: marq.r.h + 'px' }); return;
+    }
+    const d = SH.drag; if (!d) return;
+    if (d.mode === 'connEnd') {
+      const pr = page().getBoundingClientRect(), x = e.clientX - pr.left, y = e.clientY - pr.top, key = d.end === '1' ? 'p1' : 'p2', att = d.end === '1' ? 'from' : 'to';
+      d.o[att] = null; d.o[key] = { dx: x - d.o.x, dy: y - d.o.y }; const el = $(`#sh-page [data-id="${d.o.id}"]`); if (el) el.outerHTML = connHTML(d.o);
+      $$('#sh-page .conn-target').forEach(x => x.classList.remove('conn-target'));
+      const hit = document.elementsFromPoint(e.clientX, e.clientY).map(n => n.closest?.('.sh-obj')).find(n => n && n.dataset.id !== d.o.id && !n.classList.contains('sh-conn')); hit?.classList.add('conn-target'); d.hit = hit?.dataset.id || null; return;
+    }
+    if (d.mode !== 'move' || !d.pushed) return;
+    const dx = d.o.x - d.ox, dy = d.o.y - d.oy;
+    if (starts && starts[d.o.id]) {
+      Object.entries(starts).forEach(([id, p]) => { if (id === d.o.id) return; const x = findObj(id); if (!x || x.locked) return; x.x = Math.max(0, p.x + dx); x.y = Math.max(0, p.y + dy); const el = $(`#sh-page [data-id="${id}"]`); if (el) { el.style.left = x.x + 'px'; el.style.top = x.y + 'px'; } });
+    } else if (!e.altKey) {
+      // alignment guides with snapping
+      guides.forEach(g => g.remove()); guides = [];
+      const me = objBox(d.o), others = curSheet().objects.filter(x => x.id !== d.o.id && x.kind !== 'conn').map(objBox), T = 6;
+      const tryAxis = (vals, cands) => { let best = null; vals.forEach((v, k) => cands.forEach(c => { const dist = Math.abs(v - c); if (dist <= T && (!best || dist < best.dist)) best = { dist, shift: c - v, at: c }; })); return best; };
+      const bx = tryAxis([me.x, me.x + me.w / 2, me.x + me.w], others.flatMap(b => [b.x, b.x + b.w / 2, b.x + b.w])), by = tryAxis([me.y, me.y + me.h / 2, me.y + me.h], others.flatMap(b => [b.y, b.y + b.h / 2, b.y + b.h]));
+      if (bx) { d.o.x = Math.max(0, d.o.x + bx.shift); guides.push(h('div', { class: 'sh-guide v', style: `left:${bx.at}px` })); }
+      if (by) { d.o.y = Math.max(0, d.o.y + by.shift); guides.push(h('div', { class: 'sh-guide hz', style: `top:${by.at}px` })); }
+      const el = $(`#sh-page [data-id="${d.o.id}"]`); if (el) { el.style.left = d.o.x + 'px'; el.style.top = d.o.y + 'px'; }
+      guides.forEach(g => page().append(g));
+    }
+    if (curSheet().objects.some(o => o.kind === 'conn')) updateConns();
+  });
+  window.addEventListener('pointerup', e => {
+    guides.forEach(g => g.remove()); guides = []; starts = null;
+    if (marq) {
+      const m = marq; marq = null; m.el?.remove();
+      if (!m.r) { SH.sel = null; SH.multi = []; shRender(); return; }
+      const hit = curSheet().objects.filter(o => { const b = objBox(o); return b.x < m.r.x + m.r.w && b.x + b.w > m.r.x && b.y < m.r.y + m.r.h && b.y + b.h > m.r.y; }).flatMap(groupOf);
+      setMulti([...m.add, ...hit]); if (!SH.multi.length) SH.sel = null; else if (SH.multi.length === 1) SH.multi = []; shRender(); return;
+    }
+    const d = SH.drag; if (!d || d.mode !== 'connEnd') return; SH.drag = null;
+    $$('#sh-page .conn-target').forEach(x => x.classList.remove('conn-target'));
+    if (d.hit) d.o[d.end === '1' ? 'from' : 'to'] = d.hit;
+    shSave(); shRender();
+  });
+  // gallery arrows, dblclick editors
+  cv.addEventListener('click', e => {
+    const g = e.target.closest('[data-gl]'); if (!g) return; const o = findObj(g.closest('.sh-obj').dataset.id); const n = o.items.length;
+    o.i = ((o.i || 0) + +g.dataset.gl + n) % n; save(); const el = $(`#sh-page [data-id="${o.id}"]`); if (el) el.outerHTML = objHTML(o);
+  });
+  cv.addEventListener('dblclick', e => {
+    const o = findObj(e.target.closest('#sh-page .sh-obj')?.dataset.id); if (!o) return;
+    if (o.kind === 'eq') openEquation(o);
+    else if (o.kind === 'gallery') { SH.sel = { obj: o.id }; SH.side = true; shRender(); }
+  });
+})();
+
+/* ----- align, distribute, group, lock ----- */
+function alignObjs(mode) {
+  const objs = SH.multi.map(id => findObj(id)).filter(o => o && !o.locked && o.kind !== 'conn'); if (objs.length < 2) return;
+  const B = objs.map(o => ({ o, b: objBox(o) })); shPush();
+  const minX = Math.min(...B.map(x => x.b.x)), maxR = Math.max(...B.map(x => x.b.x + x.b.w)), minY = Math.min(...B.map(x => x.b.y)), maxB = Math.max(...B.map(x => x.b.y + x.b.h));
+  if (mode === 'left') B.forEach(({ o }) => o.x = minX); else if (mode === 'right') B.forEach(({ o, b }) => o.x = maxR - b.w); else if (mode === 'center') B.forEach(({ o, b }) => o.x = Math.round((minX + maxR) / 2 - b.w / 2));
+  else if (mode === 'top') B.forEach(({ o }) => o.y = minY); else if (mode === 'bottom') B.forEach(({ o, b }) => o.y = maxB - b.h); else if (mode === 'middle') B.forEach(({ o, b }) => o.y = Math.round((minY + maxB) / 2 - b.h / 2));
+  else if (mode === 'dh' || mode === 'dv') {
+    const h0 = mode === 'dh', s = B.slice().sort((a, b) => h0 ? a.b.x - b.b.x : a.b.y - b.b.y), total = sumOf(s.map(x => h0 ? x.b.w : x.b.h)), span = h0 ? maxR - minX : maxB - minY, gap = (span - total) / (s.length - 1);
+    let p = h0 ? minX : minY; s.forEach(({ o, b }) => { if (h0) o.x = Math.round(p); else o.y = Math.round(p); p += (h0 ? b.w : b.h) + gap; });
+  }
+  shSave(); shRender();
+}
+function groupSel(on) {
+  const ids = SH.multi.length ? SH.multi : SH.sel?.obj ? [SH.sel.obj] : []; if (!ids.length) return; shPush();
+  if (on) { if (ids.length < 2) { toast('Select two or more objects to group'); return; } const gid = uid('g_'); ids.forEach(id => findObj(id).group = gid); toast('Grouped'); }
+  else { const gs = new Set(ids.map(id => findObj(id).group).filter(Boolean)); curSheet().objects.forEach(o => { if (gs.has(o.group)) delete o.group; }); SH.multi = []; toast('Ungrouped'); }
+  shSave(); shRender();
+}
+function lockSel(on) { const ids = SH.multi.length ? SH.multi : SH.sel?.obj ? [SH.sel.obj] : []; if (!ids.length) return; shPush(); ids.forEach(id => { const o = findObj(id); if (o) o.locked = on; }); shSave(); shRender(); toast(on ? 'Locked. Locked objects can’t be moved, resized or deleted.' : 'Unlocked'); }
+function connectSel() {
+  const ids = SH.multi.filter(id => findObj(id)?.kind !== 'conn'); if (ids.length !== 2) { toast('Select exactly two objects to connect'); return; }
+  const n = mkConn(0, 0, 10, 10, { from: ids[0], to: ids[1] }); insertObj(n);
+}
+const _insertPos0 = insertPos;
+insertPos = function (w) { const p = _insertPos0(w), objs = curSheet()?.objects || []; for (let k = 0; k < 20 && objs.some(o => Math.abs(o.x - p.x) < 12 && Math.abs(o.y - p.y) < 12); k++) { p.x += 24; p.y += 24; } return p; };
+const _insertObj0 = insertObj;
+insertObj = function (o) { SH.multi = []; _insertObj0(o); };
+const _deleteObj0 = deleteObj;
+deleteObj = function (o) {
+  if (SH.multi.length > 1 && SH.multi.includes(o.id)) {
+    const ids = SH.multi.filter(id => !findObj(id)?.locked); if (ids.length < SH.multi.length) toast('Locked objects were kept');
+    shPush(); const s = curSheet(); s.objects = s.objects.filter(x => !ids.includes(x.id)); SH.sel = null; SH.multi = []; shSave(); shRender(); toast('Deleted', { label: 'Undo', run: shUndo }); return;
+  }
+  if (o.locked) { toast('This object is locked. Unlock it to delete.'); return; }
+  MODELS.get(o.id)?.gl.dispose(); MODELS.delete(o.id);
+  _deleteObj0(o);
+};
+const _objMenu0 = objMenu;
+objMenu = function (o) {
+  const items = _objMenu0(o), multi = SH.multi.length > 1 && SH.multi.includes(o.id);
+  const extra = [
+    ...(multi ? [{ label: 'Group', kbd: 'Ctrl+G', run: () => groupSel(true) }, { label: 'Connect with a line', run: connectSel }] : []),
+    ...(o.group ? [{ label: 'Ungroup', kbd: 'Ctrl+Shift+G', run: () => groupSel(false) }] : []),
+    ...(!multi ? [{ label: 'Add to selection', run: () => { const cur = SH.multi.length ? SH.multi : SH.sel?.obj && SH.sel.obj !== o.id ? groupOf(findObj(SH.sel.obj)) : []; setMulti([...cur, ...groupOf(o)]); shRender(); } }] : []),
+    { label: o.locked ? 'Unlock' : 'Lock', icon: 'lock', run: () => lockSel(!o.locked) },
+    ...(o.kind === 'eq' ? [{ label: 'Edit equation…', run: () => openEquation(o) }] : []),
+  ];
+  const i = items.indexOf('-'); items.splice(i < 0 ? items.length : i, 0, ...extra); return items;
+};
+document.addEventListener('keydown', e => {
+  if (UI.view !== 'sheets' || !SH.bookId || modalOpen() || SH.edit || isTyping(e.target)) return;
+  const mod = e.metaKey || e.ctrlKey, k = e.key, s = SH.sel;
+  if (mod && k.toLowerCase() === 'g') { e.preventDefault(); e.stopPropagation(); groupSel(!e.shiftKey); return; }
+  if (mod && k.toLowerCase() === 'l' && s?.obj) { e.preventDefault(); e.stopPropagation(); lockSel(!findObj(s.obj).locked); return; }
+  if (!s?.obj) return;
+  const ids = SH.multi.length > 1 ? SH.multi : [s.obj];
+  const arrows = { ArrowUp: [0, -1], ArrowDown: [0, 1], ArrowLeft: [-1, 0], ArrowRight: [1, 0] };
+  if (arrows[k]) { e.preventDefault(); e.stopPropagation(); const st = e.shiftKey ? 10 : 1; shPush(); ids.forEach(id => { const o = findObj(id); if (!o || o.locked) return; if (o.kind === 'conn' && (o.from || o.to)) return; o.x = Math.max(0, o.x + arrows[k][0] * st); o.y = Math.max(0, o.y + arrows[k][1] * st); }); shSave(); renderSheetCanvas(); return; }
+  if (k === 'Escape' && SH.multi.length) { SH.multi = []; }
+}, true);
+
+/* ----- toolbar ----- */
+document.addEventListener('click', e => {
+  const b = e.target.closest('#view-sheets [data-sh="ins-line"],#view-sheets [data-sh="ins-media"]'); if (!b) return;
+  const r = b.getBoundingClientRect();
+  if (b.dataset.sh === 'ins-line') showMenu(r.left, r.bottom + 4, [
+    { label: 'Arrow', run: () => { const p = insertPos(200); insertObj(mkConn(p.x, p.y + 40, p.x + 200, p.y + 40)); } },
+    { label: 'Line', run: () => { const p = insertPos(200); insertObj(mkConn(p.x, p.y + 40, p.x + 200, p.y + 40, { arrowEnd: false })); } },
+    { label: 'Double arrow', run: () => { const p = insertPos(200); insertObj(mkConn(p.x, p.y + 40, p.x + 200, p.y + 40, { arrowStart: true })); } },
+    { label: 'Curved arrow', run: () => { const p = insertPos(200); insertObj(mkConn(p.x, p.y + 60, p.x + 200, p.y + 20, { curve: true })); } },
+    '-', { label: 'Connect two selected objects', run: connectSel },
+  ]);
+  else showMenu(r.left, r.bottom + 4, [
+    { label: 'Equation…', run: () => openEquation(null) },
+    { label: 'Audio file…', run: insertAudioFile }, { label: 'Record audio…', run: recordAudio },
+    { label: 'Image gallery…', run: () => insertGallery(null) },
+    '-', { label: '3D object from .glb file…', run: () => insertModel(null) },
+    ...MODEL_SAMPLES.map(([v, l]) => ({ label: `3D ${l.toLowerCase()}`, run: () => insertModel(v) })),
+  ]);
+});
+
+/* ----- side panel ----- */
+const _sideStyle0 = sideStyle;
+sideStyle = function (o) {
+  let b = _sideStyle0(o);
+  const fonts = `<label class="side-lab">Font<select class="inp" data-ox="font">${TEXT_FONTS.map(([v, l]) => `<option value="${v}" ${(o.font || 'system') === v ? 'selected' : ''}>${l}</option>`).join('')}</select></label><div class="side-sub">Text color</div>${swRow('data-oxcolor', o.color)}`;
+  if (o.kind === 'text' || o.kind === 'shape') b += `<div class="side-sec"><div class="side-title">Font</div>${fonts}</div>`;
+  if (o.kind === 'conn') b += `<div class="side-sec"><div class="side-title">Line</div><div class="side-sub">Color</div>${swRow('data-ofill', o.fill, false)}${stepperRow('Width', 'cwidth', o.width || 2, 1, 12)}
+    <label class="side-check"><input type="checkbox" data-oxc="arrowEnd" ${o.arrowEnd ? 'checked' : ''}> Arrow at end</label><label class="side-check"><input type="checkbox" data-oxc="arrowStart" ${o.arrowStart ? 'checked' : ''}> Arrow at start</label><label class="side-check"><input type="checkbox" data-oxc="dash" ${o.dash ? 'checked' : ''}> Dashed</label><label class="side-check"><input type="checkbox" data-oxc="curve" ${o.curve ? 'checked' : ''}> Curved</label>
+    <p class="muted side-tip">Drag an end onto a table, chart or shape to connect it. Connected lines follow when you move things.</p></div>`;
+  if (o.kind === 'eq') b += `<div class="side-sec"><div class="side-title">Equation</div><button class="btn wide" data-oxb="eqedit">Edit equation…</button>${stepperRow('Size', 'eqsize', o.size || 22, 10, 96)}<div class="side-sub">Color</div>${swRow('data-ofill', o.fill)}</div>`;
+  if (o.kind === 'audio') b += `<div class="side-sec"><div class="side-title">Audio</div><label class="side-lab">Name<input class="inp" data-ox="name" value="${esc(o.name || '')}"></label><button class="btn wide" data-oxb="aureplace">Replace audio…</button></div>`;
+  if (o.kind === 'gallery') { const it = o.items[o.i || 0]; b += `<div class="side-sec"><div class="side-title">Gallery</div><p class="muted side-tip">Image ${(o.i || 0) + 1} of ${o.items.length}</p>${it ? `<label class="side-lab">Caption<input class="inp" data-ox="caption" value="${esc(it.caption || '')}" placeholder="Describe this image"></label>` : ''}<div class="btn-grid"><button class="btn" data-oxb="gladd">Add images</button><button class="btn danger" data-oxb="gldel" ${o.items.length ? '' : 'disabled'}>Remove this one</button></div></div>`; }
+  if (o.kind === 'model') b += `<div class="side-sec"><div class="side-title">3D object</div>${o.assetId ? `<p class="muted side-tip">${esc(o.name || 'Model')}</p>` : `<label class="side-lab">Shape<select class="inp" data-ox="sample">${MODEL_SAMPLES.map(([v, l]) => `<option value="${v}" ${o.sample === v ? 'selected' : ''}>${l}</option>`).join('')}</select></label><div class="side-sub">Color</div>${swRow('data-ofill', o.fill, false)}`}<label class="side-check"><input type="checkbox" data-oxc="spin" ${o.spin ? 'checked' : ''}> Turn slowly</label><div class="btn-grid"><button class="btn" data-oxb="mdreset">Reset view</button><button class="btn" data-oxb="mdfile">Use a .glb file…</button></div></div>`;
+  return b;
+};
+const _sideArrange0 = sideArrange;
+sideArrange = function (o) {
+  return _sideArrange0(o) + `<div class="side-sec"><div class="side-title">Lock &amp; group</div><div class="btn-grid"><button class="btn" data-oxb="${o.locked ? 'unlock' : 'lock'}">${o.locked ? 'Unlock' : 'Lock'}</button>${o.group ? '<button class="btn" data-oxb="ungroup">Ungroup</button>' : ''}</div><p class="muted side-tip">Shift-click or drag a box around objects to select several, then align or group them.</p></div>`;
+};
+const _renderSide0 = renderSide;
+renderSide = function () {
+  if (SH.multi.length < 2) return _renderSide0();
+  const side = $('#sh-side'); if (!side) return; side.hidden = !SH.side; $('#sh-format-btn')?.classList.toggle('on', SH.side); if (!SH.side) return;
+  const objs = SH.multi.map(id => findObj(id)).filter(Boolean), grouped = objs.every(o => o.group && o.group === objs[0].group), A = (m, l, g) => `<button class="btn al-btn" data-align="${m}" title="${l}"><span aria-hidden="true">${g}</span>${l}</button>`;
+  side.innerHTML = `<div class="side-head"><b>${objs.length} objects</b><button class="icon-btn" data-side-close title="Hide">${icon('x')}</button></div><div class="side-body">
+    <div class="side-sec"><div class="side-title">Align</div><div class="btn-grid three">${A('left', 'Left', '⇤')}${A('center', 'Center', '↔')}${A('right', 'Right', '⇥')}${A('top', 'Top', '⤒')}${A('middle', 'Middle', '↕')}${A('bottom', 'Bottom', '⤓')}</div></div>
+    <div class="side-sec"><div class="side-title">Distribute</div><div class="btn-grid"><button class="btn" data-align="dh" ${objs.length < 3 ? 'disabled' : ''}>Horizontally</button><button class="btn" data-align="dv" ${objs.length < 3 ? 'disabled' : ''}>Vertically</button></div></div>
+    <div class="side-sec"><div class="btn-grid"><button class="btn" data-oxb="${grouped ? 'ungroup' : 'group'}">${grouped ? 'Ungroup' : 'Group'}</button><button class="btn" data-oxb="lock">Lock all</button><button class="btn" data-oxb="unlock">Unlock all</button>${objs.filter(o => o.kind !== 'conn').length === 2 ? '<button class="btn" data-oxb="connect">Connect</button>' : ''}<button class="btn danger" data-oxb="delall">Delete</button></div></div></div>`;
+};
+$('#view-sheets').addEventListener('click', e => {
+  const el = e.target.closest('button'); if (!el || !el.closest('#sh-side')) return;
+  const d = el.dataset, o = SH.sel?.obj && findObj(SH.sel.obj);
+  if (d.align) { alignObjs(d.align); return; }
+  if (d.oxb === 'group') groupSel(true); else if (d.oxb === 'ungroup') groupSel(false); else if (d.oxb === 'lock') lockSel(true); else if (d.oxb === 'unlock') lockSel(false); else if (d.oxb === 'connect') connectSel();
+  else if (d.oxb === 'delall') deleteObj(findObj(SH.multi[0]));
+  if (!o) return;
+  if ('oxcolor' in d) { shPush(); o.color = d.oxcolor || undefined; shSave(); shRender(); }
+  else if (d.tstep === 'cwidth' || d.tstep === 'eqsize') { e.stopImmediatePropagation(); shPush(); if (d.tstep === 'cwidth') o.width = clamp((o.width || 2) + +d.d, 1, 12); else o.size = clamp((o.size || 22) + +d.d * 2, 10, 96); shSave(); shRender(); }
+  else if (d.oxb === 'eqedit') openEquation(o);
+  else if (d.oxb === 'aureplace') pickFiles('audio/*', false).then(async ([f]) => { if (!f) return; if (f.size > MAX_MEDIA) { toast('That file is over 12 MB'); return; } shPush(); o.assetId = addAsset(await fileToDataUrl(f)); shSave(); shRender(); });
+  else if (d.oxb === 'gladd') insertGallery(o);
+  else if (d.oxb === 'gldel') { shPush(); o.items.splice(o.i || 0, 1); o.i = clamp(o.i || 0, 0, Math.max(0, o.items.length - 1)); shSave(); shRender(); }
+  else if (d.oxb === 'mdreset') { delete o.view; MODELS.get(o.id)?.gl.dispose(); MODELS.delete(o.id); save(); shRender(); }
+  else if (d.oxb === 'mdfile') pickFiles('.glb,model/gltf-binary', false).then(async ([f]) => { if (!f) return; if (!/\.glb$/i.test(f.name) || f.size > MAX_MEDIA) { toast('Use a .glb file under 12 MB'); return; } shPush(); o.assetId = addAsset(await fileToDataUrl(f)); o.name = f.name; delete o.view; shSave(); shRender(); });
+}, true);
+$('#view-sheets').addEventListener('change', e => {
+  const el = e.target; if (!el.closest('#sh-side')) return; const o = SH.sel?.obj && findObj(SH.sel.obj); if (!o) return; const d = el.dataset;
+  if (d.ox === 'caption') { shPush(); o.items[o.i || 0].caption = el.value; shSave(); shRender(); }
+  else if (d.ox) { shPush(); o[d.ox] = el.value; shSave(); shRender(); }
+  else if (d.oxc) { shPush(); o[d.oxc] = el.checked; shSave(); shRender(); }
+});
+</script>
 
 <script>
 /* ================= Sheets: template gallery ================= */

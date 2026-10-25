@@ -34,6 +34,8 @@
 }
 *{box-sizing:border-box}
 html,body{margin:0;height:100%}
+html{touch-action:manipulation}
+:root{padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
 body{font-family:Inter,ui-sans-serif,system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;background:var(--bg);color:var(--text);font-size:14px;-webkit-font-smoothing:antialiased;overflow:hidden}
 button,input,select,textarea{font:inherit;color:inherit}
 .ic{width:18px;height:18px;flex:none}
@@ -108,7 +110,8 @@ textarea.inp{resize:vertical;min-height:70px}
 .kpi .k-label{font-size:12px;color:var(--muted);font-weight:500}
 .kpi .k-val{font-size:26px;font-weight:700;margin-top:6px;letter-spacing:-.02em}
 .kpi .k-sub{font-size:12px;color:var(--muted);margin-top:2px}
-.dash-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(340px,1fr));gap:14px}
+.dash-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(340px,100%),1fr));gap:14px}
+.dash-grid>*,.kpis>*{min-width:0}
 .bar-row{display:grid;grid-template-columns:96px 1fr 84px;align-items:center;gap:10px;margin:8px 0;font-size:13px}
 .bar{height:10px;background:var(--hover);border-radius:6px;overflow:hidden}
 .bar>i{display:block;height:100%;border-radius:6px;background:var(--accent)}
@@ -402,22 +405,99 @@ textarea.inp{resize:vertical;min-height:70px}
 .lightbox img{max-width:100%;max-height:80vh;display:block;margin:auto;border-radius:8px}
 body.is-dragging,body.is-dragging *{cursor:grabbing!important}
 /* responsive */
+.mobile-only{display:none}
+.kstage{display:none}
+button,.card,.tool,.nav-item{-webkit-tap-highlight-color:transparent}
+#canvas{-webkit-touch-callout:none}
+.view{overscroll-behavior:contain}
 @media (max-width:760px){
   #app{flex-direction:column-reverse}
-  #nav{width:100%;height:auto;flex-direction:row;padding:4px 4px calc(4px + env(safe-area-inset-bottom));border-right:0;border-top:1px solid var(--border);justify-content:space-around;overflow-x:auto;overflow-y:hidden}
-  .brand,.nav-label,#nav-boards,.nav-spacer,.save-state,.nav-item kbd{display:none}
-  .nav-item{flex-direction:column;gap:2px;font-size:10px;padding:6px 4px;width:auto;flex:1;align-items:center;min-width:52px}
-  .view{padding:18px 16px 32px}
+  #nav{width:100%;height:auto;flex:none;flex-direction:row;padding:4px 4px;border-right:0;border-top:1px solid var(--border);justify-content:space-around;overflow:hidden}
+  .brand,.nav-label,#nav-boards,.nav-spacer,.save-state,.nav-item kbd,.nav-item[data-act]{display:none}
+  .nav-item{flex-direction:column;gap:3px;font-size:10.5px;padding:7px 2px 6px;width:auto;flex:1 1 0;min-width:0;align-items:center;border-radius:10px}
+  .nav-item span{max-width:100%;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+  .nav-item .ic{width:22px;height:22px}
+  .mobile-only{display:inline-grid}
+  .view{padding:16px 16px 28px}
+  .page-head{margin-bottom:14px;align-items:flex-start}
+  .page-head h1{font-size:22px}
+  .head-actions .btn{padding:9px 12px}
+  input.inp,select.inp,textarea.inp,.search-field input,.cm-input,.task-row input,.task-row select,.composer textarea{font-size:16px}
   .search-field{min-width:0;flex:1}
+  .list-tools select{flex:none}
+  .kpis{grid-template-columns:1fr 1fr;gap:10px}
+  .kpi{padding:12px 14px}
+  .kpi .k-val{font-size:21px}
+  .dash-grid{grid-template-columns:minmax(0,1fr)}
+  .panel{padding:14px}
+  .bar-row{grid-template-columns:84px 1fr 72px}
+  .mini-row .chip{max-width:38%;overflow:hidden;text-overflow:ellipsis}
+  /* tables become stacked rows */
+  .table{min-width:0}
+  .table thead{display:none}
+  .table tbody tr{display:flex;flex-wrap:wrap;align-items:center;gap:4px 12px;padding:12px 14px;border-bottom:1px solid var(--border)}
+  .table tbody tr:last-child{border-bottom:0}
+  .table td{padding:0;border:0;font-size:13px;color:var(--muted);min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;max-width:100%}
+  .table td:empty{display:none}
+  .table td:first-child{flex-basis:100%;color:var(--text);font-size:14px;white-space:normal}
+  .table td.empty{flex-basis:100%;white-space:normal}
+  /* deals */
+  .kanban{grid-auto-columns:86%;scroll-snap-type:x mandatory;margin:0 -16px;padding:0 16px 12px;scroll-padding:0 16px}
+  .kcol{scroll-snap-align:start;min-height:120px}
+  .kstage{display:block;margin-top:8px;width:100%;font-size:14px;padding:6px 8px;border:1px solid var(--border);border-radius:8px;background:var(--panel-2)}
+  /* tasks */
+  .task-add .inp:first-child{flex-basis:100%}
+  .task-add .inp,.task-add .btn{flex:1}
+  .task-row{flex-wrap:wrap;gap:6px 10px;padding:10px 12px}
+  .task-row .t-title{flex:1 1 calc(100% - 60px);font-size:16px}
+  .task-row .chip{max-width:45%;overflow:hidden;text-overflow:ellipsis}
+  .task-row .t-due{width:auto;flex:1;min-width:120px}
+  /* drawer, modals */
+  #drawer{width:100%;border-left:0}
   .form-grid{grid-template-columns:1fr}
-  .notes-body{flex-direction:column-reverse}
-  .toolbar{width:100%;flex-direction:row;border-right:0;border-top:1px solid var(--border);overflow-x:auto;padding:4px;justify-content:flex-start}
-  .tool{width:auto;min-width:56px;flex:none}
-  .tool-sep{width:1px;height:30px;margin:0 4px}
-  .board-title-input{width:150px}
+  .modal-wrap{padding:6vh 10px 10px}
+  .modal-wrap.top{padding:8px}
+  .modal.wide{max-height:calc(100% - 16px)}
+  .doc-editor{height:calc(100dvh - 40px)}
+  .doc-title-in{padding:16px 16px 4px;font-size:22px}
+  .doc-body{padding:6px 16px 40px}
+  .doc-bar{flex-wrap:nowrap;overflow-x:auto}
+  .sketch-bar{gap:4px}
+  #toast{bottom:84px}
+  /* notes */
+  .notes-top{padding:8px 10px;gap:4px;min-height:48px;flex-wrap:nowrap}
+  .crumbs{flex-wrap:nowrap;flex:none}
+  .crumbs .crumb,.crumbs .crumb-sep{display:none}
+  .crumbs .crumb:nth-last-child(2){display:inline-flex;max-width:96px}
+  .crumbs .crumb:nth-last-child(2)::before{content:'‹';font-size:18px;line-height:1;margin-right:2px}
+  .board-title-input{width:auto;flex:1;min-width:0;max-width:none;font-size:16px}
+  #board-link{display:none}
+  .notes-actions{gap:0;flex:none}
   .notes-actions .btn span{display:none}
-  .zoom-ctl{bottom:84px;right:10px}
-  .dash-grid{grid-template-columns:1fr}
+  .notes-actions .btn{padding:7px 8px;border:0}
+  .notes-body{flex-direction:column-reverse}
+  .toolbar{width:100%;flex-direction:row;border-right:0;border-top:1px solid var(--border);overflow-x:auto;padding:4px 6px;justify-content:flex-start;scrollbar-width:none}
+  .toolbar::-webkit-scrollbar{display:none}
+  .tool{width:auto;min-width:58px;flex:none;padding:8px 2px 6px}
+  .tool-sep{width:1px;height:30px;margin:0 4px;flex:none;align-self:center}
+  .zoom-ctl{bottom:80px;right:12px}
+  .zoom-ctl #btn-zo,.zoom-ctl #btn-zi{display:none}
+  #fmt{max-width:calc(100vw - 16px);overflow-x:auto;scrollbar-width:none}
+  #fmt button,#linebar button{min-width:36px;height:36px}
+  .card .ed{font-size:16px}
+  .rt h1{font-size:21px}
+}
+@media (pointer:coarse){
+  .card>.resize{width:26px;height:26px;right:-10px;bottom:-10px}
+  .card>.resize::after{right:7px;bottom:7px;width:9px;height:9px}
+  .card>.connector{width:20px;height:20px;margin-top:-10px;right:-12px}
+  .card.selected>.connector{opacity:1}
+  .card>.card-more{width:30px;height:28px}
+  .todo-check{width:22px;height:22px}
+  .todo-item{padding:5px 0}
+  .todo-add{opacity:1;padding:8px 0}
+  .line-handle{r:11px}
+  .col-toggle{padding:4px 8px;font-size:16px}
 }
 @media (prefers-reduced-motion:reduce){*{transition:none!important}}
 </style>
@@ -437,6 +517,7 @@ body.is-dragging,body.is-dragging *{cursor:grabbing!important}
         <input id="board-title" class="board-title-input" spellcheck="false" aria-label="Board title">
         <span id="board-link"></span>
         <div class="notes-actions">
+          <button class="icon-btn mobile-only" data-act="search" title="Search" id="btn-nsearch"></button>
           <button class="icon-btn" data-act="undo" title="Undo (Ctrl+Z)" id="btn-undo"></button>
           <button class="icon-btn" data-act="redo" title="Redo (Ctrl+Shift+Z)" id="btn-redo"></button>
           <button class="btn" data-act="templates" id="btn-tpl"></button>
@@ -1113,7 +1194,10 @@ function rerenderCard(id) {
 <script>
 /* ================= Canvas: render ================= */
 const canvas = $('#canvas'), world = $('#world'), cardsEl = $('#cards'), linesG = $('#lines-g');
-let linesRaf = 0, ptr = null, spaceDown = false;
+let linesRaf = 0, ptr = null, spaceDown = false, lastTap = null;
+const isPhone = () => matchMedia('(max-width:760px)').matches;
+function isDoubleTap(id, x, y) { const now = Date.now(), d = lastTap && lastTap.id === id && now - lastTap.t < 380 && Math.hypot(x - lastTap.x, y - lastTap.y) < 30; lastTap = d ? null : { id, t: now, x, y }; return d; }
+function longPress(P, fn) { P.lp = setTimeout(() => { if (ptr === P && (P.mode === 'press' || (P.mode === 'pan' && !P.moved))) { ptr = { mode: 'none' }; canvas.classList.remove('panning'); try { navigator.vibrate && navigator.vibrate(12); } catch { } fn(); } }, 520); }
 const pointers = new Map();
 
 function applyView() {
@@ -1158,7 +1242,14 @@ function openBoard(id, focusId, push = true) {
   setView('notes', false);
   if (push) nav('#/notes/' + id);
   renderBoard();
+  if (isPhone() && !view().m && !focusId) phoneFit();
   if (focusId) requestAnimationFrame(() => focusCard(focusId));
+}
+function phoneFit() {
+  const v = view(), cs = topCards(N.boardId); v.m = 1;
+  if (!cs.length) { v.x = 16; v.y = 16; v.z = 0.8; applyView(); return; }
+  const x1 = Math.min(...cs.map(c => c.x)), y1 = Math.min(...cs.map(c => c.y));
+  v.z = 0.6; v.x = 14 - x1 * v.z; v.y = 14 - y1 * v.z; applyView(); scheduleLines(); save();
 }
 function focusCard(id) {
   const c = db.cards[id]; const el = els.get(id); if (!c || !el) return;
@@ -1337,7 +1428,9 @@ function onDown(e) {
   const t = e.target, v = view();
   const touchEmpty = e.pointerType === 'touch' && !t.closest('.card,.line-hit,.line-handle');
   if (e.button === 1 || (e.button === 0 && spaceDown) || (touchEmpty && !N.lineMode)) {
-    e.preventDefault(); stopEditing(); ptr = { mode: 'pan', sx: e.clientX, sy: e.clientY, vx: v.x, vy: v.y }; canvas.classList.add('panning'); return;
+    e.preventDefault(); stopEditing(); ptr = { mode: 'pan', sx: e.clientX, sy: e.clientY, vx: v.x, vy: v.y, touch: touchEmpty }; canvas.classList.add('panning');
+    if (touchEmpty) { const x = e.clientX, y = e.clientY; longPress(ptr, () => showCanvasMenu(x, y)); }
+    return;
   }
   if (t.closest('[contenteditable="true"]')) return;
   if (t.closest('input,textarea,select,button,.nodrag')) return;
@@ -1359,7 +1452,8 @@ function onDown(e) {
     const wasSelected = sel.has(id) && sel.size === 1;
     if (!sel.has(id)) selectOnly(id);
     selLine = null;
-    ptr = { mode: 'press', id, sx: e.clientX, sy: e.clientY, target: t, wasSelected };
+    ptr = { mode: 'press', id, sx: e.clientX, sy: e.clientY, target: t, wasSelected, touch: e.pointerType === 'touch' };
+    if (ptr.touch) { const x = e.clientX, y = e.clientY; longPress(ptr, () => { if (!sel.has(id)) selectOnly(id); showCardMenu(x, y); }); }
     return;
   }
   // empty canvas
@@ -1370,6 +1464,7 @@ function onDown(e) {
 }
 function startPinch() {
   const [a, b] = [...pointers.values()], v = view();
+  if (ptr) clearTimeout(ptr.lp);
   stopEditing(); clearDropUI();
   ptr = { mode: 'pinch', d0: Math.hypot(a.x - b.x, a.y - b.y) || 1, z0: v.z, c0: { x: (a.x + b.x) / 2, y: (a.y + b.y) / 2 }, vx: v.x, vy: v.y };
 }
@@ -1385,8 +1480,8 @@ function onMove(e) {
       const wx = (ptr.c0.x - r.left - ptr.vx) / ptr.z0, wy = (ptr.c0.y - r.top - ptr.vy) / ptr.z0;
       v.z = z; v.x = m.x - r.left - wx * z; v.y = m.y - r.top - wy * z; applyView(); scheduleLines(); break;
     }
-    case 'pan': v.x = ptr.vx + e.clientX - ptr.sx; v.y = ptr.vy + e.clientY - ptr.sy; applyView(); scheduleLines(); break;
-    case 'press': if (Math.hypot(e.clientX - ptr.sx, e.clientY - ptr.sy) > 4) beginDrag(); break;
+    case 'pan': if (Math.hypot(e.clientX - ptr.sx, e.clientY - ptr.sy) > 6) { ptr.moved = true; clearTimeout(ptr.lp); } v.x = ptr.vx + e.clientX - ptr.sx; v.y = ptr.vy + e.clientY - ptr.sy; applyView(); scheduleLines(); break;
+    case 'press': if (Math.hypot(e.clientX - ptr.sx, e.clientY - ptr.sy) > (ptr.touch ? 8 : 4)) { clearTimeout(ptr.lp); beginDrag(); } break;
     case 'drag': {
       const dx = (e.clientX - ptr.sx) / v.z, dy = (e.clientY - ptr.sy) / v.z;
       for (const it of ptr.items) { const c = db.cards[it.id], el = els.get(it.id); c.x = it.ox + dx; c.y = it.oy + dy; el.style.left = c.x + 'px'; el.style.top = c.y + 'px'; }
@@ -1447,12 +1542,20 @@ function beginDrag() {
 function onUp(e) {
   pointers.delete(e.pointerId);
   if (!ptr) return;
-  const p = ptr; ptr = null;
+  const p = ptr; ptr = null; clearTimeout(p.lp);
   canvas.classList.remove('panning'); document.body.classList.remove('is-dragging');
   $('#marquee').hidden = true;
   switch (p.mode) {
-    case 'pan': case 'pinch': save(); break;
-    case 'press': handleClick(p, e); break;
+    case 'pan':
+      if (p.touch && !p.moved) {
+        clearSel();
+        if (isDoubleTap('canvas', e.clientX, e.clientY)) { const w = screenToWorld(e.clientX, e.clientY); createFromTool('note', { x: w.x - 120, y: w.y - 20 }, null); }
+      }
+      save(); break;
+    case 'pinch': save(); break;
+    case 'press':
+      if (p.touch && isDoubleTap(p.id, e.clientX, e.clientY) && db.cards[p.id] && !['note', 'todo', 'comment', 'column'].includes(db.cards[p.id].type)) { openCard(db.cards[p.id]); break; }
+      handleClick(p, e); break;
     case 'drag': {
       clearDropUI();
       const ids = p.items.map(i => i.id);
@@ -1493,7 +1596,7 @@ function handleClick(p, e) {
   const a = t.closest('a[href]'); if (a) { openUrl(a.href); return; }
   const edEl = t.closest('.ed'); if (!edEl) return;
   const cfg = edCfg.get(edEl); if (!cfg) return;
-  if (cfg.immediate) activateEditable(edEl, e.clientX, e.clientY);
+  if (cfg.immediate || (p.touch && p.wasSelected)) activateEditable(edEl, e.clientX, e.clientY);
   else if (p.wasSelected) { const cx = e.clientX, cy = e.clientY; pendingEdit = setTimeout(() => activateEditable(edEl, cx, cy), 280); }
 }
 canvas.addEventListener('wheel', e => {
@@ -1516,8 +1619,11 @@ canvas.addEventListener('contextmenu', e => {
   e.preventDefault();
   const cardEl = e.target.closest('.card');
   if (cardEl) { const id = cardEl.dataset.id; if (!sel.has(id)) selectOnly(id); showCardMenu(e.clientX, e.clientY); return; }
-  const w = screenToWorld(e.clientX, e.clientY);
-  showMenu(e.clientX, e.clientY, [
+  showCanvasMenu(e.clientX, e.clientY);
+});
+function showCanvasMenu(x, y) {
+  const w = screenToWorld(x, y);
+  showMenu(x, y, [
     { label: 'Add note here', icon: 'sticky', run: () => createFromTool('note', { x: w.x - 120, y: w.y - 20 }) },
     { label: 'Add to-do here', icon: 'todo', run: () => createFromTool('todo', { x: w.x - 130, y: w.y - 20 }) },
     { label: 'Add column here', icon: 'columns', run: () => createFromTool('column', { x: w.x - 145, y: w.y - 20 }) },
@@ -1527,7 +1633,7 @@ canvas.addEventListener('contextmenu', e => {
     { label: 'Fit to content', icon: 'fit', run: fitView },
     { label: 'Templates…', icon: 'template', run: openTemplates },
   ]);
-});
+}
 function selectAll() { sel.clear(); topCards(N.boardId).forEach(c => sel.add(c.id)); applySel(); }
 
 /* ================= Files, drop, paste ================= */
@@ -2027,7 +2133,7 @@ function renderDashboard() {
   const boards = Object.values(db.boards).filter(b => b.id !== db.rootBoardId).sort((a, b) => (b.updatedAt || 0) - (a.updatedAt || 0)).slice(0, 6);
   $('#view-dashboard').innerHTML = `
   <header class="page-head"><div><h1>Good ${greet}, ${esc(db.settings.user || 'there')}</h1><p class="muted">Here's what's happening across your pipeline.</p></div>
-    <div class="head-actions"><button class="btn" data-new="contact">${icon('plus')} Contact</button><button class="btn" data-new="deal">${icon('plus')} Deal</button><button class="btn primary" data-nav="notes">${icon('layers')} Open notes</button></div></header>
+    <div class="head-actions"><button class="icon-btn mobile-only" data-act="search" title="Search">${icon('search')}</button><button class="icon-btn mobile-only" data-act="settings" title="Settings">${icon('settings')}</button><button class="btn" data-new="contact">${icon('plus')} Contact</button><button class="btn" data-new="deal">${icon('plus')} Deal</button><button class="btn primary" data-nav="notes">${icon('layers')} Open notes</button></div></header>
   <div class="kpis">
     <div class="kpi"><div class="k-label">Open pipeline</div><div class="k-val">${money(openVal)}</div><div class="k-sub">${open.length} open deals</div></div>
     <div class="kpi"><div class="k-label">Weighted forecast</div><div class="k-val">${money(weighted)}</div><div class="k-sub">by stage probability</div></div>
@@ -2068,9 +2174,9 @@ function renderDeals() {
   const root = $('#view-deals'), q = (UI.q.deal || '').toLowerCase();
   const match = d => !q || KINDS.deal.search(d).toLowerCase().includes(q);
   const focused = document.activeElement?.dataset?.q === 'deal';
-  root.innerHTML = `<header class="page-head"><div><h1>Deals</h1><p class="muted">${money(openDeals().reduce((s, d) => s + (+d.value || 0), 0))} open across ${openDeals().length} deals · drag cards between stages</p></div><div class="head-actions"><button class="btn primary" data-new="deal">${icon('plus')} New deal</button></div></header>
+  root.innerHTML = `<header class="page-head"><div><h1>Deals</h1><p class="muted">${money(openDeals().reduce((s, d) => s + (+d.value || 0), 0))} open across ${openDeals().length} deals · ${matchMedia('(max-width:760px)').matches ? 'change a stage from each card' : 'drag cards between stages'}</p></div><div class="head-actions"><button class="btn primary" data-new="deal">${icon('plus')} New deal</button></div></header>
   <div class="list-tools"><div class="search-field">${icon('search')}<input type="search" data-q="deal" placeholder="Search deals…" value="${esc(UI.q.deal || '')}"></div></div>
-  <div class="kanban">${STAGES.map(st => { const ds = db.deals.filter(d => d.stage === st && match(d)); return `<div class="kcol" data-stage="${st}"><div class="kcol-head"><span class="dot st-${slug(st)}"></span>${st}<span class="muted">${ds.length}</span><span class="kcol-sum">${money(ds.reduce((s, d) => s + (+d.value || 0), 0))}</span></div><div class="kcol-body">${ds.map(d => `<div class="kcard" draggable="true" data-deal="${d.id}" data-open="deal:${d.id}"><div class="kcard-title">${esc(d.title || 'Untitled deal')}</div><div class="muted">${esc(companyName(d.companyId))}${d.contactId ? ' · ' + esc(contactName(d.contactId)) : ''}</div><div class="kcard-foot"><b>${money(d.value)}</b><span class="muted">${fmtDate(d.closeDate)}</span></div></div>`).join('')}</div></div>`; }).join('')}</div>`;
+  <div class="kanban">${STAGES.map(st => { const ds = db.deals.filter(d => d.stage === st && match(d)); return `<div class="kcol" data-stage="${st}"><div class="kcol-head"><span class="dot st-${slug(st)}"></span>${st}<span class="muted">${ds.length}</span><span class="kcol-sum">${money(ds.reduce((s, d) => s + (+d.value || 0), 0))}</span></div><div class="kcol-body">${ds.map(d => `<div class="kcard" draggable="true" data-deal="${d.id}" data-open="deal:${d.id}"><div class="kcard-title">${esc(d.title || 'Untitled deal')}</div><div class="muted">${esc(companyName(d.companyId))}${d.contactId ? ' · ' + esc(contactName(d.contactId)) : ''}</div><div class="kcard-foot"><b>${money(d.value)}</b><span class="muted">${fmtDate(d.closeDate)}</span></div><select class="kstage" data-deal-stage="${d.id}" aria-label="Move to stage">${STAGES.map(s => `<option ${s === d.stage ? 'selected' : ''}>${s}</option>`).join('')}</select></div>`).join('')}</div></div>`; }).join('')}</div>`;
   if (focused) { const i = root.querySelector('[data-q]'); i.focus(); i.setSelectionRange(i.value.length, i.value.length); }
 }
 const dealsView = $('#view-deals');
@@ -2181,7 +2287,7 @@ function newRecord(kind) {
 /* ================= Delegated events ================= */
 document.addEventListener('click', async e => {
   const t = e.target.closest('[data-nav],[data-open],[data-board],[data-new],[data-act],[data-sort],[data-task-del],[data-act-del],[data-tab]');
-  if (!t || t.closest('#canvas')) return;
+  if (!t || t.closest('#canvas') || e.target.closest('select')) return;
   const d = t.dataset;
   if (d.nav) { if (d.nav === 'notes') openBoard(N.boardId || db.rootBoardId); else setView(d.nav); }
   else if (d.open) { const [k, i] = d.open.split(':'); openRecord(k, i); }
@@ -2217,6 +2323,7 @@ document.addEventListener('input', e => {
 document.addEventListener('change', e => {
   const t = e.target;
   if (t.dataset.filter) { UI.filter[t.dataset.filter] = t.value; renderList(t.dataset.filter); }
+  else if (t.dataset.dealStage) { const d = db.deals.find(x => x.id === t.dataset.dealStage); if (d) { setDealStage(d, t.value); save(); renderDeals(); toast(`Moved to ${t.value}`); } }
   else if (t.dataset.taskToggle) toggleTask(t.dataset.taskToggle);
   else if (t.dataset.taskField) { const k = db.tasks.find(x => x.id === t.dataset.id); if (k) { k[t.dataset.taskField] = t.value; save(); if (t.dataset.taskField !== 'title') renderTasks(); } }
   else if (t.dataset.field && t.closest('#drawer') && UI.drawer) {
@@ -2330,7 +2437,7 @@ function toast(msg, action) {
 (async function init() {
   buildNav(); buildToolbar();
   [['#btn-undo', 'undo'], ['#btn-redo', 'redo'], ['#btn-bmenu', 'more'], ['#btn-zo', 'minus'], ['#btn-zi', 'plus'], ['#btn-zf', 'fit']].forEach(([s, i]) => $(s).innerHTML = icon(i));
-  $('#btn-tpl').innerHTML = icon('template') + '<span>Templates</span>';
+  $('#btn-tpl').innerHTML = icon('template') + '<span>Templates</span>'; $('#btn-nsearch').innerHTML = icon('search');
   db = await Store.get('db'); assets = (await Store.get('assets')) || {};
   if (!db || !db.version || !db.boards || !db.boards[db.rootBoardId]) { db = seed(); assets = {}; save(); }
   db.settings = db.settings || { user: 'You', theme: 'auto' };

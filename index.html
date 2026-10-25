@@ -564,7 +564,11 @@ body.presenting-body #nav{display:none}
 .sh-fx-input:disabled{opacity:.6}
 .sh-main{flex:1;display:flex;min-height:0}
 .sh-canvas{flex:1;overflow:auto;background:var(--sh-canvas);position:relative;outline:0;touch-action:pan-x pan-y}
-.sh-page{position:relative;min-width:100%;min-height:100%}
+.sh-zoomer{position:relative;overflow:hidden}
+.sh-page{position:absolute;left:0;top:0;transform-origin:0 0}
+.sh-zoom{margin-left:auto;display:flex;align-items:center;gap:2px;flex:none;position:sticky;right:0;background:var(--panel);padding-left:8px}
+.sh-zoom button{border:0;background:none;color:var(--text);min-width:30px;height:26px;border-radius:6px;font-size:15px;cursor:pointer}
+.sh-zoom button:hover{background:var(--hover)}.sh-zoom .zl{min-width:52px;font-size:12px;font-variant-numeric:tabular-nums}
 .sh-empty{position:absolute;left:40px;top:40px;color:var(--muted);max-width:340px}
 .sh-obj{position:absolute}
 .sh-obj.sel-obj:not(.sh-table){outline:2px solid var(--accent);outline-offset:2px}
@@ -4019,7 +4023,7 @@ function renderSheetEditor() {
       </div>
       <div class="sh-tabs" id="sh-tabs"></div>
       <div class="sh-fbar"><span class="sh-ref" id="sh-ref">—</span><button class="sh-fx" data-sh="functions" title="Functions">ƒx</button><input id="sh-fx" class="sh-fx-input" placeholder="Select a cell, then type a value or a formula starting with =" spellcheck="false" autocomplete="off"></div>
-      <div class="sh-main"><div class="sh-canvas" id="sh-canvas" tabindex="-1"><div class="sh-page" id="sh-page"></div></div><aside class="sh-side" id="sh-side"></aside></div>
+      <div class="sh-main"><div class="sh-canvas" id="sh-canvas" tabindex="-1"><div class="sh-zoomer" id="sh-zoomer"><div class="sh-page" id="sh-page"></div></div></div><aside class="sh-side" id="sh-side"></aside></div>
       <div class="sh-status" id="sh-status"></div>
     </div>`;
     bindSheetCanvas();
@@ -4135,7 +4139,7 @@ function placeFillHandle() {
   const page = $('#sh-page'), tEl = page.querySelector(`.sh-table[data-id="${SH.sel.t}"]`); if (!tEl) return;
   const td = tEl.querySelector(`td[data-r="${r.r2}"][data-c="${r.c2}"]`) || tEl.querySelector('td.sel:last-of-type'); if (!td) return;
   const pr = page.getBoundingClientRect(), tr = td.getBoundingClientRect();
-  page.append(h('div', { class: 'sh-fill', title: 'Drag to fill', style: `left:${tr.right - pr.left - 5}px;top:${tr.bottom - pr.top - 5}px` }));
+  const z = shZ(); page.append(h('div', { class: 'sh-fill', title: 'Drag to fill', style: `left:${(tr.right - pr.left) / z - 5}px;top:${(tr.bottom - pr.top) / z - 5}px` }));
 }
 function renderFbar() {
   const s = SH.sel, ref = $('#sh-ref'), fx = $('#sh-fx'); if (!ref) return;
@@ -4177,7 +4181,7 @@ function beginEdit(initial, viaBar) {
   if (viaBar) { SH.edit.input = fx; fx.value = val; fx.focus(); return; }
   const td = $(`#sh-page .sh-table[data-id="${t.id}"] td[data-r="${s.ar}"][data-c="${s.ac}"]`); if (!td) { SH.edit = null; return; }
   const page = $('#sh-page'), pr = page.getBoundingClientRect(), tr = td.getBoundingClientRect();
-  const inp = h('input', { class: 'sh-cell-input', spellcheck: 'false', autocomplete: 'off', style: `left:${tr.left - pr.left}px;top:${tr.top - pr.top}px;min-width:${tr.width}px;height:${tr.height}px`, 'aria-label': 'Edit cell ' + refName(s.ar, s.ac) });
+  const inp = h('input', { class: 'sh-cell-input', spellcheck: 'false', autocomplete: 'off', style: `left:${(tr.left - pr.left) / shZ()}px;top:${(tr.top - pr.top) / shZ()}px;min-width:${tr.width / shZ()}px;height:${tr.height / shZ()}px`, 'aria-label': 'Edit cell ' + refName(s.ar, s.ac) });
   inp.value = val; SH.edit.input = inp; SH.edit.overlay = inp; page.append(inp); fx.value = val;
   inp.focus(); inp.setSelectionRange(val.length, val.length);
   inp.addEventListener('input', () => { fx.value = inp.value; SH.edit && (SH.edit.lastRef = null); });
@@ -4259,18 +4263,18 @@ function bindSheetCanvas() {
   window.addEventListener('pointermove', e => {
     const d = SH.drag; if (!d) return;
     if (d.mode === 'move') {
-      const dx = e.clientX - d.sx, dy = e.clientY - d.sy; if (!d.pushed && Math.hypot(dx, dy) < 3) return;
+      const dx = (e.clientX - d.sx) / shZ(), dy = (e.clientY - d.sy) / shZ(); if (!d.pushed && Math.hypot(dx, dy) < 3) return;
       if (!d.pushed) { shPush(); d.pushed = true; }
       d.o.x = Math.max(0, Math.round((d.ox + dx) / 4) * 4); d.o.y = Math.max(0, Math.round((d.oy + dy) / 4) * 4);
       const el = $(`#sh-page [data-id="${d.o.id}"]`); if (el) { el.style.left = d.o.x + 'px'; el.style.top = d.o.y + 'px'; }
     } else if (d.mode === 'resize') {
-      d.o.w = Math.max(60, Math.round(d.w + e.clientX - d.sx)); if (d.o.kind !== 'text') d.o.h = Math.max(40, Math.round(d.h + e.clientY - d.sy));
+      d.o.w = Math.max(60, Math.round(d.w + (e.clientX - d.sx) / shZ())); if (d.o.kind !== 'text') d.o.h = Math.max(40, Math.round(d.h + (e.clientY - d.sy) / shZ()));
       const el = $(`#sh-page [data-id="${d.o.id}"]`); if (d.o.kind === 'chart') { clearTimeout(d.tm); d.tm = setTimeout(() => { if (el) el.outerHTML = objHTML(d.o); }, 16); } else if (el) { el.style.width = d.o.w + 'px'; if (d.o.h) el.style.height = d.o.h + 'px'; if (d.o.kind === 'shape') el.querySelector('svg').outerHTML = shapeSVG(d.o); }
     } else if (d.mode === 'rowh') {
-      d.o.rowH = d.o.rowH || {}; d.o.rowH[d.r] = Math.max(20, Math.round(d.h + e.clientY - d.sy));
+      d.o.rowH = d.o.rowH || {}; d.o.rowH[d.r] = Math.max(20, Math.round(d.h + (e.clientY - d.sy) / shZ()));
       const tr = $(`#sh-page .sh-table[data-id="${d.o.id}"] [data-rh="${d.r}"]`)?.closest('tr'); if (tr) tr.style.height = d.o.rowH[d.r] + 'px';
     } else if (d.mode === 'colw') {
-      d.o.colW[d.c] = Math.max(36, Math.round(d.w + e.clientX - d.sx)); const tEl = $(`#sh-page .sh-table[data-id="${d.o.id}"]`);
+      d.o.colW[d.c] = Math.max(36, Math.round(d.w + (e.clientX - d.sx) / shZ())); const tEl = $(`#sh-page .sh-table[data-id="${d.o.id}"]`);
       if (tEl) { tEl.querySelectorAll('col')[d.c + 1].style.width = d.o.colW[d.c] + 'px'; tEl.querySelector('table').style.width = 30 + d.o.colW.reduce((s, w) => s + w, 0) + 'px'; }
     } else if (d.mode === 'cells' || d.mode === 'ref' || d.mode === 'fill') {
       const td = document.elementFromPoint(e.clientX, e.clientY)?.closest?.('td[data-r]'); if (!td || td.closest('.sh-table')?.dataset.id !== d.o.id) return;
@@ -4426,7 +4430,7 @@ function openPivotDialog(srcT) {
 const maxZ = () => Math.max(0, ...(curSheet()?.objects || []).map(o => o.z || 0));
 
 /* ----- inserting objects ----- */
-function insertPos(w = 300) { const cv = $('#sh-canvas'); return { x: Math.round((cv.scrollLeft + Math.max(40, cv.clientWidth / 2 - w / 2)) / 4) * 4, y: Math.round((cv.scrollTop + 60) / 4) * 4 }; }
+function insertPos(w = 300) { const cv = $('#sh-canvas'), z = shZ(); return { x: Math.round(Math.max(40, (cv.scrollLeft + cv.clientWidth / 2) / z - w / 2) / 4) * 4, y: Math.round((cv.scrollTop / z + 60) / 4) * 4 }; }
 function insertObj(o) { const s = curSheet(); shPush(); o.z = maxZ() + 1; s.objects.push(o); SH.sel = o.kind === 'table' ? { t: o.id, r1: o.headerRows || 0, c1: 0, r2: o.headerRows || 0, c2: 0, ar: o.headerRows || 0, ac: 0 } : { obj: o.id }; shSave(); shRender(); }
 function nextTableName() { const names = new Set(allTables().map(t => t.name)); let i = 1; while (names.has('Table ' + i)) i++; return 'Table ' + i; }
 function insertTable(kind) {
@@ -5775,7 +5779,7 @@ function setMulti(ids) { SH.multi = [...new Set(ids)]; if (SH.multi.length) SH.s
     if (!objEl && !e.target.closest('.ctl,.sh-cell-input,.sh-add,.sh-fill') && e.pointerType === 'mouse') {
       if (SH.edit) commitEdit();
       e.preventDefault(); e.stopPropagation();
-      const pr = page().getBoundingClientRect(); marq = { x0: e.clientX - pr.left, y0: e.clientY - pr.top, add: e.shiftKey ? SH.multi.slice() : [], el: null };
+      const pr = page().getBoundingClientRect(); marq = { x0: (e.clientX - pr.left) / shZ(), y0: (e.clientY - pr.top) / shZ(), add: e.shiftKey ? SH.multi.slice() : [], el: null };
       return;
     }
     if (!o) return;
@@ -5791,7 +5795,7 @@ function setMulti(ids) { SH.multi = [...new Set(ids)]; if (SH.multi.length) SH.s
   }, true);
   window.addEventListener('pointermove', e => {
     if (marq) {
-      const pr = page().getBoundingClientRect(), x = e.clientX - pr.left, y = e.clientY - pr.top;
+      const pr = page().getBoundingClientRect(), x = (e.clientX - pr.left) / shZ(), y = (e.clientY - pr.top) / shZ();
       if (!marq.el && Math.hypot(x - marq.x0, y - marq.y0) < 4) return;
       if (!marq.el) { marq.el = h('div', { class: 'sh-marquee' }); page().append(marq.el); }
       Object.assign(marq.r = { x: Math.min(x, marq.x0), y: Math.min(y, marq.y0), w: Math.abs(x - marq.x0), h: Math.abs(y - marq.y0) });
@@ -5799,7 +5803,7 @@ function setMulti(ids) { SH.multi = [...new Set(ids)]; if (SH.multi.length) SH.s
     }
     const d = SH.drag; if (!d) return;
     if (d.mode === 'connEnd') {
-      const pr = page().getBoundingClientRect(), x = e.clientX - pr.left, y = e.clientY - pr.top, key = d.end === '1' ? 'p1' : 'p2', att = d.end === '1' ? 'from' : 'to';
+      const pr = page().getBoundingClientRect(), x = (e.clientX - pr.left) / shZ(), y = (e.clientY - pr.top) / shZ(), key = d.end === '1' ? 'p1' : 'p2', att = d.end === '1' ? 'from' : 'to';
       d.o[att] = null; d.o[key] = { dx: x - d.o.x, dy: y - d.o.y }; const el = $(`#sh-page [data-id="${d.o.id}"]`); if (el) el.outerHTML = connHTML(d.o);
       $$('#sh-page .conn-target').forEach(x => x.classList.remove('conn-target'));
       const hit = document.elementsFromPoint(e.clientX, e.clientY).map(n => n.closest?.('.sh-obj')).find(n => n && n.dataset.id !== d.o.id && !n.classList.contains('sh-conn')); hit?.classList.add('conn-target'); d.hit = hit?.dataset.id || null; return;
@@ -6137,6 +6141,62 @@ document.addEventListener('click', e => {
 }, true);
 document.addEventListener('keydown', e => { if (UI.view === 'sheets' && SH.bookId && (e.metaKey || e.ctrlKey) && e.key.toLowerCase() === 'p' && !modalOpen() && !$('.print-view')) { e.preventDefault(); openPrint(); } });
 </script>
+<script>
+/* ================= Sheets: zoom (pinch, Ctrl+wheel, buttons, keyboard) ================= */
+const ZMIN = .25, ZMAX = 3;
+function shZ() { return SH.zoom || 1; }
+function applyZoom() {
+  const page = $('#sh-page'), zr = $('#sh-zoomer'), cv = $('#sh-canvas'); if (!page || !zr) return;
+  const z = shZ(), w = Math.max(parseFloat(page.dataset.w || page.style.width) || 600, cv.clientWidth / z), hh = Math.max(parseFloat(page.dataset.h || page.style.height) || 400, cv.clientHeight / z);
+  page.style.width = w + 'px'; page.style.height = hh + 'px'; page.style.transform = z === 1 ? '' : `scale(${z})`;
+  zr.style.width = w * z + 'px'; zr.style.height = hh * z + 'px';
+  const l = $('#sh-status .zl'); if (l) l.textContent = Math.round(z * 100) + '%';
+}
+function setZoom(z, ax, ay) {
+  const cv = $('#sh-canvas'); if (!cv) return; z = clamp(Math.round(z * 100) / 100, ZMIN, ZMAX); const z0 = shZ(); if (z === z0) return;
+  const r = cv.getBoundingClientRect(); ax = ax ?? r.left + cv.clientWidth / 2; ay = ay ?? r.top + cv.clientHeight / 2;
+  const px = (cv.scrollLeft + ax - r.left) / z0, py = (cv.scrollTop + ay - r.top) / z0;
+  SH.zoom = z; applyZoom(); cv.scrollLeft = px * z - (ax - r.left); cv.scrollTop = py * z - (ay - r.top);
+  const b = curBook(); if (b) { b.zoom = z; clearTimeout(setZoom.t); setZoom.t = setTimeout(save, 400); }
+  if (SH.sel?.t && !SH.edit) { $$('#sh-page .sh-fill').forEach(x => x.remove()); placeFillHandle(); }
+}
+function fitZoom() {
+  const cv = $('#sh-canvas'); let w = 0, hh = 0; $$('#sh-page > .sh-obj').forEach(el => { w = Math.max(w, el.offsetLeft + el.offsetWidth); hh = Math.max(hh, el.offsetTop + el.offsetHeight); });
+  if (!w) return; setZoom(Math.min(1, (cv.clientWidth - 16) / (w + 24))); cv.scrollLeft = 0; cv.scrollTop = 0;
+}
+const _renderSheetCanvasZ = renderSheetCanvas;
+renderSheetCanvas = function () {
+  const b = curBook(); if (b && SH.zoomBook !== b.id) { SH.zoomBook = b.id; SH.zoom = b.zoom || 1; }
+  _renderSheetCanvasZ(); const page = $('#sh-page'); if (!page) return;
+  page.dataset.w = parseFloat(page.style.width) || 600; page.dataset.h = parseFloat(page.style.height) || 400; applyZoom();
+};
+const _renderStatusZ = renderStatus;
+renderStatus = function () {
+  _renderStatusZ(); const el = $('#sh-status'); if (!el) return;
+  el.insertAdjacentHTML('beforeend', `<span class="sh-zoom" role="group" aria-label="Zoom"><button data-zoom="out" title="Zoom out (Ctrl −)" aria-label="Zoom out">−</button><button class="zl" data-zoom="fit" title="Tap to fit the sheet, tap again for 100%">${Math.round(shZ() * 100)}%</button><button data-zoom="in" title="Zoom in (Ctrl +)" aria-label="Zoom in">+</button></span>`);
+};
+document.addEventListener('click', e => {
+  const b = e.target.closest('#sh-status [data-zoom]'); if (!b) return; const k = b.dataset.zoom;
+  if (k === 'fit') { if (shZ() === 1) fitZoom(); else setZoom(1); renderStatus(); }
+  else { setZoom(shZ() * (k === 'in' ? 1.25 : 0.8)); renderStatus(); }
+});
+/* pinch to zoom on touch screens */
+(function () {
+  const root = $('#view-sheets'); let pin = null;
+  const dist = t => Math.hypot(t[0].clientX - t[1].clientX, t[0].clientY - t[1].clientY), mid = t => [(t[0].clientX + t[1].clientX) / 2, (t[0].clientY + t[1].clientY) / 2];
+  root.addEventListener('touchstart', e => { if (e.touches.length !== 2 || !e.target.closest('#sh-canvas')) return; SH.drag = null; pin = { d: dist(e.touches), z: shZ() }; }, { passive: true });
+  root.addEventListener('touchmove', e => { if (!pin || e.touches.length !== 2) return; e.preventDefault(); const [mx, my] = mid(e.touches); setZoom(pin.z * dist(e.touches) / pin.d, mx, my); }, { passive: false });
+  root.addEventListener('touchend', e => { if (pin && e.touches.length < 2) { pin = null; renderStatus(); } });
+  ['gesturestart', 'gesturechange'].forEach(t => root.addEventListener(t, e => { if (e.target.closest?.('#sh-canvas')) e.preventDefault(); }, { passive: false }));
+  root.addEventListener('wheel', e => { if (!(e.ctrlKey || e.metaKey) || !e.target.closest('#sh-canvas')) return; e.preventDefault(); setZoom(shZ() * Math.exp(-e.deltaY * .01), e.clientX, e.clientY); }, { passive: false });
+})();
+document.addEventListener('keydown', e => {
+  if (UI.view !== 'sheets' || !SH.bookId || !(e.ctrlKey || e.metaKey) || modalOpen() || SH.edit || isTyping(e.target)) return;
+  if (e.key === '=' || e.key === '+') { e.preventDefault(); setZoom(shZ() * 1.25); } else if (e.key === '-') { e.preventDefault(); setZoom(shZ() * .8); } else if (e.key === '0') { e.preventDefault(); setZoom(1); }
+});
+addEventListener('resize', () => { if (UI.view === 'sheets' && SH.bookId) applyZoom(); });
+</script>
+<script>addEventListener('pagehide', () => { if (setZoom.t) { clearTimeout(setZoom.t); setZoom.t = 0; save(); } });</script>
 <script>
 /* ================= Sheets: template gallery ================= */
 const $C = (dec = 2, sym = '$') => ({ type: 'currency', sym, dec }), $P = (dec = 0) => ({ type: 'percent', dec }), $D = (style = 'medium') => ({ type: 'date', style });

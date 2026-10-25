@@ -537,6 +537,7 @@ body.presenting-body #nav{display:none}
 .mini-grid td{border:1px solid var(--border);padding:1px 3px;white-space:nowrap;overflow:hidden;max-width:46px;background:var(--sh-cell)}
 .mini-grid tr.h td{font-weight:700}
 .mini-chart{flex:none;min-width:0;overflow:hidden;background:var(--sh-cell);border-radius:4px}
+.mini-photo{flex:none;width:100%;height:56px;object-fit:cover;border-radius:4px;display:block}
 .mini-chart svg{width:100%;height:auto;max-height:76px;display:block}
 .mini-empty{font-size:40px;margin:auto}
 .sh-editor{display:flex;flex-direction:column;height:100%;min-height:0}
@@ -6490,7 +6491,97 @@ function openBookTemplates() {
   });
 }
 </script>
+<script>
+/* ================= Sheets: more premium templates (photo, report, document, invoice styles) ================= */
+/* placeholder photos are small inline SVGs; "Replace image…" in the Style panel swaps in your own */
+function photoSrc(kind, a, b) {
+  const art = {
+    landscape: `<circle cx="450" cy="120" r="54" fill="#fff" opacity=".85"/><path d="M0 400L170 190L300 330L390 250L600 400Z" fill="#000" opacity=".22"/><path d="M0 400L120 290L240 370L380 260L600 400Z" fill="#000" opacity=".32"/>`,
+    food: `<circle cx="300" cy="200" r="150" fill="#fff" opacity=".9"/><circle cx="300" cy="200" r="112" fill="${b}" opacity=".55"/><circle cx="262" cy="170" r="26" fill="#fff" opacity=".7"/><circle cx="335" cy="232" r="32" fill="#000" opacity=".15"/><circle cx="340" cy="160" r="16" fill="#fff" opacity=".6"/>`,
+    studio: `<rect x="70" y="70" width="210" height="260" rx="14" fill="#fff" opacity=".25"/><circle cx="420" cy="170" r="96" fill="#fff" opacity=".3"/><rect x="330" y="270" width="200" height="70" rx="35" fill="#000" opacity=".18"/>`,
+    logo: `<circle cx="300" cy="200" r="150" fill="#fff" opacity=".18"/><path d="M300 95l30 70 76 6-58 50 18 74-66-40-66 40 18-74-58-50 76-6z" fill="#fff"/>`,
+    band: '', paper: '',
+  }[kind] || '';
+  const fill = kind === 'paper' ? `<rect width="600" height="400" fill="${a}"/>` : `<defs><linearGradient id="g" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="${a}"/><stop offset="1" stop-color="${b}"/></linearGradient></defs><rect width="600" height="400" fill="url(#g)"/>`;
+  return 'data:image/svg+xml;charset=utf-8,' + encodeURIComponent(`<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 600 400" preserveAspectRatio="xMidYMid slice">${fill}${art}</svg>`);
+}
+const mkPhoto = (kind, a, b, x, y, w, hh, z = 1) => ({ id: uid('im_'), kind: 'image', src: photoSrc(kind, a, b), x, y, w, h: hh, z });
+const _objHTML2 = objHTML;
+objHTML = function (o) { const html = _objHTML2(o); return o.kind === 'image' && o.src && !assets[o.assetId] ? html.replace('src=""', `src="${esc(o.src)}"`) : html; };
+const _bookThumb0 = bookThumb;
+bookThumb = function (b) { const im = b.sheets[0]?.objects.find(o => o.kind === 'image' && o.src && o.w > 200); return (im ? `<img class="mini-photo" alt="" src="${esc(im.src)}">` : '') + _bookThumb0(b); };
 
+const SH_PREMIUM2 = [
+  { id: 'p-budget-bluegreen', cat: 'Budgets', name: 'Budget Overview', icon: '💙', desc: 'Monthly income and spending in blue and green, with a breakdown', build: () => {
+    const m = mkTable('Monthly', [['Month', 'Income', 'Spending'], ...MONTHS.map((mo, i) => [mo, String(6200 + (i % 4) * 380 + i * 45), String(4700 + ((i * 7) % 5) * 310)])], { headerCols: 1, fmt: { 1: $C(0), 2: $C(0) }, x: 40, y: 420, colW: [70, 100, 100], style: 'blue', showName: false });
+    const cats = [['Housing', 1650], ['Food', 620], ['Transport', 310], ['Health', 180], ['Fun', 240], ['Savings', 900]];
+    const k = mkTable('Breakdown', [['Category', 'Monthly', 'Share'], ...cats.map((c, i) => [c[0], String(c[1]), `=B${i + 2}/SUM(B$2:B$7)`]), ['Total', '=SUM(B2:B7)', '=SUM(C2:C7)']], { footerRows: 1, fmt: { 1: $C(0), 2: $P(1) }, x: 360, y: 420, colW: [120, 100, 80], style: 'green' });
+    const s = mkTable('Summary', [['Income this year', 'Spent this year', 'Saved'], ['=SUM(Monthly::B2:B13)', '=SUM(Monthly::C2:C13)', '=A2-B2']], { fmt: { 0: $C(0), 1: $C(0), 2: $C(0) }, x: 40, y: 92, colW: [150, 150, 150], style: 'plain', banded: false, showName: false, styles: [[1, 0, { b: true, size: 20, color: 'blue' }], [1, 1, { b: true, size: 20, color: 'green' }], [1, 2, { b: true, size: 20 }]] });
+    return [mkSheet('Budget', [mkText(`<div><b>Budget Overview</b></div><div>${thisY}</div>`, 40, 24, 400, 24), s, mkChart('column', m, [0, 0, 12, 2], 40, 180, 700, 220, { showTitle: false, colors: ['blue', 'green'] }), m, k])];
+  } },
+  { id: 'p-budget-photo', cat: 'Budgets', name: 'Photo Budget', icon: '🏞️', desc: 'A photo header, a green spending chart and a simple ledger', build: () => {
+    const wk = mkTable('Weekly', [['Week', 'Spent'], ...['Week 1', 'Week 2', 'Week 3', 'Week 4'].map((w, i) => [w, String([410, 365, 520, 298][i])])], { fmt: { 1: $C(0) }, x: 40, y: 560, colW: [100, 100], style: 'green', showName: false });
+    const l = mkTable('Ledger', [['Date', 'Description', 'Category', 'Amount'], [D(10, 2), 'Farmers market', 'Food', '64.5'], [D(10, 4), 'Bus pass', 'Transport', '86'], [D(10, 9), 'Concert tickets', 'Fun', '120'], [D(10, 15), 'Pharmacy', 'Health', '32.4'], [D(10, 21), 'Groceries', 'Food', '148.2'], [D(10, 28), 'Dinner with friends', 'Fun', '72'], ['Total', '', '', '=SUM(D2:D7)']], { footerRows: 1, fmt: { 0: $D('short'), 2: { type: 'popup', options: ['Food', 'Transport', 'Fun', 'Health', 'Home'] }, 3: $C() }, x: 300, y: 560, colW: [90, 190, 110, 100], style: 'green', showName: false });
+    return [mkSheet('Budget', [mkPhoto('landscape', '#3f8f6b', '#c9e7b5', 40, 24, 760, 200), mkText('<div><b>October Budget</b></div>', 40, 236, 400, 26), mkText('<div>Spend on what matters · Where it went</div>', 40, 276, 400, 14, { color: 'green' }), mkChart('column', wk, [0, 0, 4, 1], 40, 306, 760, 236, { showTitle: false, legend: false, colors: ['green'] }), wk, l])];
+  } },
+  { id: 'p-recipes', cat: 'Featured', name: 'Recipe Collection', icon: '🥗', desc: 'Favorite recipes and a pantry list, with photos', build: () => {
+    const r = mkTable('Recipes', [['Dish', 'Course', 'Prep time', 'Serves', 'Rating', 'Made it'], ['Lemon herb salad', 'Starter', '0h 15m', '4', '4', 'TRUE'], ['Tomato basil soup', 'Starter', '0h 40m', '6', '5', 'TRUE'], ['Mushroom risotto', 'Main', '0h 50m', '4', '5', 'FALSE'], ['Sheet-pan salmon', 'Main', '0h 30m', '2', '4', 'TRUE'], ['Berry crumble', 'Dessert', '0h 45m', '8', '5', 'FALSE']], { fmt: { 1: { type: 'popup', options: ['Starter', 'Main', 'Dessert', 'Side'] }, 2: { type: 'duration' }, 4: { type: 'stars' }, 5: { type: 'checkbox' } }, x: 40, y: 330, colW: [180, 100, 100, 70, 110, 80], style: 'orange' });
+    const p = mkTable('Pantry', [['Item', 'Have', 'Need', 'To buy'], ['Arborio rice', '1', '2', '=MAX(0,C2-B2)'], ['Olive oil', '1', '1', '=MAX(0,C3-B3)'], ['Canned tomatoes', '2', '4', '=MAX(0,C4-B4)'], ['Salmon fillets', '0', '2', '=MAX(0,C5-B5)'], ['Frozen berries', '1', '2', '=MAX(0,C6-B6)']], { fmt: { 1: { type: 'stepper', min: 0, max: 99, step: 1 }, 2: { type: 'stepper', min: 0, max: 99, step: 1 } }, x: 40, y: 560, colW: [170, 110, 110, 80], style: 'gray', rules: [{ r1: 1, c1: 3, r2: 5, c2: 3, op: 'gt', a: '0', style: 'yellow' }] });
+    return [mkSheet('Recipes', [mkText('<div><b>Recipe Collection</b></div><div>Our family favorites</div>', 40, 24, 400, 26), mkPhoto('food', '#f2c36b', '#e8743b', 40, 96, 240, 200), mkPhoto('food', '#a7d58b', '#2f8f5b', 300, 96, 240, 200), mkPhoto('food', '#f0a3b8', '#8e4ec6', 560, 96, 240, 200), r, p])];
+  } },
+  { id: 'p-creative', cat: 'Featured', name: 'Creative Services', icon: '🎨', desc: 'Photo blocks for your work and a price table', build: () => {
+    const s = [['Photography', 'Half-day shoot, 40 edited images', 1800], ['Art direction', 'Concept, mood boards, on-set lead', 2400], ['Illustration', 'Up to 5 custom pieces', 3200], ['Motion', '30-second animated spot', 4500]];
+    const t = mkTable('Prices', [['Service', 'What you get', 'Price'], ...s.map(x => [x[0], x[1], String(x[2])]), ['Bundle all four', 'Save 10%', '=SUM(C2:C5)*0.9']], { footerRows: 1, fmt: { 2: $C(0) }, x: 40, y: 420, colW: [170, 320, 120], style: 'plain', banded: false, showName: false, styles: [[5, 2, { b: true }]] });
+    return [mkSheet('Services', [mkText('<div><b>CREATIVE SERVICES</b></div><div>Studio North · Portfolio and rates</div>', 40, 24, 500, 24), mkPhoto('studio', '#5b5bd6', '#d6409f', 40, 92, 250, 300), mkPhoto('studio', '#12a594', '#3e63dd', 306, 92, 250, 140), mkPhoto('studio', '#f76b15', '#e2b203', 306, 252, 250, 140), mkText('<div><b>Recent work</b></div><div>Brand campaigns, editorial and product launches for clients in food, fashion and tech.</div>', 576, 92, 230, 14), t])];
+  } },
+  { id: 'p-report-donut', cat: 'Featured', name: 'Report', icon: '🍩', desc: 'Summary report with a donut chart and a gradient footer', build: () => {
+    const t = mkTable('Channels', [['Channel', 'Visitors', 'Signups', 'Rate'], ['Search', '18400', '920', '=C2/B2'], ['Social', '12650', '506', '=C3/B3'], ['Email', '6100', '488', '=C4/B4'], ['Referral', '4300', '301', '=C5/B5'], ['Direct', '7900', '395', '=C6/B6'], ['Total', '=SUM(B2:B6)', '=SUM(C2:C6)', '=C7/B7']], { footerRows: 1, fmt: { 1: { type: 'number', dec: 0, sep: true }, 2: { type: 'number', dec: 0, sep: true }, 3: $P(1) }, x: 400, y: 120, colW: [110, 100, 90, 80], style: 'teal', showName: false });
+    return [mkSheet('Report', [mkText('<div><b>Quarterly Report</b></div><div>Q3 · Website growth</div>', 40, 24, 500, 26), mkChart('donut', t, [0, 0, 5, 1], 40, 100, 330, 300, { title: 'Visitors by channel', palette: 'ocean' }), t, mkText('<div><b>Highlights</b></div><div>Search remains the largest channel. Email converts best at 8%. Social traffic grew 22% on last quarter.</div>', 400, 360, 400, 14), mkPhoto('band', '#a6e3d8', '#cdb8f0', 40, 440, 780, 56), mkText('<div><b>Prepared by the Growth team</b></div>', 60, 456, 400, 14)])];
+  } },
+  { id: 'p-doc-green', cat: 'Featured', name: 'Document Report', icon: '📗', desc: '“Document Title” layout with a green column chart and colored table', build: () => {
+    const t = mkTable('Results', [['Region', 'Q1', 'Q2', 'Q3', 'Q4'], ['North', '42', '48', '51', '60'], ['South', '35', '39', '44', '47'], ['East', '28', '33', '30', '38'], ['West', '50', '54', '58', '63']], { headerCols: 1, fmt: { 1: $C(0), 2: $C(0), 3: $C(0), 4: $C(0) }, x: 40, y: 470, colW: [110, 90, 90, 90, 90], style: 'green', showName: false });
+    t.rows.slice(1).forEach(row => row.slice(1).forEach(c => { if (c) c.v = String(+c.v * 1000); }));
+    return [mkSheet('Document', [mkText('<div><b>Document Title</b></div>', 40, 24, 600, 34), mkText('<div>Subtitle · Annual sales by region</div>', 40, 74, 600, 15, { color: 'green' }), mkText('<div>Write a short introduction here. Explain what the chart shows and what readers should take away. Every region grew this year, with the West leading in each quarter.</div>', 40, 108, 640, 14), mkChart('column', t, [0, 0, 4, 4], 40, 180, 640, 270, { showTitle: false, palette: 'forest' }), t])];
+  } },
+  { id: 'p-expense-report', cat: 'Personal Finance', name: 'Expense Report', icon: '🧾', desc: 'Business expenses with green and orange charts by category and week', build: () => {
+    const ex = [[D(10, 1), 'Travel', 'Flight to Denver', 412, 'TRUE'], [D(10, 1), 'Lodging', 'Hotel, 2 nights', 356, 'TRUE'], [D(10, 2), 'Meals', 'Client dinner', 148.6, 'TRUE'], [D(10, 8), 'Supplies', 'Printer ink', 64.99, 'FALSE'], [D(10, 9), 'Meals', 'Team lunch', 92.4, 'TRUE'], [D(10, 15), 'Travel', 'Rideshare', 38.2, 'TRUE'], [D(10, 22), 'Software', 'Design tool', 29, 'FALSE'], [D(10, 23), 'Meals', 'Coffee meeting', 14.5, 'TRUE']];
+    const t = mkTable('Expenses', [['Date', 'Category', 'Description', 'Amount', 'Reimburse'], ...ex.map(e => [e[0], e[1], e[2], String(e[3]), e[4]]), ['Total', '', '', '=SUM(D2:D9)', '']], { footerRows: 1, fmt: { 0: $D('short'), 1: { type: 'popup', options: ['Travel', 'Lodging', 'Meals', 'Supplies', 'Software'] }, 3: $C(), 4: { type: 'checkbox' } }, x: 40, y: 410, colW: [90, 110, 190, 100, 90], style: 'green', showName: false });
+    const c = mkTable('By category', [['Category', 'Amount'], ...['Travel', 'Lodging', 'Meals', 'Supplies', 'Software'].map((x, i) => [x, `=SUMIF(Expenses::B:B,A${i + 2},Expenses::D:D)`])], { fmt: { 1: $C(0) }, x: 700, y: 410, colW: [100, 90], style: 'orange' });
+    const w = mkTable('By week', [['Week', 'Amount'], ...[1, 8, 15, 22].map((d, i) => [`Oct ${d}`, `=SUMIFS(Expenses::D:D,Expenses::A:A,">="&DATE(2026,10,${d}),Expenses::A:A,"<"&DATE(2026,10,${d + 7}))`])], { fmt: { 1: $C(0) }, x: 700, y: 620, colW: [100, 90], style: 'gray' });
+    const s = mkTable('Totals', [['To reimburse', 'Not reimbursed'], ['=SUMIF(Expenses::E:E,TRUE,Expenses::D:D)', '=SUMIF(Expenses::E:E,FALSE,Expenses::D:D)']], { fmt: { 0: $C(), 1: $C() }, x: 40, y: 92, colW: [150, 150], style: 'plain', banded: false, showName: false, styles: [[1, 0, { b: true, size: 20, color: 'green' }], [1, 1, { b: true, size: 20, color: 'orange' }]] });
+    return [mkSheet('Expense Report', [mkText('<div><b>Expense Report</b></div><div>Jordan Lee · October 2026</div>', 40, 24, 500, 24), s, mkChart('donut', c, [0, 0, 5, 1], 40, 170, 340, 220, { title: 'By category', colors: ['green', 'orange', 'teal', 'yellow', 'gray'] }), mkChart('column', w, [0, 0, 4, 1], 400, 170, 400, 220, { title: 'By week', legend: false, colors: ['orange'] }), t, c, w])];
+  } },
+  { id: 'p-inventory-pie', cat: 'Business', name: 'Inventory by Category', icon: '🥧', desc: 'Stock list with a pie chart of value by category', build: () => {
+    const items = [['Notebook A5', 'Paper', 120, 6.5], ['Sketchbook', 'Paper', 45, 14], ['Gel pen set', 'Pens', 80, 9], ['Fountain pen', 'Pens', 18, 48], ['Desk tray', 'Desk', 25, 22], ['Lamp', 'Desk', 12, 64], ['Tote bag', 'Bags', 40, 18]];
+    const t = mkTable('Stock', [['Item', 'Category', 'In stock', 'Unit cost', 'Value'], ...items.map((x, i) => [x[0], x[1], String(x[2]), String(x[3]), `=C${i + 2}*D${i + 2}`]), ['Total', '', '=SUM(C2:C8)', '', '=SUM(E2:E8)']], { footerRows: 1, fmt: { 1: { type: 'popup', options: ['Paper', 'Pens', 'Desk', 'Bags'] }, 3: $C(), 4: $C(0) }, x: 40, y: 100, colW: [150, 100, 90, 90, 100], style: 'blue', rules: [{ r1: 1, c1: 2, r2: 7, c2: 2, op: 'lt', a: '20', style: 'red' }] });
+    const c = mkTable('Value by category', [['Category', 'Value'], ...['Paper', 'Pens', 'Desk', 'Bags'].map((x, i) => [x, `=SUMIF(Stock::B:B,A${i + 2},Stock::E:E)`])], { fmt: { 1: $C(0) }, x: 40, y: 420, colW: [120, 100], style: 'gray' });
+    return [mkSheet('Inventory', [mkText('<div><b>Inventory</b></div>', 40, 20, 400, 22), mkText('<div>Value of stock on hand by category. Items under 20 are highlighted.</div>', 40, 56, 640, 13, { color: 'gray' }), t, c, mkChart('pie', c, [0, 0, 4, 1], 300, 400, 380, 300, { title: 'Stock value by category' })])];
+  } },
+  { id: 'p-doc-purple', cat: 'Featured', name: 'Purple Document', icon: '💜', desc: 'A purple document with a checklist of items, owners and due dates', build: () => {
+    const t = mkTable('List', [['Item', 'Owner', 'Status', 'Due', 'Done'], ['Draft outline', 'Sam', 'Done', D(10, 20), 'TRUE'], ['Collect data', 'Priya', 'In progress', D(10, 30), 'FALSE'], ['Write first draft', 'Sam', 'Not started', D(11, 6), 'FALSE'], ['Review', 'Maya', 'Not started', D(11, 13), 'FALSE'], ['Publish', 'Jules', 'Not started', D(11, 20), 'FALSE']], { fmt: { 2: { type: 'popup', options: ['Not started', 'In progress', 'Done'] }, 3: $D(), 4: { type: 'checkbox' } }, x: 40, y: 190, colW: [200, 100, 130, 120, 70], style: 'purple', showName: false, rules: [{ r1: 1, c1: 2, r2: 5, c2: 2, op: 'eq', a: 'Done', style: 'green' }] });
+    const p = mkTable('Progress', [['Done', 'Total', 'Complete'], ['=COUNTIF(List::E2:E6,TRUE)', '=COUNTA(List::A2:A6)', '=A2/B2']], { fmt: { 2: $P() }, x: 40, y: 400, colW: [90, 90, 110], style: 'purple', showName: false });
+    return [mkSheet('Document', [mkText('<div><b>Document Title</b></div>', 40, 24, 640, 32, { color: 'purple' }), mkText('<div>Project plan · Fall newsletter</div>', 40, 72, 640, 15), mkText('<div>Use this list to track each step. Change the status from its pop-up menu and tick Done when finished.</div>', 40, 110, 640, 14, { fill: 'purple' }), t, p])];
+  } },
+  { id: 'p-doc-orange', cat: 'Business', name: 'Price Sheet', icon: '🧡', desc: 'An orange document with grouped prices and notes', build: () => {
+    const t = mkTable('Prices', [['Item', 'Size', 'Price', 'Notes'], ['Drip coffee', '12 oz', '3', 'Refills $1'], ['Latte', '12 oz', '4.75', 'Oat milk +$0.75'], ['Cold brew', '16 oz', '5', ''], ['Croissant', 'Each', '3.75', 'Baked daily'], ['Banana bread', 'Slice', '3.5', ''], ['Breakfast sandwich', 'Each', '7.5', 'Until 11 am'], ['Whole beans', '12 oz bag', '16', 'Single origin']], { fmt: { 2: $C() }, x: 40, y: 130, colW: [180, 110, 90, 200], style: 'orange', showName: false });
+    return [mkSheet('Price Sheet', [mkText('<div><b>Price Sheet</b></div><div>Corner Café · Effective November 1</div>', 40, 24, 520, 26, { fill: 'orange' }), mkText('<div>Prices include tax. Ask about catering for groups of 10 or more.</div>', 40, 94, 600, 13, { color: 'gray' }), t])];
+  } },
+  { id: 'p-invoice-logo', cat: 'Business', name: 'Invoice with Logo', icon: '🧾', desc: 'A cream invoice with space for your logo', build: () => {
+    const items = [['Logo design', 1, 1200], ['Business cards (500)', 2, 85], ['Letterhead template', 1, 300], ['Brand guide', 1, 650]];
+    const t = mkTable('Items', [['Description', 'Qty', 'Unit price', 'Amount'], ...items.map((x, i) => [x[0], String(x[1]), String(x[2]), `=B${i + 2}*C${i + 2}`]), ['Subtotal', '', '', '=SUM(D2:D5)'], ['Tax (8%)', '', '', '=D6*0.08'], ['Total due', '', '', '=D6+D7']], { footerRows: 3, fmt: { 2: $C(), 3: $C() }, x: 60, y: 260, colW: [260, 70, 110, 120], style: 'plain', banded: false, showName: false, styles: [[8, 3, { b: true, size: 16 }], [8, 0, { b: true }]] });
+    t.z = 2;
+    return [mkSheet('Invoice', [mkPhoto('paper', '#f6efe2', '#f6efe2', 20, 10, 640, 620, 1), mkPhoto('logo', '#8e4ec6', '#3e63dd', 60, 40, 90, 90, 2), mkText('<div><b>Your Company</b></div><div>12 Market St · Portland, OR</div><div>hello@yourcompany.com</div>', 170, 48, 300, 14), mkText('<div><b>INVOICE</b></div><div>#2026-031</div><div>Date: Oct 25, 2026</div><div>Due: Nov 24, 2026</div>', 470, 44, 170, 13), mkText('<div><b>Bill to</b></div><div>Brightline Studio</div><div>400 Alder Ave, Seattle</div>', 60, 180, 300, 13), t, mkText('<div>Thank you for your business. Payment by bank transfer within 30 days.</div>', 60, 560, 520, 12, { color: 'gray' })])];
+  } },
+  { id: 'p-activity-purple', cat: 'Personal', name: 'Activity Log (Purple)', icon: '💪', desc: 'Workouts with a purple chart and weekly totals', build: () => {
+    const days = Array.from({ length: 14 }, (_, i) => [D(11, i + 2), ['Strength', 'Run', 'Yoga', 'Strength', 'Bike', 'Hike', 'Rest'][i % 7], [50, 35, 30, 55, 60, 110, 0][i % 7] + (i > 6 ? 5 : 0), [420, 380, 160, 450, 520, 780, 0][i % 7]]);
+    const t = mkTable('Workouts', [['Date', 'Type', 'Minutes', 'Calories'], ...days.map(d => [d[0], d[1], String(d[2]), String(d[3])])], { fmt: { 0: $D('short'), 1: { type: 'popup', options: ['Strength', 'Run', 'Yoga', 'Bike', 'Hike', 'Rest'] } }, x: 40, y: 400, colW: [100, 110, 90, 90], style: 'purple' });
+    const wk = mkTable('Weeks', [['Week', 'Minutes', 'Calories'], ['Week 1', '=SUM(Workouts::C2:C8)', '=SUM(Workouts::D2:D8)'], ['Week 2', '=SUM(Workouts::C9:C15)', '=SUM(Workouts::D9:D15)']], { headerCols: 1, fmt: { 2: { type: 'number', dec: 0, sep: true } }, x: 520, y: 400, colW: [80, 90, 90], style: 'purple', showName: false });
+    const c = mkTable('Chart data', [['Day', 'Minutes'], ...days.map((d, i) => [`=TEXT(DAY(Workouts::A${i + 2}),"0")`, `=Workouts::C${i + 2}`])], { x: 520, y: 520, colW: [60, 80], style: 'gray', showName: false });
+    return [mkSheet('Activity', [mkText('<div><b>Activity Log</b></div><div>Nov 2 – Nov 15</div>', 40, 24, 400, 22, { color: 'purple' }), mkChart('column', c, [0, 0, 14, 1], 40, 90, 700, 280, { title: 'Minutes per day', legend: false, showTitle: false, colors: ['purple'], trend: 'avg' }), t, wk, c])];
+  } },
+];
+SH_TEMPLATES.unshift(...SH_PREMIUM2);
+</script>
 <script>
 /* ================= CRM definitions ================= */
 const companyName = id => db.companies.find(c => c.id === id)?.name || '';
